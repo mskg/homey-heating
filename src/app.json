@@ -1,0 +1,168 @@
+{
+  "id": "app.mskg.homey-heating",
+  "version": "1.0.0",
+  "compatibility": ">= 2.0.0",
+  "sdk": 2,
+  "name": {
+    "en": "Homey Heating Scheduler"
+  },
+  "tags": {
+
+  },
+  "brandColor": "#2196f3",
+  "description": {
+    "en": "Create and manage heating schedules"
+  },
+  "category": [
+    "tools"
+  ],
+  "permissions": [
+    "homey:manager:api"
+  ],
+  "images": {
+    "large": "/assets/images/large.png",
+    "small": "/assets/images/small.png"
+  },
+  "flow": {
+    "actions": [
+      {
+        "id": "apply_all",
+        "title": {
+          "en": "Apply all active heating plans"
+        }
+      },
+      {
+        "id": "apply_plan",
+        "title": {
+          "en": "Apply heating plan"
+        },
+        "args": [
+          {
+            "type": "autocomplete",
+            "name": "plan",
+            "placeholder": {
+              "en": "Search for a plan..."
+            }
+          }
+        ]
+      },
+      {
+        "id": "set_mode",
+        "title": {
+          "en": "Set heating mode"
+        },
+        "args": [       
+          {
+            "type": "dropdown",
+            "name": "state",
+            "values": [
+              {
+                "id": "0",
+                "label": {
+                  "en": "Automatic"
+                }
+              },
+              {
+                "id": "1",
+                "label": {
+                  "en": "1 day at home"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "1 day away from home"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Sleeping"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Holiday"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_log_state",
+        "title": {
+          "en": "Set remote logging"
+        },
+        "args": [         
+          {
+            "type": "dropdown",
+            "name": "state",
+            "values": [
+              {
+                "id": "true",
+                "label": {
+                  "en": "to enabled"
+                }
+              },
+              {
+                "id": "false",
+                "label": {
+                  "en": "to disabled"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_plan_state",
+        "title": {
+          "en": "Set heating plan"
+        },
+        "args": [
+          {
+            "type": "autocomplete",
+            "name": "plan",
+            "placeholder": {
+              "en": "Search for a plan..."
+            }
+          },
+          {
+            "type": "dropdown",
+            "name": "state",
+            "values": [
+              {
+                "id": "true",
+                "label": {
+                  "en": "to enabled"
+                }
+              },
+              {
+                "id": "false",
+                "label": {
+                  "en": "to disabled"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "author": {
+    "name": "Markus Kling",
+    "email": "markus.kling@gmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/mskg/homey-heating/issues"
+  },
+  "contributing": {
+    "donate": {
+        "paypal": {
+            "username": "klingmarkus"
+        }
+    }
+  }
+}

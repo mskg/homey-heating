@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "es6",
+        "moduleResolution": "node",
+        "declaration": false,
+        "noImplicitAny": false,
+        "sourceMap": true,
+        "jsx": "react",
+        "noLib": false,
+        "esModuleInterop": true,
+        "suppressImplicitAnyIndexErrors": true
+    },
+    "include": [
+        "./src/typings.d.ts",
+        "./src/settings/**/*"
+    ]
+}

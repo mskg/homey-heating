@@ -1,0 +1,150 @@
+{
+  "settings": {
+    "title": "Settings",
+
+    "category_log": "console.re Logging",
+    "enabled": {
+      "label": "Enabled?"
+    },
+
+    "category": {
+      "label": "Log category",
+      "placeholder": "Log category"
+    },
+
+    "backup": {
+      "section": "Backup and restore your heating plans",
+      "label": "Heating plan configuration",
+      "placeholder": "Heating plan configuration"
+    }
+  },
+
+  "clone": {
+    "title": "Duplicate heating plan",
+    "text": " Enter a new name and presss OK to create a copy of the heating plan '__name__'.",
+    "name": {
+      "label": "Plan name",
+      "placeholder": "New name of your plan"
+    },
+    "cancel": "Cancel",
+    "ok": "OK"
+  },
+  
+  "copy": {
+    "title": "Copy schedule",
+    "text": "Select the days, you want the current schedule also be applied to.",
+    "cancel": "Cancel",
+    "ok": "OK",
+
+    "Monday": "Monday",
+    "Tuesday": "Tuesday",
+    "Wednesday": "Wednesday",
+    "Thursday": "Thursday",
+    "Friday": "Friday",
+    "Saturday": "Saturday",
+    "Sunday": "Sunday"
+  },
+
+  "plan": {
+    "target": {
+      "label": "Target temperature",
+      "placeholder": "Target temperature"
+    },
+
+    "confirm": {
+      "title": "Do you really want to remove the heating plan?",
+      "content": "Press OK to permanently remove the heating plan. This action cannot be undone."
+    },
+
+    "save": "save",
+
+    "overview": {
+      "section": "Overview",
+      "name": {
+        "label": "Display name of your plan",
+        "placeholder": "Display name"
+      },
+      "enabled": {
+        "label": "Enabled?"
+      },
+      "edit": "Edit schedule"
+    },
+    "overrides": {
+      "section": "Pause plan when",
+      "athome": "...you are a day at home?",
+      "away": "...when you are a day away from home?",
+      "sleeping": "...you are sleeping?",
+      "holiday": "...you are on holiday?"
+    },
+    "zones": {
+      "section": "Check the zones to which you want this plan to be applied to (all devices inside such zones are included)"
+    },
+    "devices": {
+      "section": "Check the devices you want this plan to be applied to"
+    }
+  },
+
+  "schedule": {
+    "title": "Edit schedules",
+    "save": "save",
+
+    "Monday": "MO",
+    "Tuesday": "TU",
+    "Wednesday": "WE",
+    "Thursday": "TH",
+    "Friday": "FR",
+    "Saturday": "SA",
+    "Sunday": "SU"
+  },
+  
+  "setpoint": {
+    "title": "Edit set point",
+    "save": "save",
+    "start": {
+      "label": "Start time",
+      "placeholder": "Start time"
+    },
+
+    "temperature": {
+      "label": "Temperature",
+      "low": "Night",
+      "middle": "Economy",
+      "warm": "Comfort",
+      "warmer": "Comfort plus"
+    },
+
+    "target": {
+      "label": "Target temperature",
+      "placeholder": "Target temperature"
+    }
+  },
+
+  "temperatures": {
+    "title": "Current temperatures"
+  },
+
+  "plans": {
+    "title": "Heating plans"
+  },
+
+  "error": {
+    "title": "Whoops! Something went wrong."
+  },
+
+  "menu": {
+    "title": "Homey Heating Scheduler",
+    "plans": "Heating plans",
+    "schedule": "Current temperatures",
+    "settings": "Settings",
+    "about": "About"
+  },
+
+  "confirm": {
+    "title": "Please confirm your action",
+    "cancel": "Cancel",
+    "ok": "OK"
+  },
+
+  "apply": "Evaluating heating plan __plan__",
+  "thermostat": "(__plan__) Setting target temperature of thermostat __name__ to __value__"
+}
