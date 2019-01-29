@@ -1,0 +1,1 @@
+{"version":3,"file":"appStyles.css","sources":["webpack:///./css/site.css"],"sourcesContent":["body,\nhtml,\n#root {\n    width: 100%;\n    height: 100%;\n}\n\nbody,\nhtml {\n    overflow: hidden;\n}\n\n#root {\n    overflow: auto;\n}"],"mappings":"AAAA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;","sourceRoot":""}
