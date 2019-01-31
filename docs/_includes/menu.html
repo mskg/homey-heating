@@ -1,0 +1,7 @@
+{% if site.data.navigation.size > 0 %}
+<div class="menu">
+{% for menu in site.data.navigation %}
+    <a href="{{ menu.url | relative_url }}">{{ menu.title }}</a>
+{% endfor %}
+</div>
+{% endif %}

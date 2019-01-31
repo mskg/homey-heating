@@ -1,0 +1,10 @@
+title: [Homey Heating Scheduler]
+description: [Easily control the temperature of your thermostats through your Athom Homey]
+
+store: "https://apps.athom.com/app/app.mskg.homey-heating"
+repository: mskg/homey-heating
+
+show_excerpts: true
+
+sass:
+  style: compact # possible values: nested expanded compact compressed
