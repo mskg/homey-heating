@@ -4,7 +4,7 @@ Easily control the temperature of your thermostats.
 
 ## How does this work and what can it do on Homey?
 
-This app controls the target temperature if your thermostats based on (many) **heating plans**. A heating plan is list of set points. At each set point, the associated target temperature is applied to a list devices.
+This app controls the target temperature if your thermostats based on (many) *heating plans*. A heating plan is list of set points. At each set point, the associated target temperature is applied to a list devices.
 
 A heating plan can be associated with either zones or devices. If a heating plan is associated with a zone, the heating plan is associated with all themorstats inside that zone. Child zones are not evaluated (yet).
 
