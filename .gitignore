@@ -3,6 +3,11 @@ dist/
 app.js
 app.js.map
 
+# Generated docs
+docs/_site
+docs/.jekyll-metadata
+docs/.sass-cache
+
 # Logs
 logs
 *.log
