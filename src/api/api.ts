@@ -1,6 +1,6 @@
 import { app, ManagerSettings } from "homey";
 import { filter, find, forEach, map, remove } from "lodash";
-import { HeatingManagerApp } from "../app/app";
+import { HeatingSchedulerApp } from "../app/app";
 import { DEFAULT_HEATING_PLAN } from "../app/helper/defaultPlan";
 import { IHeatingDevice, IHeatingPlan, IHeatingZone, Settings } from "../app/model";
 import { CLASS_THERMOSTAT } from "../app/services/homey-api";
@@ -26,7 +26,6 @@ module.exports = [
 
             var result = {};
 
-            const myApp = app as HeatingManagerApp;
             forEach(Object.keys(Settings), s=> {
                 result[s] = ManagerSettings.get(Settings[s]);
             });
@@ -52,7 +51,7 @@ module.exports = [
                 }
             });
 
-            const myApp = app as HeatingManagerApp;
+            const myApp = app as HeatingSchedulerApp;
             myApp.refreshConfig();
 
             callback(null, null);
@@ -68,7 +67,7 @@ module.exports = [
 
     //         const mode: number = args.body;
 
-    //         const myApp = app as HeatingManagerApp;
+    //         const myApp = app as HeatingSchedulerApp;
     //         myApp.manager.operationMode = mode as OperationMode;
     //         // scheduler must be restart?
 
@@ -83,7 +82,7 @@ module.exports = [
         fn: (args: IAPIParams, callback) => {
             logger.debug("GET zones");
 
-            const myApp = app as HeatingManagerApp;
+            const myApp = app as HeatingSchedulerApp;
             const result = map(myApp.manager.zones,
                 z => {
                     return {
@@ -105,7 +104,7 @@ module.exports = [
         fn: (args: IAPIParams, callback) => {
             logger.debug("GET devices");
             
-            const myApp = app as HeatingManagerApp;
+            const myApp = app as HeatingSchedulerApp;
             const result = map(filter(myApp.manager.devices, d => d.class === CLASS_THERMOSTAT),
                 z => {
                     return {
@@ -127,8 +126,8 @@ module.exports = [
         fn: (args: IAPIParams, callback) => {
             logger.debug("GET resetplans");
 
-            const myApp = app as HeatingManagerApp;
-            myApp.repsitory.replacePlans(DEFAULT_HEATING_PLAN);
+            const myApp = app as HeatingSchedulerApp;
+            myApp.repository.replacePlans(DEFAULT_HEATING_PLAN);
 
             // callback follows ( err, result )
             callback(null, "Done.");
@@ -142,7 +141,7 @@ module.exports = [
         fn: async (args: IAPIParams, callback) => {
             logger.debug("GET evaluate plans");
 
-            const myApp = app as HeatingManagerApp;
+            const myApp = app as HeatingSchedulerApp;
             const result = await myApp.manager.evaluateActivePlans();
 
             // callback follows ( err, result )
@@ -157,8 +156,8 @@ module.exports = [
         fn: async (args: IAPIParams, callback) => {
             logger.debug("GET plans");
 
-            const myApp = app as HeatingManagerApp;
-            const result = await myApp.repsitory.plans;
+            const myApp = app as HeatingSchedulerApp;
+            const result = await myApp.repository.plans;
 
             // callback follows ( err, result )
             callback(null, result);
@@ -172,7 +171,7 @@ module.exports = [
     //     fn: async (args: IAPIParams, callback) => {
     //         logger.debug("POST evaluate plans");
 
-    //         const myApp = app as HeatingManagerApp;
+    //         const myApp = app as HeatingSchedulerApp;
     //         const plan = await myApp.repsitory.find(args.params.id);
 
     //         await myApp.manager.applyPlan(plan);
@@ -189,8 +188,8 @@ module.exports = [
         fn: async (args: IAPIParams, callback) => {
             logger.debug(`GET plan ${args.params.id}`);
 
-            const myApp = app as HeatingManagerApp;
-            const result = await myApp.repsitory.find(args.params.id);
+            const myApp = app as HeatingSchedulerApp;
+            const result = await myApp.repository.find(args.params.id);
 
             // callback follows ( err, result )
             callback(null, result);
@@ -204,7 +203,7 @@ module.exports = [
         fn: async (args: IAPIParams, callback) => {
             logger.debug(`PUT plan ${args.params.id}`);
 
-            const myApp = app as HeatingManagerApp;
+            const myApp = app as HeatingSchedulerApp;
 
             const plan = args.body as IHeatingPlan;
             plan.id = args.params.id;
@@ -223,7 +222,7 @@ module.exports = [
                 );
             }
 
-            await myApp.repsitory.update(plan);
+            await myApp.repository.update(plan);
 
             // callback follows ( err, result )
             callback(null, plan);
@@ -237,9 +236,9 @@ module.exports = [
         fn: async (args: IAPIParams, callback) => {
             logger.debug(`DELETE plan ${args.params.id}`);
 
-            const myApp = app as HeatingManagerApp;
+            const myApp = app as HeatingSchedulerApp;
 
-            await myApp.repsitory.remove(args.params.id);
+            await myApp.repository.remove(args.params.id);
             callback(null, null);
         },
     },

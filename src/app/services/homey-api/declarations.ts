@@ -16,11 +16,18 @@ export interface ICapabilityInstance<T> {
     destroy();
 }
 
+export type HashedList<T> = {
+    [key: string]: T;
+  } & ArrayLike<T>;
+
 export interface IDevice {
     id: string;
     name: string;
     zone: string;
     class: string;
+    ready: boolean;
+    available: boolean;
+    unavailableMessage: string;
     iconObj?: {
         id: string;
         url: string;
@@ -29,14 +36,20 @@ export interface IDevice {
     makeCapabilityInstance<T>(id: string): Promise<ICapabilityInstance<T>>;
 }
 
+type EventHandler<T> = (zone: T) => void; 
+
 export interface IZoneManager {
-    getZones(): Promise<IZone[]>;
+    getZones(): Promise<HashedList<IZone>>;
     destroy();
+
+    on: (event: string, callback: EventHandler<IZone>) => void;
 }
 
 export interface IDeviceManager {
-    getDevices(): Promise<IDevice[]>;
+    getDevices(): Promise<HashedList<IDevice>>;
     destroy();
+
+    on: (event: string, callback: EventHandler<IDevice>) => void;
 }
 
 export interface IHomeyAPI {

@@ -1,6 +1,5 @@
 import { App, FlowCardAction, ManagerSettings } from "homey";
-import { DEFAULT_HEATING_PLAN } from "./helper/defaultPlan";
-import { Settings, OperationMode } from "./model";
+import { OperationMode, Settings } from "./model";
 import { HeatingManagerService } from "./services/heating-manager";
 import { HeatingPlanRepositoryService } from "./services/heating-plan-repository";
 import { HeatingSchedulerService } from "./services/heating-scheduler/HeatingSchedulerService";
@@ -23,15 +22,15 @@ type ChangeLogArgs = {
     state: string;
 };
 
-export class HeatingManagerApp extends App {
-    private repository: HeatingPlanRepositoryService = null;
+export class HeatingSchedulerApp extends App {
+    private repositoryService: HeatingPlanRepositoryService = null;
     private heatingManager: HeatingManagerService = null;
     private scheduler: HeatingSchedulerService = null;
     private logger: ILogger;
     private flowLogger: ILogger;
 
-    public get repsitory(): HeatingPlanRepositoryService {
-        return this.repository;
+    public get repository(): HeatingPlanRepositoryService {
+        return this.repositoryService;
     }
 
     public get manager(): HeatingManagerService {
@@ -41,7 +40,7 @@ export class HeatingManagerApp extends App {
     public refreshConfig() {
         LogService.init(this);
         this.logger.information("Refreshed configuration");
-        this.repository.load();
+        this.repositoryService.load();
     }
 
     public async onInit() {
@@ -53,16 +52,16 @@ export class HeatingManagerApp extends App {
         this.logger.information("Bootstrapping");
         this.bindActions();
 
-        this.repository = new HeatingPlanRepositoryService();
-        this.repository.load();
+        this.repositoryService = new HeatingPlanRepositoryService();
+        this.repositoryService.load();
 
-        this.heatingManager = new HeatingManagerService(this.repository);
+        this.heatingManager = new HeatingManagerService(this.repositoryService);
         await this.heatingManager.applyPlans();
 
         this.scheduler = new HeatingSchedulerService(this.heatingManager);
         await this.scheduler.start();
 
-        this.repository.onChanged.subscribe(async (rep, plan) => {
+        this.repositoryService.onChanged.subscribe(async (rep, plan) => {
             await this.heatingManager.applyPlans();
             await this.scheduler.start();
         });
@@ -74,7 +73,7 @@ export class HeatingManagerApp extends App {
             .registerRunListener(async (args, state) => {
                 this.flowLogger.information("Apply plans");
                 await this.heatingManger.applyPlans();
-                return Promise.resolve(true);
+                return true;
             });
 
         new FlowCardAction("apply_plan")
@@ -82,15 +81,15 @@ export class HeatingManagerApp extends App {
             .registerRunListener(async (args: PlanRefArgs, state) => {
                 this.flowLogger.information(`Apply plan ${args.plan.id}`);
 
-                const plan = await this.repository.find(args.plan.id);
+                const plan = await this.repositoryService.find(args.plan.id);
                 if (plan == null) { return Promise.resolve(false); }
 
                 await this.manager.applyPlan(plan);
-                return Promise.resolve(true);
+                return true;
             })
             .getArgument("plan")
             .registerAutocompleteListener(async (query, args) => {
-                const plans = await this.repository.plans;
+                const plans = await this.repositoryService.plans;
 
                 return Promise.resolve(plans.map<PlaceHolderArg>((p) => { return {
                     id: p.id,
@@ -101,13 +100,14 @@ export class HeatingManagerApp extends App {
             
         new FlowCardAction("set_mode")
             .register()
-            .registerRunListener((args: ChangeLogArgs, state) => {
+            .registerRunListener(async (args: ChangeLogArgs, state) => {
                 this.flowLogger.information(`Set mode ${args.state}`);
 
                 this.heatingManager.operationMode = parseInt(args.state) as OperationMode;
-                this.scheduler.start();
+                await this.heatingManager.applyPlans();
+                await this.scheduler.start();
                 
-                return Promise.resolve(true);
+                return true;
             });
 
         new FlowCardAction("set_log_state")
@@ -126,26 +126,26 @@ export class HeatingManagerApp extends App {
             .registerRunListener(async (args: ChangePlanArgs, state) => {
                 this.flowLogger.information(`Set plan ${args.plan.id} to ${args.state}`);
 
-                const plan = await this.repository.find(args.plan.id);
+                const plan = await this.repositoryService.find(args.plan.id);
                 if (plan == null) { return Promise.resolve(false); }
 
                 plan.enabled = args.state === "true";
-                await this.repository.update(plan);
+                await this.repositoryService.update(plan);
 
-                return Promise.resolve(true);
+                return true;
             })
             .getArgument("plan")
             .registerAutocompleteListener(async (query, args) => {
-                const plans = await this.repository.plans;
+                const plans = await this.repositoryService.plans;
 
-                return Promise.resolve(plans.map<PlaceHolderArg>((p) => { return {
+                return plans.map<PlaceHolderArg>((p) => { return {
                     id: p.id,
                     name: p.name || p.id,
-                }; }));
+                }; });
             });
     }
 }
 
 // we are a script, but the startup class is still bound to the export
 declare var module;
-module.exports = HeatingManagerApp;
+module.exports = HeatingSchedulerApp;

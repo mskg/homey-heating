@@ -149,7 +149,10 @@ const PlanPage: React.StatelessComponent<Props> = (props) => {
     };
 
     const getOverride = (mode: OverrideMode) => {
-        var override = plan.overrides != null ? plan.overrides[mode] : null;
+        var override = plan.overrides != null 
+            // made an error in first implementation storing the number instead of the value
+            ? (plan.overrides[OverrideMode[mode]] || plan.overrides[mode])
+            : null;
 
         return {
             mode: mode,
@@ -166,10 +169,12 @@ const PlanPage: React.StatelessComponent<Props> = (props) => {
             } 
 
             if (target == 0) {
+                delete old.overrides[OverrideMode[mode]];
                 delete old.overrides[mode];
             }
             else {
-                old.overrides[mode] = {
+                debugger
+                old.overrides[OverrideMode[mode]] = {
                     targetTemperature: target
                 };
             }

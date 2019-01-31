@@ -146,5 +146,7 @@
   },
 
   "apply": "Evaluating heating plan __plan__",
-  "thermostat": "(__plan__) Setting target temperature of thermostat __name__ to __value__"
+
+  "thermostat": "(__plan__) Setting target temperature of thermostat __name__ to __value__",
+  "failed_thermostat": "Failed to set thermostat __name__ to __value___"
 }

@@ -1,18 +1,18 @@
-import { __, Notification } from "homey";
-import { filter, find, forEach, isEmpty, map } from "lodash";
+import { ManagerSettings, Notification, __ } from "homey";
+import { filter, forEach, isEmpty, throttle } from "lodash";
 import { HeatingPlanCalculator } from "../../helper/HeatingPlanCalculator";
-import { IHeatingPlan, ICalculatedTemperature, NormalOperationMode, OperationMode, OverrideMode, ISetPoint, InternalSettings } from "../../model";
+import { ICalculatedTemperature, IHeatingPlan, InternalSettings, ISetPoint, NormalOperationMode, OperationMode, OverrideMode } from "../../model";
 import { HeatingPlanRepositoryService } from "../heating-plan-repository";
-import { CLASS_THERMOSTAT, HomeyAPIService, IDevice, IHomeyAPI, IZone, TARGET_TEMPERATURE, MEASURE_TEMPERATURE } from "../homey-api";
+import { CLASS_THERMOSTAT, HashedList, HomeyAPIService, IDevice, IHomeyAPI, IZone, MEASURE_TEMPERATURE, TARGET_TEMPERATURE } from "../homey-api";
 import { ILogger, LogService } from "../log";
-import { ManagerSettings } from "homey";
+import AsyncThrottle from "../../helper/AsyncThrottle";
 
 export class HeatingManagerService {
     private isRunning: boolean;
     private initialized: boolean = false;
 
-    private deviceList: IDevice[];
-    private zoneList: IZone[];
+    private deviceList: HashedList<IDevice>;
+    private zoneList: HashedList<IZone>;
 
     private logger: ILogger;
 
@@ -54,10 +54,6 @@ export class HeatingManagerService {
 
         this.mode = mode;
         ManagerSettings.set(InternalSettings.OperationMode, mode);
-
-        (async () => {
-            await this.applyPlans();
-        })();
     }
 
     public get repository(): HeatingPlanRepositoryService {
@@ -93,7 +89,8 @@ export class HeatingManagerService {
         // read temperatures
         await Promise.all(
             settings.map(s => 
-                (async () => { s.temperature = await this.getTemperature(await this.findDevice(s.device.id)) })()
+                (async () => { s.temperature = await this.getTemperature(this.findDevice(s.device.id)) })
+                () // execute the function to return the promise
             )
         );
 
@@ -113,25 +110,50 @@ export class HeatingManagerService {
         this.deviceList = await this.homeyApi.devices.getDevices();
         this.zoneList = await this.homeyApi.zones.getZones();
 
+        this.homeyApi.devices.on("device.create", (device: IDevice) => {
+            this.logger.debug(`Device ${device.id} was created.`);
+            this.deviceList[device.id] = device;
+        });
+
+        this.homeyApi.devices.on("device.delete", (device: IDevice) => {
+            this.logger.debug(`Device ${device.id} was removed.`);
+            delete this.deviceList[device.id];
+        });
+
+        this.homeyApi.zones.on("zone.create", (zone: IZone) => {
+            this.logger.debug(`Zone ${zone.id} was created.`);
+            this.zoneList[zone.id] = zone;
+        });
+
+        this.homeyApi.zones.on("zone.delete", (zone: IZone) => {
+            this.logger.debug(`Zone ${zone.id} was removed.`);
+            delete this.zoneList[zone.id];
+        });
+
         this.initialized = true;
     }
 
     private async applySettings(settings: ICalculatedTemperature[]) {
-        forEach(settings, async v => {
-            if (await this.setTemperature(this.findDevice(v.device.id), v.targetTemperature)) {
-                // tslint:disable-next-line: max-line-length
-                const notification = new Notification({
-                    excerpt: __("thermostat",
-                        {
-                            name: v.device.name,
-                            value: v.targetTemperature,
-                            plan: v.plan.name
-                        })
-                });
+        // throttle execution to not flood zwave stack
+        var setTemperature = AsyncThrottle(async (d,n) => await this.setTemperature(d,n), 1000);
 
-                notification.register();
-            }
-        });
+        await Promise.all(
+            settings.map(async newSetting => {
+                if (await setTemperature(this.findDevice(newSetting.device.id), newSetting.targetTemperature)) {
+
+                    // tslint:disable-next-line: max-line-length
+                    const notification = new Notification({
+                        excerpt: __("thermostat",
+                            {
+                                name: newSetting.device.name,
+                                value: newSetting.targetTemperature,
+                                plan: newSetting.plan.name
+                            })
+                    });
+                    notification.register();
+                }
+            })
+        );
     }
 
     private evaluatePlan(plan: IHeatingPlan): ICalculatedTemperature[] {
@@ -139,9 +161,10 @@ export class HeatingManagerService {
 
         let setPoint: ISetPoint = null;
 
-        const override = plan.overrides ? plan.overrides[this.mode] : null; 
+        // error in first implementation used number instead of text
+        const override = plan.overrides ? (plan.overrides[this.mode] || plan.overrides[OverrideMode[this.mode]]) : null; 
         if (override != null) {
-            this.logger.debug(`> Plan has override for ${this.mode}`);
+            this.logger.debug(`> Plan has override for ${OverrideMode[this.mode]}`);
 
             const date = new Date();
             setPoint = {
@@ -173,6 +196,9 @@ export class HeatingManagerService {
                 if (isEmpty(devices)) {
                     this.logger.debug("> No devices found");
                     return;
+                }
+                else {
+                    this.logger.debug(`> found ${devices.length} device(s)`);
                 }
 
                 forEach(devices, d => {
@@ -226,35 +252,60 @@ export class HeatingManagerService {
     private async setTemperature(d: IDevice, targetTemperature: number): Promise<boolean> {
         this.logger.debug(`Checking temperature for device ${d.name} (${d.id})`);
 
-        const ci = await d.makeCapabilityInstance<number>(TARGET_TEMPERATURE);
+        if (!d.ready) {
+            this.logger.error(`> Device ${d.name} is not ready (${d.unavailableMessage}).`);
+            return false;
+        }
+
         try {
-            if (PRODUCTION) {
+            const ci = await d.makeCapabilityInstance<number>(TARGET_TEMPERATURE);
+            try {
                 if (ci.value !== targetTemperature) {
                     this.logger.information(`Adjusting temperature for ${d.name} to ${targetTemperature}`);
-                    ci.setValue(targetTemperature);
+
+                    if (PRODUCTION) {
+                        ci.setValue(targetTemperature);
+                    }
 
                     return true;
                 }
             }
-        }
-        finally {
-            ci.destroy();
+            finally {
+                ci.destroy();
+            }
+        } catch (e) {
+            // Todo: Issue #25
+            this.logger.error(`Failed to set temperature ${d.name} (${d.id}) due to ${e}`);
+
+            const notification = new Notification({
+                excerpt: __("failed_thermostat",
+                    {
+                        name: d.name,
+                        value: targetTemperature
+                    })
+            });
+            notification.register();
         }
 
         return false;
     }
 
-    private findZone(id: string): IZone {
-        return find(this.zoneList, (d: IZone) => d.id === id || d.name === id);
+    private findZone(zoneId: string): IZone {
+        return this.zoneList[zoneId];
+
+        // return find(this.zoneList, (d: IZone) => d.id === id || d.name === id);
     }
 
-    private findDevice(id: string): IDevice {
-        return find(this.deviceList, (d: IDevice) =>
-            (d.id === id || d.name === id) && d.class === CLASS_THERMOSTAT);
+    private findDevice(deviceId: string): IDevice {
+        var d = this.deviceList[deviceId];
+        return d.class === CLASS_THERMOSTAT ? d : null;
+
+        // return find(this.deviceList, (d: IDevice) =>
+        //     (d.id === id || d.name === id) && d.class === CLASS_THERMOSTAT);
     }
 
-    private getDevicesForZone(id: string): IDevice[] {
+    private getDevicesForZone(zoneId: string): IDevice[] {
         return filter(this.deviceList, (d: IDevice) =>
-            d.zone === id && d.class === CLASS_THERMOSTAT);
+            d.zone === zoneId && d.class === CLASS_THERMOSTAT);
     }
 }
