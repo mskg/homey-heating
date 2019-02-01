@@ -48,7 +48,7 @@ var scriptConfig = (env, argv) => {
           test: /\.(png|jpg|gif|svg)$/,
           loader: 'file-loader',
           options: {
-            name: 'assets/img/[name].[ext]?[hash]'
+            name: '[name].[ext]?[hash]'
           }
         }
       ]
