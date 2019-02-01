@@ -147,8 +147,18 @@
     "ok": "OK"
   },
 
-  "apply": "Evaluating heating plan __plan__",
+  "Modes": {
+    "0": "Automatic",
+    "1": "One day at home",
+    "2": "One day away from home",
+    "3": "Sleeping",
+    "4": "On Holiday",    
+  },
 
-  "thermostat": "(__plan__) Setting target temperature of thermostat __name__ to __value__",
-  "failed_thermostat": "Failed to set thermostat __name__ to __value___"
+  "Notifications": {
+    "apply_plan": "Evaluating heating plan '__plan__'",
+    "set_operation_mode": "Heating mode set to '__mode__'",
+    "set_target_temperature": "(__plan__) Setting target temperature of thermostat '__name__' to __value__°",
+    "failed_set_target_temperature": "Failed to set thermostat '__name__' to __value___°"
+  }
 }

@@ -57,6 +57,14 @@ export class HeatingManagerService {
 
         this.mode = mode;
         ManagerSettings.set(InternalSettings.OperationMode, mode);
+
+        const notification = new Notification({
+            excerpt: __("Notification.set_operation_mode",
+                {
+                    mode: __(`Modes.${mode}`)
+                })
+        });
+        notification.register();
     }
 
     public get repository(): HeatingPlanRepositoryService {
@@ -138,7 +146,7 @@ export class HeatingManagerService {
 
                     // tslint:disable-next-line: max-line-length
                     const notification = new Notification({
-                        excerpt: __("thermostat",
+                        excerpt: __("Notification.set_target_temperature",
                             {
                                 name: newSetting.device.name,
                                 value: newSetting.targetTemperature,
@@ -264,7 +272,7 @@ export class HeatingManagerService {
             this.logger.error(`Failed to set temperature ${d.name} (${d.id}) due to ${e}`);
 
             const notification = new Notification({
-                excerpt: __("failed_thermostat",
+                excerpt: __("Notification.failed_set_target_temperature",
                     {
                         name: d.name,
                         value: targetTemperature
