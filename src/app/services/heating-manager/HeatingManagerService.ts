@@ -3,16 +3,19 @@ import { filter, forEach, isEmpty, throttle } from "lodash";
 import { HeatingPlanCalculator } from "../../helper/HeatingPlanCalculator";
 import { ICalculatedTemperature, IHeatingPlan, InternalSettings, ISetPoint, NormalOperationMode, OperationMode, OverrideMode } from "../../model";
 import { HeatingPlanRepositoryService } from "../heating-plan-repository";
-import { CLASS_THERMOSTAT, HashedList, HomeyAPIService, IDevice, IHomeyAPI, IZone, MEASURE_TEMPERATURE, TARGET_TEMPERATURE } from "../homey-api";
+import { CLASS_THERMOSTAT, IdLookupList, HomeyAPIService, IDevice, IHomeyAPI, IZone, MEASURE_TEMPERATURE, TARGET_TEMPERATURE } from "../homey-api";
 import { ILogger, LogService } from "../log";
 import AsyncThrottle from "../../helper/AsyncThrottle";
 
 export class HeatingManagerService {
+    public static readonly CanSetTargetTemperature = (device: IDevice): boolean => 
+        device.capabilities != null ? device.capabilities.find(c => c === TARGET_TEMPERATURE) != null : null;
+
     private isRunning: boolean;
     private initialized: boolean = false;
 
-    private deviceList: HashedList<IDevice>;
-    private zoneList: HashedList<IZone>;
+    private deviceList: IdLookupList<IDevice>;
+    private zoneList: IdLookupList<IZone>;
 
     private logger: ILogger;
 
@@ -85,15 +88,7 @@ export class HeatingManagerService {
         forEach((await this.plans.activePlans), (plan) => {
             settings.push(...this.evaluatePlan(plan));
         });
-
-        // read temperatures
-        await Promise.all(
-            settings.map(s => 
-                (async () => { s.temperature = await this.getTemperature(this.findDevice(s.device.id)) })
-                () // execute the function to return the promise
-            )
-        );
-
+       
         return settings;
     }
 
@@ -209,6 +204,7 @@ export class HeatingManagerService {
                             name: plan.name
                         },
                         // temperature: await this.getTemperature(d),
+                        temperature: this.getMeasuredTemperature(d),
                         targetTemperature: setPoint.targetTemperature,
                     });
                 });
@@ -231,22 +227,13 @@ export class HeatingManagerService {
                         id: plan.id,
                         name: plan.name
                     },
+                    temperature: this.getMeasuredTemperature(device),
                     targetTemperature: setPoint.targetTemperature
                 });
             });
         }
 
         return targets;
-    }
-
-    public async getTemperature(d: IDevice): Promise<number> {        
-        const ci = await d.makeCapabilityInstance<number>(MEASURE_TEMPERATURE);
-        try {
-            return ci.value;
-        }
-        finally {
-            ci.destroy();
-        }
     }
 
     private async setTemperature(d: IDevice, targetTemperature: number): Promise<boolean> {
@@ -258,20 +245,19 @@ export class HeatingManagerService {
         }
 
         try {
-            const ci = await d.makeCapabilityInstance<number>(TARGET_TEMPERATURE);
-            try {
-                if (ci.value !== targetTemperature) {
-                    this.logger.information(`Adjusting temperature for ${d.name} to ${targetTemperature}`);
+            let value = d.capabilitiesObj[TARGET_TEMPERATURE].value as number;
+            if (value !== targetTemperature) {
+                this.logger.information(`Adjusting temperature for ${d.name} to ${targetTemperature}`);
 
-                    if (PRODUCTION) {
-                        ci.setValue(targetTemperature);
-                    }
-
-                    return true;
+                if (PRODUCTION) {
+                    await this.homeyApi.devices.setCapabilityValue({
+                        deviceId: d.id,
+                        capabilityId: TARGET_TEMPERATURE,
+                        value: targetTemperature
+                    });        
                 }
-            }
-            finally {
-                ci.destroy();
+
+                return true;
             }
         } catch (e) {
             // Todo: Issue #25
@@ -292,20 +278,25 @@ export class HeatingManagerService {
 
     private findZone(zoneId: string): IZone {
         return this.zoneList[zoneId];
-
-        // return find(this.zoneList, (d: IZone) => d.id === id || d.name === id);
     }
+
+    private getMeasuredTemperature(d: IDevice): number {
+        var capability = d.capabilitiesObj[MEASURE_TEMPERATURE] || d.capabilitiesObj[TARGET_TEMPERATURE];
+        return capability != null ? capability.value as number : 0;
+    }
+
+    // private getTargetTemperature(d: IDevice): number {
+    //     var capability = d.capabilitiesObj[TARGET_TEMPERATURE];
+    //     return capability != null ? capability.value as number : 0;
+    // }
 
     private findDevice(deviceId: string): IDevice {
         var d = this.deviceList[deviceId];
-        return d.class === CLASS_THERMOSTAT ? d : null;
-
-        // return find(this.deviceList, (d: IDevice) =>
-        //     (d.id === id || d.name === id) && d.class === CLASS_THERMOSTAT);
+        return HeatingManagerService.CanSetTargetTemperature(d) ? d : null;
     }
 
     private getDevicesForZone(zoneId: string): IDevice[] {
         return filter(this.deviceList, (d: IDevice) =>
-            d.zone === zoneId && d.class === CLASS_THERMOSTAT);
+            d.zone === zoneId && HeatingManagerService.CanSetTargetTemperature(d));
     }
 }

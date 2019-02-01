@@ -5,6 +5,7 @@ import { DEFAULT_HEATING_PLAN } from "../app/helper/defaultPlan";
 import { IHeatingDevice, IHeatingPlan, IHeatingZone, Settings } from "../app/model";
 import { CLASS_THERMOSTAT } from "../app/services/homey-api";
 import { LogService } from "../app/services/log";
+import { HeatingManagerService } from "../app/services/heating-manager";
 
 interface IAPIParams {
     body: any;
@@ -105,7 +106,7 @@ module.exports = [
             logger.debug("GET devices");
             
             const myApp = app as HeatingSchedulerApp;
-            const result = map(filter(myApp.manager.devices, d => d.class === CLASS_THERMOSTAT),
+            const result = map(filter(myApp.manager.devices, HeatingManagerService.CanSetTargetTemperature),
                 z => {
                     return {
                         id: z.id,
