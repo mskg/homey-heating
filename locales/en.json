@@ -158,6 +158,6 @@
   "Notification": {
     "set_operation_mode": "Heating mode set to '__mode__'",
     "set_target_temperature": "(__plan__) Setting target temperature of thermostat '__name__' to __value__°",
-    "failed_set_target_temperature": "Failed to set thermostat '__name__' to __value___°"
+    "failed_set_target_temperature": "Failed to set thermostat '__name__' to __value__°"
   }
 }
