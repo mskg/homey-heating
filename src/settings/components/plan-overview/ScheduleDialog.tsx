@@ -18,7 +18,7 @@ import { Day, ISetPoint } from '../../../app/model';
 import AddFab from "../AddFab";
 import AppHeader from "../AppHeader";
 import defautStyles from "../DefaultStyles";
-import TemperatureAvatar from '../TemperatureAvatar';
+import { TemperatureAvatar } from '../TemperatureAvatar';
 import CopyDayDialog from './CopyDayDialog';
 import SetPointDialog from "./SetPointDialog";
 import translate from '../../i18n/Translation';

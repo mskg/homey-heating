@@ -11,6 +11,7 @@ import AppHeader from "../AppHeader";
 import defautStyles from "../DefaultStyles";
 import translate from '../../i18n/Translation';
 import Transition from "../Transition";
+import {TARGET_TEMPERATURE_MIN, TARGET_TEMPERATURE_MAX} from '../../../app/services/homey-api/declarations';
 
 const styles: StyleRulesCallback = (theme) => ({
     ...defautStyles(theme, 100), ...{
@@ -114,7 +115,8 @@ const SetPointDialog: React.StatelessComponent<Props> = (props: Props) => {
                         </FormControl>
 
                         <TextField
-                            type="number"
+                            type="number"                        
+                            InputProps={{ inputProps: { min: TARGET_TEMPERATURE_MIN, max: TARGET_TEMPERATURE_MAX, step: 0.5 } }}
 
                             className={classes.input}
                             label={translate("setpoint.target.label")}

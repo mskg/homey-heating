@@ -46,6 +46,8 @@
   },
 
   "plan": {
+    "unnamed": "Unnamed plan",
+
     "target": {
       "label": "Target temperature",
       "placeholder": "Target temperature"

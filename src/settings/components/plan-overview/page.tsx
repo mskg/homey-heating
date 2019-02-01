@@ -188,7 +188,7 @@ const PlanPage: React.StatelessComponent<Props> = (props) => {
         <React.Fragment>
             <AppHeader>
                 {{
-                    title: plan.name,
+                    title: plan.name || translate("plan.unnamed"),
                     button: (
                         <IconButton className={classes.menuButton} color="inherit" {...{ to: `/plans` }} component={Link}>
                             {isDirty && <CancelIcon />}
@@ -248,7 +248,7 @@ const PlanPage: React.StatelessComponent<Props> = (props) => {
                             onChange={() => toggleState()}
                             checked={plan.enabled} />
                     }
-                    label={translate("plan.overview.name.label")}
+                    label={translate("plan.overview.enabled.label")}
                     labelPlacement="start"
                 />
 

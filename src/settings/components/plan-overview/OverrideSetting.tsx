@@ -5,6 +5,7 @@ import React from 'react';
 import { OverrideMode } from '../../../app/model';
 import translate from '../../i18n/Translation';
 import FormTextField from '../FormTextField';
+import {TARGET_TEMPERATURE_MIN, TARGET_TEMPERATURE_MAX} from '../../../app/services/homey-api/declarations';
 
 const styles: StyleRulesCallback = (theme) => ({
     planOverride: {
@@ -42,8 +43,10 @@ const OverrideSetting: React.StatelessComponent<PlanOverrideProps> = (props) => 
                 <FormTextField
                     label={translate('plan.target.label')}
                     placeholder={translate('plan.target.placeholder')}
-                    type="number"
                     disabled={!props.enabled}
+
+                    type="number"                        
+                    InputProps={{ inputProps: { min: TARGET_TEMPERATURE_MIN, max: TARGET_TEMPERATURE_MAX, step: 0.5 } }}
 
                     value={props.targetTemperature}
                     onChange={(evt) => {

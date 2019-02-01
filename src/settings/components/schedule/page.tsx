@@ -12,16 +12,22 @@ import { useSchedules } from '../../api/hooks';
 import AppHeader from "../AppHeader";
 import defautStyles from "../DefaultStyles";
 import AppMenu from '../Menu';
-import TemperatureAvatar from '../TemperatureAvatar';
+import { TemperatureAvatar, FilledTemperatureAvatar, normalize }  from '../TemperatureAvatar';
 import { ListItemAvatar } from '@material-ui/core';
 import translation from "../../i18n/Translation";
 
 const styles: StyleRulesCallback = (theme) => ({
-    ...defautStyles(theme), ...{
+    ...defautStyles(theme), ...{      
     }
 });
 
 type Props = WithStyles<typeof styles>;
+
+function percent(a, b) {
+    if (a > b) { return 100; }
+
+    return Math.round(a/b * 100);
+}
 
 const SchedulesPage: React.StatelessComponent<Props> = (props) => {
     const { classes } = props;
@@ -53,8 +59,8 @@ const SchedulesPage: React.StatelessComponent<Props> = (props) => {
                                     <TemperatureAvatar value={schedule.targetTemperature} />
                                 </ListItemAvatar>
                                 <ListItemText primary={schedule.device.name} secondary={schedule.plan.name} />
-                                <ListItemSecondaryAction>
-                                    <TemperatureAvatar value={schedule.temperature} />
+                                <ListItemSecondaryAction style={{paddingRight: 16}} >
+                                    <FilledTemperatureAvatar value={schedule.temperature} fill={percent(schedule.temperature, schedule.targetTemperature)} />
                                 </ListItemSecondaryAction>
                             </ListItem>
                             <Divider />
