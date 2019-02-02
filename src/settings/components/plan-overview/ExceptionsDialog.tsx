@@ -1,6 +1,5 @@
-import { Button, Dialog, Typography } from '@material-ui/core';
+import { Button, Dialog, DialogContent, DialogTitle, Typography } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
 import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
 import BackIcon from '@material-ui/icons/ArrowBackIos';
 import CancelIcon from '@material-ui/icons/Cancel';
@@ -14,7 +13,7 @@ import Transition from '../Transition';
 import OverrideSetting from './OverrideSetting';
 
 const styles: StyleRulesCallback = (theme) => ({
-    ...defautStyles(theme, theme.spacing.unit * 6), ...{
+    ...defautStyles(theme, theme.spacing.unit * 3), ...{
     }
 });
 
@@ -27,7 +26,7 @@ type Props = WithStyles<typeof styles> & {
 };
 
 const ExceptionsDialog: React.StatelessComponent<Props> = (props: Props) => {
-    const { classes, onSave, onCancel,  overrides, ...otherProps } = props;
+    const { classes, onSave, onCancel, overrides, ...otherProps } = props;
     const [isDirty, setDirty] = React.useState<boolean>(false);
     const [editedOverrides, setOverrides] = React.useState(overrides);
 
@@ -81,30 +80,32 @@ const ExceptionsDialog: React.StatelessComponent<Props> = (props: Props) => {
 
     return (
         <React.Fragment>
-            <Dialog fullScreen TransitionComponent={Transition} {...otherProps}>
+            <Dialog fullScreen scroll="body" TransitionComponent={Transition} {...otherProps}>
 
-                <AppHeader>
-                    {{
-                        title: translate("overrides.title"),
-                        button: (
-                            <IconButton className={classes.menuButton} color="inherit" onClick={onCancelDialog}>
-                                {isDirty && <CancelIcon />}
-                                {!isDirty && <BackIcon />}
-                            </IconButton>
-                        ),
-                        actions: (
-                            <React.Fragment>
-                                {isDirty &&
-                                    <Button color="inherit" onClick={onSaveDialog}>
-                                        {translate("schedule.save")}
-                                    </Button>
-                                }
-                            </React.Fragment>
-                        )
-                    }}
-                </AppHeader>
+                <DialogTitle>
+                    <AppHeader>
+                        {{
+                            title: translate("overrides.title"),
+                            button: (
+                                <IconButton className={classes.menuButton} color="inherit" onClick={onCancelDialog}>
+                                    {isDirty && <CancelIcon />}
+                                    {!isDirty && <BackIcon />}
+                                </IconButton>
+                            ),
+                            actions: (
+                                <React.Fragment>
+                                    {isDirty &&
+                                        <Button color="inherit" onClick={onSaveDialog}>
+                                            {translate("schedule.save")}
+                                        </Button>
+                                    }
+                                </React.Fragment>
+                            )
+                        }}
+                    </AppHeader>
+                </DialogTitle>
 
-                <Paper square className={classes.paper}>
+                <DialogContent className={classes.resetPadding}>
                     <SubHeader text={translate("overrides.section")} />
                     <Typography className={classes.text} variant="body1" color="textSecondary">{translate("overrides.text")}</Typography>
 
@@ -112,7 +113,8 @@ const ExceptionsDialog: React.StatelessComponent<Props> = (props: Props) => {
                     <OverrideSetting text={translate("overrides.away")} setOverride={updateOverride} {...getOverride(OverrideMode.DayAway)} />
                     <OverrideSetting text={translate("overrides.sleeping")} setOverride={updateOverride} {...getOverride(OverrideMode.Sleep)} />
                     <OverrideSetting text={translate("overrides.holiday")} setOverride={updateOverride} {...getOverride(OverrideMode.Holiday)} />
-                </Paper>
+                </DialogContent>
+
             </Dialog>
         </React.Fragment>
     );

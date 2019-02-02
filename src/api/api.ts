@@ -2,7 +2,7 @@ import { app, ManagerSettings } from "homey";
 import { filter, find, forEach, map, remove } from "lodash";
 import { HeatingSchedulerApp } from "../app/app";
 import { DEFAULT_HEATING_PLAN } from "../app/helper/defaultPlan";
-import { IHeatingDevice, IHeatingPlan, IHeatingZone, Settings, OperationMode } from "../app/model";
+import { IHeatingDevice, IHeatingPlan, IHeatingZone, Settings, OperationMode, IScheduleInformation } from "../app/model";
 import { CLASS_THERMOSTAT } from "../app/services/homey-api";
 import { LogService } from "../app/services/log";
 import { HeatingManagerService } from "../app/services/heating-manager";
@@ -58,6 +58,27 @@ module.exports = [
             callback(null, null);
         },
     },
+
+    {
+        method: "GET",
+        path: "/schedule",
+        public: !PRODUCTION,
+
+        fn: async (args: IAPIParams, callback) => {
+            logger.debug("GET schedule");
+
+            const myApp = app as HeatingSchedulerApp;
+            const result: IScheduleInformation = {
+                mode: app.manager.operationMode,
+                nextDate: app.scheduler.nextSchedule,
+                temperatures: await myApp.manager.evaluateActivePlans(),
+            };
+
+            // callback follows ( err, result )
+            callback(null, result);
+        },
+    },  
+
     {
         method: "GET",
         path: "/mode",
@@ -146,21 +167,6 @@ module.exports = [
 
             // callback follows ( err, result )
             callback(null, "Done.");
-        },
-    },
-    {
-        method: "GET",
-        path: "/plans/evaluate",
-        public: !PRODUCTION,
-
-        fn: async (args: IAPIParams, callback) => {
-            logger.debug("GET evaluate plans");
-
-            const myApp = app as HeatingSchedulerApp;
-            const result = await myApp.manager.evaluateActivePlans();
-
-            // callback follows ( err, result )
-            callback(null, result);
         },
     },  
     {

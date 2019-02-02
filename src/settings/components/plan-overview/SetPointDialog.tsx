@@ -1,7 +1,6 @@
 import DateFnsUtils from '@date-io/date-fns';
-import { Button, Dialog, FormControl, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
+import { Button, Dialog, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
 import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import { MuiPickersUtilsProvider, TimePicker } from 'material-ui-pickers';
@@ -14,14 +13,7 @@ import defautStyles from "../DefaultStyles";
 import Transition from "../Transition";
 
 const styles: StyleRulesCallback = (theme) => ({
-    ...defautStyles(theme, 100), ...{
-        dialogPaper: {
-            minHeight: "100%",
-            minWidth: "100%",
-            maxWidth: "100%",
-            paddingBottom: 50,
-            paddingTop: theme.spacing.unit * 10,
-        },
+    ...defautStyles(theme, theme.spacing.unit * 3), ...{
     }
 });
 
@@ -65,24 +57,26 @@ const SetPointDialog: React.StatelessComponent<Props> = (props: Props) => {
 
     return (
         <Dialog fullScreen TransitionComponent={Transition} {...otherProps}>
-            <AppHeader>
-                {{
-                    title: translate("setpoint.title"),
-                    button: (
-                        <IconButton className={classes.menuButton} color="inherit" onClick={onCancelDialog} aria-label="Close">
-                            <CloseIcon />
-                        </IconButton>
-                    ),
-                    actions: (
-                        <Button color="inherit" onClick={onSaveDialog}>
-                            {translate("setpoint.save")}
-                        </Button>
-                    )
-                }}
-            </AppHeader>
+            <DialogTitle>
+                <AppHeader>
+                    {{
+                        title: translate("setpoint.title"),
+                        button: (
+                            <IconButton className={classes.menuButton} color="inherit" onClick={onCancelDialog} aria-label="Close">
+                                <CloseIcon />
+                            </IconButton>
+                        ),
+                        actions: (
+                            <Button color="inherit" onClick={onSaveDialog}>
+                                {translate("setpoint.save")}
+                            </Button>
+                        )
+                    }}
+                </AppHeader>
+            </DialogTitle>
 
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <Paper square className={classes.dialogPaper}>
+            <DialogContent className={classes.resetPadding}>
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <div className={classes.inputContainer}>
                         <TimePicker
                             ampm={false}
@@ -94,7 +88,7 @@ const SetPointDialog: React.StatelessComponent<Props> = (props: Props) => {
                             className={classes.input}
                         />
 
-                        <FormControl className={classes.formControl} style={{marginTop: 16}}>
+                        <FormControl className={classes.formControl} style={{ marginTop: 16 }}>
                             <InputLabel >{translate("setpoint.temperature.label")}</InputLabel>
 
                             <Select
@@ -115,7 +109,7 @@ const SetPointDialog: React.StatelessComponent<Props> = (props: Props) => {
                         </FormControl>
 
                         <TextField
-                            type="number"                        
+                            type="number"
                             InputProps={{ inputProps: { min: TARGET_TEMPERATURE_MIN, max: TARGET_TEMPERATURE_MAX, step: 0.5 } }}
 
                             className={classes.input}
@@ -129,8 +123,8 @@ const SetPointDialog: React.StatelessComponent<Props> = (props: Props) => {
                             onChange={(e) => { setSetPointValue('targetTemperature', e.target.value); }}
                         />
                     </div>
-                </Paper>
-            </MuiPickersUtilsProvider>
+                </MuiPickersUtilsProvider>
+            </DialogContent>
         </Dialog>
     );
 }

@@ -1,10 +1,9 @@
-import { Button, Dialog, ListItemSecondaryAction, Slide } from '@material-ui/core';
+import { Button, Dialog, DialogContent, DialogTitle, ListItemSecondaryAction } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
 import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
@@ -12,20 +11,20 @@ import BackIcon from '@material-ui/icons/ArrowBackIos';
 import CancelIcon from '@material-ui/icons/Cancel';
 import TrashIcon from '@material-ui/icons/Delete';
 import CopyIcon from '@material-ui/icons/FileCopy';
-import { filter, forEach, sortBy, remove } from 'lodash';
+import { filter, forEach, remove, sortBy } from 'lodash';
 import React from 'react';
 import { Day, ISetPoint } from '../../../app/model';
+import translate from '../../i18n/Translation';
 import AddFab from "../AddFab";
 import AppHeader from "../AppHeader";
 import defautStyles from "../DefaultStyles";
 import { TemperatureAvatar } from '../TemperatureAvatar';
+import Transition from "../Transition";
 import CopyDayDialog from './CopyDayDialog';
 import SetPointDialog from "./SetPointDialog";
-import translate from '../../i18n/Translation';
-import Transition from "../Transition";
 
 const styles: StyleRulesCallback = (theme) => ({
-    ...defautStyles(theme, 100), ...{
+    ...defautStyles(theme, theme.spacing.unit * 6), ...{
         tab: {
             minWidth: "50px"
         },
@@ -36,7 +35,7 @@ const styles: StyleRulesCallback = (theme) => ({
     }
 });
 
-function formatNumber (i: number) {
+function formatNumber(i: number) {
     return i > 9 ? i.toString() : "0" + i;
 };
 
@@ -244,55 +243,57 @@ const ScheduleDialog: React.StatelessComponent<Props> = (props: Props) => {
 
     return (
         <React.Fragment>
-            <Dialog fullScreen TransitionComponent={Transition} {...otherProps}>
+            <CopyDayDialog open={isCopyDayDialogOpen}
+                onConfirm={copyDay}
+                onCancel={() => { setIsCopyDayDialogOpen(false); }
+                } />
 
-                <AppHeader>
-                    {{
-                        title: translate("schedule.title", {name: props.name}),
-                        button: (
-                            <IconButton className={classes.menuButton} color="inherit" onClick={onCancelDialog}>
-                                {isDirty && <CancelIcon />}
-                                {!isDirty && <BackIcon />}
-                            </IconButton>
-                        ),
-                        actions: (
-                            <React.Fragment>
-                                <IconButton color="inherit" onClick={() => { setIsCopyDayDialogOpen(true); }}>
-                                    <CopyIcon />
+            <SetPointDialog open={isSetPointDialogOpen} setPoint={setPoint}
+                onSave={onSaveSetPoint}
+                onCancel={() => { setSetPointDialogOpen(false); }
+                } />
+
+            <Dialog fullScreen scroll="body" TransitionComponent={Transition} {...otherProps}>
+                <DialogTitle>
+
+                    <AppHeader>
+                        {{
+                            title: translate("schedule.title", { name: props.name }),
+                            button: (
+                                <IconButton className={classes.menuButton} color="inherit" onClick={onCancelDialog}>
+                                    {isDirty && <CancelIcon />}
+                                    {!isDirty && <BackIcon />}
                                 </IconButton>
+                            ),
+                            actions: (
+                                <React.Fragment>
+                                    <IconButton color="inherit" onClick={() => { setIsCopyDayDialogOpen(true); }}>
+                                        <CopyIcon />
+                                    </IconButton>
 
-                                {isDirty &&
-                                    <Button color="inherit" onClick={onSaveDialog}>
-                                        {translate("schedule.save")}
-                                    </Button>
-                                }
-                            </React.Fragment>
-                        ),
-                        subBar: (
-                            <Tabs value={selectedTab} onChange={changeTab} variant="fullWidth">
-                                <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Monday")} />
-                                <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Tuesday")} />
-                                <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Wednesday")} />
-                                <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Thursday")} />
-                                <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Friday")} />
-                                <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Saturday")} />
-                                <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Sunday")} />
-                            </Tabs>
-                        )
-                    }}
-                </AppHeader>
+                                    {isDirty &&
+                                        <Button color="inherit" onClick={onSaveDialog}>
+                                            {translate("schedule.save")}
+                                        </Button>
+                                    }
+                                </React.Fragment>
+                            ),
+                            subBar: (
+                                <Tabs value={selectedTab} onChange={changeTab} variant="fullWidth">
+                                    <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Monday")} />
+                                    <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Tuesday")} />
+                                    <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Wednesday")} />
+                                    <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Thursday")} />
+                                    <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Friday")} />
+                                    <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Saturday")} />
+                                    <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Sunday")} />
+                                </Tabs>
+                            )
+                        }}
+                    </AppHeader>
+                </DialogTitle>
 
-                <CopyDayDialog open={isCopyDayDialogOpen}
-                    onConfirm={copyDay}
-                    onCancel={() => { setIsCopyDayDialogOpen(false); }
-                    } />
-
-                <SetPointDialog open={isSetPointDialogOpen} setPoint={setPoint}
-                    onSave={onSaveSetPoint}
-                    onCancel={() => { setSetPointDialogOpen(false); }
-                    } />
-
-                <Paper square className={classes.paper}>
+                <DialogContent className={classes.resetPadding}>
                     <List className={classes.list}>
                         {
                             previousSchedule &&
@@ -326,9 +327,10 @@ const ScheduleDialog: React.StatelessComponent<Props> = (props: Props) => {
                             )
                         }
                     </List>
-                </Paper>
 
-                <AddFab onClick={addSetPoint} />
+                    <AddFab onClick={addSetPoint} />
+                </DialogContent>
+
             </Dialog>
         </React.Fragment>
     );

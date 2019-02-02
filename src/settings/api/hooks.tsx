@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { sortBy, forEach } from "lodash";
-import { IHeatingPlan, IHeatingDevice, IHeatingZone, ICalculatedTemperature, OperationMode, NormalOperationMode } from '../../app/model';
+import { IHeatingPlan, IHeatingDevice, IHeatingZone, ICalculatedTemperature, OperationMode, NormalOperationMode, IScheduleInformation } from '../../app/model';
 import { planAPI, modeAPI } from './heating';
 import { deviceAPI } from './devices';
 import { settingsAPI, SettingsHashMap } from './settings';
@@ -98,18 +98,21 @@ export const useZones = () => {
     return { zones, loadZones };
 }
 
-export const useSchedules = () => {
-    const [schedules, setSchedules] = React.useState<ICalculatedTemperature[]>([]);
+export const useScheduleInformation = () => {
+    const [scheduleInformation, setSchedules] = React.useState<IScheduleInformation>({
+        mode: NormalOperationMode.Automatic,
+        temperatures: [],
+    });
 
-    const loadSchedule = async () => {
+    const loadScheduleInformation = async () => {
         await tryApiMethod(planAPI.fetchSchedule, setSchedules);
     }
 
     React.useEffect(() => {
-        loadSchedule();
+        loadScheduleInformation();
     }, []);
 
-    return { schedules, loadSchedule };
+    return { scheduleInformation, loadScheduleInformation };
 }
 
 export const useSettings =  () => {

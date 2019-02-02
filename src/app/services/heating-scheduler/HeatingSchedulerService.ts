@@ -1,20 +1,24 @@
 
 import { ManagerCron } from "homey";
-import { find, first, forEach, sortBy } from "lodash";
+import { first, sortBy } from "lodash";
 import { Mutex } from "../../helper/Mutex";
-import { IHeatingPlan, NormalOperationMode, OverrideMode } from "../../model/heating";
+import { NormalOperationMode, OverrideMode } from "../../model/heating";
 import { HeatingManagerService } from "../heating-manager";
-import { IZone } from "../homey-api";
 import { ILogger, LogService } from "../log";
 
 export class HeatingSchedulerService {
     private mutex: Mutex = new Mutex();
     private logger: ILogger;
     private manager: HeatingManagerService;
+    private next: Date = null;
 
     constructor(manager: HeatingManagerService) {
         this.logger = LogService.createLogger("Scheduler");
         this.manager = manager;
+    }
+
+    public get nextSchedule(): Date {
+        return this.next;
     }
 
     public async stop() {
@@ -81,16 +85,16 @@ export class HeatingSchedulerService {
         }
 
         // do we need to convert to ms?
-        const next = first(sortBy(allDates, ((d: Date) => d)));
+        this.next = first(sortBy(allDates, ((d: Date) => d)));
 
-        if (next == null) {
+        if (this.next == null) {
             this.logger.information(`No execution planned.`);
             return;
         }
 
-        this.logger.information(`Next execution is at ${next.toLocaleString()}`);
+        this.logger.information(`Next execution is at ${this.next.toLocaleString()}`);
 
-        const task = await ManagerCron.registerTask("HeatingManagerService", next, resetMode);
+        const task = await ManagerCron.registerTask("HeatingManagerService", this.next, resetMode);
         task.once("run", (data) => {
             try {
                 if (data) {

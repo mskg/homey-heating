@@ -2,7 +2,7 @@
 // https://github.com/Lemoncode/react-typescript-samples/tree/master/18%20Hooks/src/api
 
 import { map, sortBy } from "lodash";
-import { IHeatingPlan, ICalculatedTemperature, OperationMode } from "../../../app/model";
+import { IHeatingPlan, ICalculatedTemperature, OperationMode, IScheduleInformation } from "../../../app/model";
 import callAPI from "../callAPI";
 
 const fetchPlans = async (): Promise<IHeatingPlan[]> => {
@@ -44,9 +44,11 @@ const fetchPlanById = async (id: string): Promise<IHeatingPlan> => {
   return plan;
 }
 
-const fetchSchedule = async (): Promise<ICalculatedTemperature[]> => {
-  var settings = await callAPI<ICalculatedTemperature[]>("GET", `/plans/evaluate`);
-  return sortBy(settings, [(s:ICalculatedTemperature) => s.device.name]);
+const fetchSchedule = async (): Promise<IScheduleInformation> => {
+  var schedule = await callAPI<IScheduleInformation>("GET", `/schedule`);
+  schedule.temperatures = sortBy(schedule.temperatures, [(s:ICalculatedTemperature) => s.device.name]);
+
+  return schedule;
 }
 
 const fetchMode = async (): Promise<OperationMode> => {

@@ -6,6 +6,13 @@ export default ((theme, padding = 50) => ({
         marginRight: 20,
     },
 
+    resetPadding: {
+        paddingBottom: 50,
+        paddingTop: padding,
+        paddingLeft: 0,
+        paddingRight: 0,
+    },
+
     paper: {
         minHeight: "100%",
         paddingBottom: 50,

@@ -61,6 +61,12 @@ export interface IHeatingZone extends IExternalReference {
     icon?: string;
 }
 
+export interface IScheduleInformation {
+    mode: OperationMode,
+    nextDate?: Date,
+    temperatures: ICalculatedTemperature[]
+}
+
 export interface ICalculatedTemperature {
     device: IHeatingDevice;
 

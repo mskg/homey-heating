@@ -133,7 +133,11 @@
   },
 
   "temperatures": {
-    "title": "Current temperatures"
+    "title": "Current temperatures",
+    "list": "Temperatures",
+    "mode": "Operation mode",
+    "next": "Next operation",
+    "schedule": "Schedule"
   },
 
   "plans": {
