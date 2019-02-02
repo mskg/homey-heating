@@ -44,6 +44,17 @@
     "Saturday": "Saturday",
     "Sunday": "Sunday"
   },
+  
+  "overrides": {
+    "title": "Edit schedule exceptions",
+    "section": "Pause schedule when",
+    "text": "Pause the configured schedule when something special happens, e.g. you leave home unplanned, or you return earlier. To activate the special behavior, you have to set the scheduler to the appropriate mode using the plans overview page.",
+
+    "athome": "...you are a day at home?",
+    "away": "...when you are a day away from home?",
+    "sleeping": "...you are sleeping?",
+    "holiday": "...you are on holiday?"
+  },
 
   "plan": {
     "unnamed": "Unnamed plan",
@@ -62,27 +73,27 @@
 
     "overview": {
       "section": "Overview",
+      "text": "Give your plan a speaking name.",
       "name": {
         "label": "Display name of your plan",
         "placeholder": "Display name"
       },
+      "text_enable": "If you disable the plan, it is not applied automatically, but can still apply it manually via Flow.",
       "enabled": {
         "label": "Enabled?"
       },
-      "edit": "Edit schedule"
+      "text_schedule": "Configure the schedules when your heating devices' temperature need to be adjusted. Additional exceptions can be configured e.g. when something special happens: You leave home unplanned, or you return earlier.",
+      "edit": "Normal Schedule",
+      "exceptions": "Exceptions"
     },
-    "overrides": {
-      "section": "Pause plan when",
-      "athome": "...you are a day at home?",
-      "away": "...when you are a day away from home?",
-      "sleeping": "...you are sleeping?",
-      "holiday": "...you are on holiday?"
-    },
+   
     "zones": {
-      "section": "Check the zones to which you want this plan to be applied to (all devices inside such zones are included)"
+      "section": "Associate zones",
+      "text": "Check the zones to which you want this plan to be applied to. All devices that support setting a target temperature inside such zones are included."
     },
     "devices": {
-      "section": "Check the devices you want this plan to be applied to"
+      "section": "Associate devices",
+      "text": "Check the devices you want this plan to be applied to. You can mix zones and individual devices, no problem."
     }
   },
 
@@ -126,7 +137,14 @@
   },
 
   "plans": {
-    "title": "Heating plans"
+    "title": "Overview",
+    "heatingmode": {
+      "section": "Change heating mode",
+      "label": "Heating mode"
+    },
+    "plans": {
+      "section": "Heating plans"
+    }
   },
 
   "error": {
@@ -135,7 +153,7 @@
 
   "menu": {
     "title": "Homey Heating Scheduler",
-    "plans": "Heating plans",
+    "plans": "Overview",
     "schedule": "Current temperatures",
     "settings": "Settings",
     "about": "About"
@@ -156,8 +174,8 @@
   },
 
   "Notification": {
-    "set_operation_mode": "Heating mode set to '__mode__'",
-    "set_target_temperature": "(__plan__) Setting target temperature of thermostat '__name__' to __value__°",
-    "failed_set_target_temperature": "Failed to set thermostat '__name__' to __value__°"
+    "set_operation_mode": "Heating mode changed to '__mode__'",
+    "set_target_temperature": "Setting thermostat '__name__' to __value__° (__plan__)",
+    "failed_set_target_temperature": "Failed to set thermostat '__name__' to __value__° (__error__)"
   }
 }

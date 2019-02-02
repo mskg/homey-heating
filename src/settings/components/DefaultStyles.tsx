@@ -20,6 +20,11 @@ export default ((theme, padding = 50) => ({
         paddingRight: theme.spacing.unit * 3,
     },
 
+    divider: {
+        marginTop: theme.spacing.unit * 3,
+        marginBottom: theme.spacing.unit * 1,
+    },
+
     input: {
         // marginLeft: theme.spacing.unit * 2,
         // marginRight: "-14px",
@@ -30,16 +35,23 @@ export default ((theme, padding = 50) => ({
     },
 
     formControl: {
-        marginTop: theme.spacing.unit * 2,
+        // marginTop: theme.spacing.unit * 2,
         minWidth: "100%",
     },
 
     list: {
+        marginTop: 0,
         marginBottom: theme.spacing.unit * 2,
     },
-    
+
+    headline: {
+        marginTop: theme.spacing.unit * 4,
+        paddingLeft: theme.spacing.unit * 2,
+        paddingRight: theme.spacing.unit * 2,
+    },
+
     text: {
-        paddingTop: theme.spacing.unit * 2,
+        // marginTop: theme.spacing.unit * 4,
         paddingLeft: theme.spacing.unit * 2,
         paddingRight: theme.spacing.unit * 2,
     },

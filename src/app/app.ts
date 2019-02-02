@@ -25,7 +25,7 @@ type ChangeLogArgs = {
 export class HeatingSchedulerApp extends App {
     private repositoryService: HeatingPlanRepositoryService = null;
     private heatingManager: HeatingManagerService = null;
-    private scheduler: HeatingSchedulerService = null;
+    private heatingScheduler: HeatingSchedulerService = null;
     private logger: ILogger;
     private flowLogger: ILogger;
 
@@ -35,6 +35,10 @@ export class HeatingSchedulerApp extends App {
 
     public get manager(): HeatingManagerService {
         return this.heatingManager;
+    }
+
+    public get scheduler(): HeatingSchedulerService {
+        return this.heatingScheduler;
     }
 
     public refreshConfig() {
@@ -58,12 +62,16 @@ export class HeatingSchedulerApp extends App {
         this.heatingManager = new HeatingManagerService(this.repositoryService);
         await this.heatingManager.applyPlans();
 
-        this.scheduler = new HeatingSchedulerService(this.heatingManager);
-        await this.scheduler.start();
+        this.heatingScheduler = new HeatingSchedulerService(this.heatingManager);
+        await this.heatingScheduler.start();
 
         this.repositoryService.onChanged.subscribe(async (rep, plan) => {
             await this.heatingManager.applyPlans();
-            await this.scheduler.start();
+            await this.heatingScheduler.start();
+        });
+
+        process.on('uncaughtException', function(err) {
+            this.logger.error(err);
         });
     }
 
@@ -105,7 +113,7 @@ export class HeatingSchedulerApp extends App {
 
                 this.heatingManager.operationMode = parseInt(args.state) as OperationMode;
                 await this.heatingManager.applyPlans();
-                await this.scheduler.start();
+                await this.heatingScheduler.start();
                 
                 return true;
             });

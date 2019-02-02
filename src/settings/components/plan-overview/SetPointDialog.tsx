@@ -1,5 +1,5 @@
 import DateFnsUtils from '@date-io/date-fns';
-import { Button, Dialog, Slide, TextField, Select, MenuItem, FormControl, InputLabel } from '@material-ui/core';
+import { Button, Dialog, FormControl, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
@@ -7,11 +7,11 @@ import CloseIcon from '@material-ui/icons/Close';
 import { MuiPickersUtilsProvider, TimePicker } from 'material-ui-pickers';
 import React from 'react';
 import { ISetPoint } from '../../../app/model';
+import { TARGET_TEMPERATURE_MAX, TARGET_TEMPERATURE_MIN } from '../../../app/services/homey-api/declarations';
+import translate from '../../i18n/Translation';
 import AppHeader from "../AppHeader";
 import defautStyles from "../DefaultStyles";
-import translate from '../../i18n/Translation';
 import Transition from "../Transition";
-import {TARGET_TEMPERATURE_MIN, TARGET_TEMPERATURE_MAX} from '../../../app/services/homey-api/declarations';
 
 const styles: StyleRulesCallback = (theme) => ({
     ...defautStyles(theme, 100), ...{
@@ -94,8 +94,8 @@ const SetPointDialog: React.StatelessComponent<Props> = (props: Props) => {
                             className={classes.input}
                         />
 
-                        <FormControl className={classes.formControl}>
-                            <InputLabel>{translate("setpoint.temperature.label")}</InputLabel>
+                        <FormControl className={classes.formControl} style={{marginTop: 16}}>
+                            <InputLabel >{translate("setpoint.temperature.label")}</InputLabel>
 
                             <Select
                                 fullWidth

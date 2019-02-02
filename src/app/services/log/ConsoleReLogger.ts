@@ -8,15 +8,15 @@ export class ConsoleReLogger implements ILogger {
         this.consolere = ConsoleRe.connect("console.re", "80", channel);
     }
 
-    public information(message: any) {
-        (console as any).re.information(message);
+    public information(...args: any[]) {
+        (console as any).re.information(...args);
     }
 
-    public debug(message: any) {
-        (console as any).re.log(message);
+    public debug(...args: any[]) {
+        (console as any).re.log(...args);
     }
 
-    public error(message: any) {
-        (console as any).re.error(message);
+    public error(...args: any[]) {
+        (console as any).re.error(...args);
     }
 }

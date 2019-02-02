@@ -39,6 +39,8 @@ export interface ISetPoint {
     targetTemperature: number;
 }
 
+export type Overrides =  { [key in keyof typeof OverrideMode]?: ITemperatureOverride };
+
 // defined schedules
 // assignement of schedules to zones
 export interface IHeatingPlan extends IExternalReference {
@@ -48,9 +50,7 @@ export interface IHeatingPlan extends IExternalReference {
     devices?: string[];
     zones?: string[];
 
-    overrides?: {
-        [key in keyof typeof OverrideMode]?: ITemperatureOverride
-    }
+    overrides?: Overrides
 }
 
 export interface IHeatingDevice extends IExternalReference {

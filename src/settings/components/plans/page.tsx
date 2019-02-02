@@ -12,17 +12,19 @@ import { forEach, sortBy } from "lodash";
 import React from 'react';
 import { RouteComponentProps } from "react-router";
 import { Link, withRouter } from 'react-router-dom';
-import { IHeatingPlan } from '../../../app/model';
-import { planAPI } from '../../api/heating';
-import { useDevices, usePlans, useZones } from '../../api/hooks';
+import { IHeatingPlan, OperationMode } from '../../../app/model';
+import { planAPI, modeAPI } from '../../api/heating';
+import { useDevices, usePlans, useZones, useMode } from '../../api/hooks';
 import AddFab from "../AddFab";
 import AppHeader from "../AppHeader";
 import defautStyles from "../DefaultStyles";
 import AppMenu from '../Menu';
 import translate from '../../i18n/Translation';
+import SubHeader from '../SubHeader';
+import { FormControl, MenuItem, Select, InputLabel } from '@material-ui/core';
 
 const styles: StyleRulesCallback = (theme) => ({
-    ...defautStyles(theme), ...{
+    ...defautStyles(theme, theme.spacing.unit * 6), ...{
     }
 });
 
@@ -34,6 +36,7 @@ const PlansPage: React.StatelessComponent<Props> = (props) => {
     const [openMenu, setOpenMenu] = React.useState<boolean>(false);
     const { zones } = useZones();
     const { devices } = useDevices();
+    const { mode, loadMode } = useMode();
 
     function formatAttachments(plan: IHeatingPlan): string {
         let elements: string[] = [];
@@ -76,7 +79,31 @@ const PlansPage: React.StatelessComponent<Props> = (props) => {
             </AppHeader>
 
             <Paper square className={classes.paper}>
+                <SubHeader text={translate("plans.heatingmode.section")} />
+                <div className={classes.inputContainer}>
+                    <FormControl className={classes.formControl}>
+                        {/* <InputLabel>{translate("plans.heatingmode.label")}</InputLabel> */}
+
+                        <Select
+                            fullWidth
+                            onChange={async (evt) => {
+                                await modeAPI.setMode(parseInt(evt.target.value));
+                                await loadMode();
+                            }}
+                            value={mode}
+                        >
+                            <MenuItem value={0}>{translate("Modes.0")}</MenuItem>
+                            <MenuItem value={1}>{translate("Modes.1")}</MenuItem>
+                            <MenuItem value={2}>{translate("Modes.2")}</MenuItem>
+                            <MenuItem value={3}>{translate("Modes.3")}</MenuItem>
+                            <MenuItem value={4}>{translate("Modes.4")}</MenuItem>
+                        </Select>
+                    </FormControl>
+                </div>
+
+                <SubHeader text={translate("plans.plans.section")} />
                 <List className={classes.list}>
+                    {plans.length > 0 && <Divider />}
                     {plans.map((plan) => (
                         <React.Fragment key={plan.id}>
                             <ListItem {...{ to: `/plans/${plan.id}` }} component={Link} button>

@@ -1,11 +1,12 @@
 import { ManagerSettings, Notification, __ } from "homey";
-import { filter, forEach, isEmpty, throttle } from "lodash";
+import { filter, forEach, isEmpty } from "lodash";
 import { HeatingPlanCalculator } from "../../helper/HeatingPlanCalculator";
 import { ICalculatedTemperature, IHeatingPlan, InternalSettings, ISetPoint, NormalOperationMode, OperationMode, OverrideMode } from "../../model";
 import { HeatingPlanRepositoryService } from "../heating-plan-repository";
-import { CLASS_THERMOSTAT, IdLookupList, HomeyAPIService, IDevice, IHomeyAPI, IZone, MEASURE_TEMPERATURE, TARGET_TEMPERATURE } from "../homey-api";
+import { IdLookupList, HomeyAPIService, IDevice, IHomeyAPI, IZone, MEASURE_TEMPERATURE, TARGET_TEMPERATURE } from "../homey-api";
 import { ILogger, LogService } from "../log";
 import AsyncThrottle from "../../helper/AsyncThrottle";
+import Retry from "../../helper/Retry";
 
 export class HeatingManagerService {
     public static readonly CanSetTargetTemperature = (device: IDevice): boolean => 
@@ -53,18 +54,14 @@ export class HeatingManagerService {
     }
 
     public set operationMode(mode: OperationMode) {
-        this.logger.information(`Setting mode to ${mode}`);
+        this.logger.information(`Setting mode to`, mode);
 
         this.mode = mode;
         ManagerSettings.set(InternalSettings.OperationMode, mode);
 
-        const notification = new Notification({
-            excerpt: __("Notification.set_operation_mode",
-                {
-                    mode: __(`Modes.${mode}`)
-                })
+        this.sendNotification("set_operation_mode", {
+            mode: __(`Modes.${mode}`)
         });
-        notification.register();
     }
 
     public get repository(): HeatingPlanRepositoryService {
@@ -143,17 +140,11 @@ export class HeatingManagerService {
         await Promise.all(
             settings.map(async newSetting => {
                 if (await setTemperature(this.findDevice(newSetting.device.id), newSetting.targetTemperature)) {
-
-                    // tslint:disable-next-line: max-line-length
-                    const notification = new Notification({
-                        excerpt: __("Notification.set_target_temperature",
-                            {
-                                name: newSetting.device.name,
-                                value: newSetting.targetTemperature,
-                                plan: newSetting.plan.name
-                            })
-                    });
-                    notification.register();
+                    this.sendNotification("set_target_temperature", {
+                        name: newSetting.device.name,
+                        value: newSetting.targetTemperature,
+                        plan: newSetting.plan.name
+                    })
                 }
             })
         );
@@ -211,7 +202,6 @@ export class HeatingManagerService {
                             id: plan.id,
                             name: plan.name
                         },
-                        // temperature: await this.getTemperature(d),
                         temperature: this.getMeasuredTemperature(d),
                         targetTemperature: setPoint.targetTemperature,
                     });
@@ -255,33 +245,44 @@ export class HeatingManagerService {
         try {
             let value = d.capabilitiesObj[TARGET_TEMPERATURE].value as number;
             if (value !== targetTemperature) {
-                this.logger.information(`Adjusting temperature for ${d.name} to ${targetTemperature}`);
-
                 if (PRODUCTION) {
-                    await this.homeyApi.devices.setCapabilityValue({
-                        deviceId: d.id,
-                        capabilityId: TARGET_TEMPERATURE,
-                        value: targetTemperature
-                    });        
+                    // incremental backoff, 5 retries, max 20s
+                    await Retry(async () => { 
+                        this.logger.information(`Adjusting temperature for ${d.name} to ${targetTemperature}`);
+                        
+                        await this.homeyApi.devices.setCapabilityValue({
+                            deviceId: d.id,
+                            capabilityId: TARGET_TEMPERATURE,
+                            value: targetTemperature
+                        });
+
+                        this.logger.debug(`> ${d.name} done.`);
+                    }, 5, 1000, true, 20000);
                 }
 
                 return true;
             }
+            else {
+                this.logger.error(`> ${d.name} target temperature already set.`);
+            }
         } catch (e) {
-            // Todo: Issue #25
             this.logger.error(`Failed to set temperature ${d.name} (${d.id}) due to ${e}`);
 
-            const notification = new Notification({
-                excerpt: __("Notification.failed_set_target_temperature",
-                    {
-                        name: d.name,
-                        value: targetTemperature
-                    })
+            this.sendNotification("failed_set_target_temperature", {
+                name: d.name,
+                value: targetTemperature,
+                error: e.name
             });
-            notification.register();
         }
 
         return false;
+    }
+
+    private sendNotification(name: string, args?: {}) {
+        const notification = new Notification({
+            excerpt: __(`Notification.${name}`, args)
+        });
+        notification.register();
     }
 
     private findZone(zoneId: string): IZone {
@@ -292,11 +293,6 @@ export class HeatingManagerService {
         var capability = d.capabilitiesObj[MEASURE_TEMPERATURE] || d.capabilitiesObj[TARGET_TEMPERATURE];
         return capability != null ? capability.value as number : 0;
     }
-
-    // private getTargetTemperature(d: IDevice): number {
-    //     var capability = d.capabilitiesObj[TARGET_TEMPERATURE];
-    //     return capability != null ? capability.value as number : 0;
-    // }
 
     private findDevice(deviceId: string): IDevice {
         var d = this.deviceList[deviceId];

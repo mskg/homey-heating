@@ -2,18 +2,18 @@ import { ILogger } from "./declarations";
 
 export class ConsoleLogger implements ILogger {
 
-    public information(message: any) {
+    public information(...args: any[]) {
         // tslint:disable-next-line: no-console
-        console.log(message);
+        console.log(...args);
     }
 
-    public debug(message: any) {
+    public debug(...args: any[]) {
         // tslint:disable-next-line: no-console
-        console.log(message);
+        console.log(...args);
     }
 
-    public error(message: any) {
+    public error(...args: any[]) {
         // tslint:disable-next-line: no-console
-        console.error(message);
+        console.error(...args);
     }
 }

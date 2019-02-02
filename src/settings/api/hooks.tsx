@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { sortBy, forEach } from "lodash";
-import { IHeatingPlan, IHeatingDevice, IHeatingZone, ICalculatedTemperature } from '../../app/model';
-import { planAPI } from './heating';
+import { IHeatingPlan, IHeatingDevice, IHeatingZone, ICalculatedTemperature, OperationMode, NormalOperationMode } from '../../app/model';
+import { planAPI, modeAPI } from './heating';
 import { deviceAPI } from './devices';
 import { settingsAPI, SettingsHashMap } from './settings';
 
@@ -124,4 +124,18 @@ export const useSettings =  () => {
     }, []);
 
     return { settings, setSettings, loadSettings };
+}
+
+export const useMode = () => {
+    const [mode, setMode] = React.useState<OperationMode>(NormalOperationMode.Automatic);
+
+    const loadMode = async () => {
+        await tryApiMethod(modeAPI.fetchMode, setMode);
+    }
+
+    React.useEffect(() => {
+        loadMode();
+    }, []);
+
+    return { mode, loadMode };
 }

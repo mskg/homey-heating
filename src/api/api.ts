@@ -2,7 +2,7 @@ import { app, ManagerSettings } from "homey";
 import { filter, find, forEach, map, remove } from "lodash";
 import { HeatingSchedulerApp } from "../app/app";
 import { DEFAULT_HEATING_PLAN } from "../app/helper/defaultPlan";
-import { IHeatingDevice, IHeatingPlan, IHeatingZone, Settings } from "../app/model";
+import { IHeatingDevice, IHeatingPlan, IHeatingZone, Settings, OperationMode } from "../app/model";
 import { CLASS_THERMOSTAT } from "../app/services/homey-api";
 import { LogService } from "../app/services/log";
 import { HeatingManagerService } from "../app/services/heating-manager";
@@ -58,23 +58,37 @@ module.exports = [
             callback(null, null);
         },
     },
-    // {
-    //     method: "PUT",
-    //     path: "/mode",
-    //     public: !PRODUCTION,
+    {
+        method: "GET",
+        path: "/mode",
+        public: !PRODUCTION,
 
-    //     fn: (args: IAPIParams, callback) => {
-    //         logger.debug("PUT mode");
+        fn: async (args: IAPIParams, callback) => {
+            logger.debug("GET mode");
 
-    //         const mode: number = args.body;
+            const myApp = app as HeatingSchedulerApp;
+            callback(null, myApp.manager.operationMode);
+        },
+    },
+    {
+        method: "PUT",
+        path: "/mode",
+        public: !PRODUCTION,
 
-    //         const myApp = app as HeatingSchedulerApp;
-    //         myApp.manager.operationMode = mode as OperationMode;
-    //         // scheduler must be restart?
+        fn: async (args: IAPIParams, callback) => {
+            logger.debug("PUT mode");
 
-    //         callback(null, null);
-    //     },
-    // },
+            const mode: number = args.body.mode;
+
+            const myApp = app as HeatingSchedulerApp;
+            myApp.manager.operationMode = mode as OperationMode;
+
+            await myApp.manager.applyPlans();
+            await myApp.scheduler.start();
+
+            callback(null, null);
+        },
+    },
     {
         method: "GET",
         path: "/zones",

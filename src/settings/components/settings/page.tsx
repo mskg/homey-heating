@@ -16,9 +16,10 @@ import AppHeader from "../AppHeader";
 import defautStyles from "../DefaultStyles";
 import FormTextField from '../FormTextField';
 import AppMenu from '../Menu';
+import SubHeader from '../SubHeader';
 
 const styles: StyleRulesCallback = (theme) => ({
-    ...defautStyles(theme, theme.spacing.unit * 8), ...{
+    ...defautStyles(theme, theme.spacing.unit * 6), ...{
     }
 });
 
@@ -91,7 +92,7 @@ const SettingsPage: React.StatelessComponent<Props> = (props) => {
             </AppHeader>
 
             <Paper square className={classes.paper}>
-                <ListSubheader disableSticky component="div">{translate("settings.category_log")}</ListSubheader>
+                <SubHeader text={translate("settings.category_log")} />
                 <FormControlLabel
                     control={
                         <Switch
@@ -110,8 +111,7 @@ const SettingsPage: React.StatelessComponent<Props> = (props) => {
                     onChange={updateField('LogCategory')}
                 />
 
-                <ListSubheader disableSticky component="div">{translate("settings.backup.section")}</ListSubheader>
-
+                <SubHeader text={translate("settings.backup.section")} />
                  <FormTextField
                     label={translate("settings.backup.label")}
                     placeholder={translate("settings.backup.placeholder")}

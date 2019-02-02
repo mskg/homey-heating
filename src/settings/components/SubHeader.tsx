@@ -4,7 +4,7 @@ import React from 'react';
 import defautStyles from "./DefaultStyles";
 
 const styles: StyleRulesCallback = (theme) => ({
-    ...defautStyles(theme, theme.spacing.unit * 8), ...{
+    ...defautStyles(theme, theme.spacing.unit * 3), ...{
     }
 });
 
@@ -13,7 +13,7 @@ type SubHeaderProps = {
 } & WithStyles<typeof styles>;
 
 const SubHeader: React.StatelessComponent<SubHeaderProps> = (props) => {
-    return (<Typography className={props.classes.text} variant="subtitle1" gutterBottom>
+    return (<Typography className={props.classes.headline} variant="h5" color="textSecondary" gutterBottom>
         {props.text}
     </Typography>);
 };

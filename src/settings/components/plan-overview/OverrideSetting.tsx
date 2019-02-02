@@ -23,6 +23,7 @@ type PlanOverrideProps = {
 } & WithStyles<typeof styles>;
 
 const OverrideSetting: React.StatelessComponent<PlanOverrideProps> = (props) => {
+
     return (
         <React.Fragment>
             <div className={props.classes.planOverride}>
@@ -44,6 +45,7 @@ const OverrideSetting: React.StatelessComponent<PlanOverrideProps> = (props) => 
                     label={translate('plan.target.label')}
                     placeholder={translate('plan.target.placeholder')}
                     disabled={!props.enabled}
+                    hidden={!props.enabled}
 
                     type="number"                        
                     InputProps={{ inputProps: { min: TARGET_TEMPERATURE_MIN, max: TARGET_TEMPERATURE_MAX, step: 0.5 } }}

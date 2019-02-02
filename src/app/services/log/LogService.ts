@@ -30,21 +30,21 @@ export class LogService implements ILogger {
         return LogService.instance;
     }
 
-    public information(message: any) {
+    public information(...args: any[]) {
         this.loggers.forEach((e) => {
-            e.debug(message);
+            e.debug(...args);
         });
     }
 
-    public debug(message: any) {
+    public debug(...args: any[]) {
         this.loggers.forEach((e) => {
-            e.debug(message);
+            e.debug(...args);
         });
     }
 
-    public error(message: any) {
+    public error(...args: any[]) {
         this.loggers.forEach((e) => {
-            e.error(message);
+            e.error(...args);
         });
     }
 

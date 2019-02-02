@@ -1,4 +1,4 @@
-import { Button, Divider } from '@material-ui/core';
+import { Button, Divider, Typography } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -19,7 +19,7 @@ import { isEmpty, map, remove } from 'lodash';
 import React from 'react';
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import * as uuidv1 from 'uuid/v1';
-import { IHeatingPlan, OverrideMode } from '../../../app/model';
+import { IHeatingPlan } from '../../../app/model';
 import { planAPI } from '../../api/heating';
 import { useDevices, usePlan, useZones } from '../../api/hooks';
 import translate from '../../i18n/Translation';
@@ -29,12 +29,12 @@ import defautStyles from "../DefaultStyles";
 import FormTextField from '../FormTextField';
 import SubHeader from '../SubHeader';
 import CloneDialog from './CloneDialog';
+import ExceptionsDialog from './ExceptionsDialog';
 import ZoneIcon from './Icons';
-import OverrideSetting from './OverrideSetting';
 import ScheduleDialog from "./ScheduleDialog";
 
 const styles: StyleRulesCallback = (theme) => ({
-    ...defautStyles(theme, theme.spacing.unit * 8), ...{
+    ...defautStyles(theme, theme.spacing.unit * 6), ...{
         button: {
             margin: theme.spacing.unit * 2,
         },
@@ -70,6 +70,7 @@ const PlanPage: React.StatelessComponent<Props> = (props) => {
 
     const [isScheduleDialogOpen, setScheduleDialogOpen] = React.useState(false);
     const [isCloneDialogOpen, setIsCloneDialogOpen] = React.useState(false);
+    const [isExceptionsDialogOpen, setIsExceptionsDialogOpen] = React.useState(false);
 
     const { dialog: confirmRemoveDialog, open: openConfirmRemove } = useConfirmDialog({
         title: translate("plan.confirm.title"),
@@ -80,6 +81,7 @@ const PlanPage: React.StatelessComponent<Props> = (props) => {
     React.useEffect(() => {
         setScheduleDialogOpen(false);
         setIsCloneDialogOpen(false);
+        setIsExceptionsDialogOpen(false);
         setDirty(false);
     }, [props.match.params.id]);
 
@@ -125,6 +127,12 @@ const PlanPage: React.StatelessComponent<Props> = (props) => {
         setScheduleDialogOpen(false);
     };
 
+    const onSaveExceptions = (overrides) => {
+        setPlan(old => { return { ...old, overrides: overrides } });
+        setDirty(true);
+        setIsExceptionsDialogOpen(false);
+    };
+
     const save = () => {
         planAPI.updatePlan(plan).then(p => {
             props.history.push("/plans");
@@ -147,42 +155,6 @@ const PlanPage: React.StatelessComponent<Props> = (props) => {
                 throw r;
             });
     };
-
-    const getOverride = (mode: OverrideMode) => {
-        var override = plan.overrides != null 
-            // made an error in first implementation storing the number instead of the value
-            ? (plan.overrides[OverrideMode[mode]] || plan.overrides[mode])
-            : null;
-
-        return {
-            mode: mode,
-            enabled: override != null && override.targetTemperature != 0,
-            targetTemperature: override != null ? override.targetTemperature : 0
-        }
-    };
-
-    const updateOverride = (mode: OverrideMode, target: number) => {
-        setPlan(old => {
-            if (old.overrides == null && target == 0) return old;
-            if (old.overrides == null) {
-                old.overrides = {};
-            } 
-
-            if (target == 0) {
-                delete old.overrides[OverrideMode[mode]];
-                delete old.overrides[mode];
-            }
-            else {
-                debugger
-                old.overrides[OverrideMode[mode]] = {
-                    targetTemperature: target
-                };
-            }
-
-            return old;
-        });
-        setDirty(true); 
-    }
 
     return (
         <React.Fragment>
@@ -231,9 +203,14 @@ const PlanPage: React.StatelessComponent<Props> = (props) => {
                 onCancel={() => { setScheduleDialogOpen(false); }
                 } />
 
+            <ExceptionsDialog open={isExceptionsDialogOpen} overrides={plan.overrides} 
+                onSave={onSaveExceptions}
+                onCancel={() => { setIsExceptionsDialogOpen(false); }
+                } />
+
             <Paper square className={classes.paper}>
                 <SubHeader text={translate("plan.overview.section")} />
-
+                <Typography className={classes.text} variant="body1" color="textSecondary">{translate("plan.overview.text")}</Typography>
                 <FormTextField
                     label={translate("plan.overview.name.label")}
                     placeholder={translate("plan.overview.name.placeholder")}
@@ -242,6 +219,7 @@ const PlanPage: React.StatelessComponent<Props> = (props) => {
                     onChange={updateField('name')}
                 />
 
+                <Typography className={classes.text} style={{paddingTop: 16}} variant="body1" color="textSecondary">{translate("plan.overview.text_enable")}</Typography>
                 <FormControlLabel
                     control={
                         <Switch
@@ -252,23 +230,20 @@ const PlanPage: React.StatelessComponent<Props> = (props) => {
                     labelPlacement="start"
                 />
 
-                <div>
+                <Typography className={classes.text} style={{paddingTop: 16}} variant="body1" color="textSecondary">{translate("plan.overview.text_schedule")}</Typography>
+                <div style={{display: "flex", flexDirection: "row"}}>
                     <Button variant="contained" color="primary" className={classes.button} onClick={() => { setScheduleDialogOpen(true); }}>
-                     {translate("plan.overview.edit")}
+                        {translate("plan.overview.edit")}
+                    </Button>
+
+                    <Button variant="contained" color="primary" className={classes.button} onClick={() => { setIsExceptionsDialogOpen(true); }}>
+                        {translate("plan.overview.exceptions")}
                     </Button>
                 </div>
 
-                <Divider />
-
-                <SubHeader text={translate("plan.overrides.section")} />
-
-                <OverrideSetting text={translate("plan.overrides.athome")} setOverride={updateOverride} {...getOverride(OverrideMode.DayAtHome)} />
-                <OverrideSetting text={translate("plan.overrides.away")} setOverride={updateOverride} {...getOverride(OverrideMode.DayAway)} />
-                <OverrideSetting text={translate("plan.overrides.sleeping")} setOverride={updateOverride} {...getOverride(OverrideMode.Sleep)} />
-                <OverrideSetting text={translate("plan.overrides.holiday")} setOverride={updateOverride} {...getOverride(OverrideMode.Holiday)} />
-                <Divider />
-
+                <Divider className={classes.divider} />
                 <SubHeader text={translate("plan.zones.section")} />
+                <Typography className={classes.text} variant="body1" color="textSecondary">{translate("plan.zones.text")}</Typography>
                 <List>
                     {map(zones, zone => (
                         <ListItem key={zone.id} button onClick={toggleZone(zone.id)}>
@@ -285,9 +260,10 @@ const PlanPage: React.StatelessComponent<Props> = (props) => {
                     ))}
                 </List>
 
-                <Divider />
-
+                <Divider className={classes.divider} />
                 <SubHeader text={translate("plan.devices.section")} />
+                <Typography className={classes.text} variant="body1" color="textSecondary">{translate("plan.devices.text")}</Typography>
+
                 <List>
                     {map(devices, device => (
                         <ListItem key={device.id} button onClick={toggleDevice(device.id)}>
@@ -304,7 +280,7 @@ const PlanPage: React.StatelessComponent<Props> = (props) => {
                     ))}
                 </List>
 
-                <Divider />
+                <Divider className={classes.divider} />
             </Paper>
         </React.Fragment>
     );
