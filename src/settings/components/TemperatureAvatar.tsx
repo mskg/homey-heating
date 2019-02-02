@@ -134,7 +134,7 @@ const BaseTemperatureAvatar: React.StatelessComponent<Props> = (props) => {
     const { value } = props;
 
     return (
-        <Avatar style={{ padding: "25px", background: getColor(value)[500], fontSize: "1em" }}>{value}°</Avatar>
+        <Avatar style={{ padding: "25px", background: getColor(value)[500], fontSize: "1em" }}>{FixedDigits(value, 1)}°</Avatar>
     );
 }
 
