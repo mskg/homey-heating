@@ -80,7 +80,7 @@ export class HeatingSchedulerApp extends App {
             .register()
             .registerRunListener(async (args, state) => {
                 this.flowLogger.information("Apply plans");
-                await this.heatingManger.applyPlans();
+                await this.heatingManager.applyPlans();
                 return true;
             });
 
