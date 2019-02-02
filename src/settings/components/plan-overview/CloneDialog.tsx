@@ -24,7 +24,7 @@ const CloneDialog: React.StatelessComponent<Props> = (props: Props) => {
   }, [props.open]);
 
   return (
-    <Dialog open={props.open} onClose={() => { props.onCancel() }} TransitionComponent={Transition}>/
+    <Dialog open={props.open} onClose={() => { props.onCancel() }} TransitionComponent={Transition}>
       <DialogTitle>{translate("clone.title")}</DialogTitle>
       <DialogContent>
         <DialogContentText>
