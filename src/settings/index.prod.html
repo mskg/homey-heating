@@ -20,18 +20,23 @@
     function onHomeyReady(Homey) {
       Homey.ready();
 
-      // remove homey styles
-      window.document.head.getElementsByTagName("link")[2].remove();
-
+      var links = window.document.head.getElementsByTagName("link");
+      for (var i = 0; i < links.length; ++i) {
+        var el = links[i];
+        if (el.href.match(/homey\.css/ig)) {
+          el.remove();
+        }
+      }
+      
       loadScript("app.js");
       loadScript("appStyles.js");
       loadScript("vendor.js");
     }
   </script>
-  <link href="appStyles.css" rel="stylesheet">
 </head>
 
 <body class="hy-nostyle">
   <div id="root" />
 </body>
+
 </html>

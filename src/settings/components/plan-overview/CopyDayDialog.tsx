@@ -5,7 +5,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { find, map, remove, filter } from "lodash";
+import { find, map, remove } from "lodash";
 import React from 'react';
 import { Day } from '../../../app/model';
 import translate from '../../i18n/Translation';
@@ -28,8 +28,8 @@ const CopyDayDialog: React.StatelessComponent<Props> = (props: Props) => {
   const toggleDay = (day) => setDays(oldDays => {
     if (oldDays == null) { oldDays = []; }
 
-    const found = find(oldDays, day);
-    remove(oldDays, day);
+    const found = find(oldDays, d => d === day);
+    remove(oldDays, d => d === day);
 
     if (found == null) {
       oldDays.push(day);
@@ -46,7 +46,7 @@ const CopyDayDialog: React.StatelessComponent<Props> = (props: Props) => {
         {translate("copy.text")}
         </DialogContentText>
 
-        <List>
+        <List dense={true}>
           {map([1, 2, 3, 4, 5, 6, 0], day => (
             <ListItem key={day} button onClick={() => toggleDay(day)}>
               <ListItemText primary={translate(`copy.${Day[day]}`)} />

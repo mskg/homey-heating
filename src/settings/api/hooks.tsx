@@ -19,8 +19,6 @@ async function tryApiMethod<T>(apiMethod: () => Promise<T>, setStateAction: Disp
         setStateAction(await apiMethod()); 
     }
     catch (e) {
-        debugger
-
         // required for the error to popup the hierarchy
         setStateAction (t => { throw e; });
     }

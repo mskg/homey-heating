@@ -3,23 +3,23 @@ import Typography, { TypographyProps } from '@material-ui/core/Typography';
 import React from 'react';
 
 const styles: StyleRulesCallback = (theme) => ({
-    headline: {
-        marginTop: theme.spacing.unit * 4,
+    text: {
+        // marginTop: theme.spacing.unit * 4,
         paddingLeft: theme.spacing.unit * 2,
         paddingRight: theme.spacing.unit * 2,
     },
 });
 
-type SubHeaderProps = {
+type Props = {
     text: string,
 } & WithStyles<typeof styles> & TypographyProps;
 
-const SubHeader: React.StatelessComponent<SubHeaderProps> = (props) => {
-    const {classes, text, ...otherProps} = props;
+const BodyText: React.StatelessComponent<Props> = (props) => {
+    const {classes,text, ...otherProps} = props;
 
-    return (<Typography className={classes.headline} variant="h5" color="textSecondary" gutterBottom {...otherProps}>
+    return (<Typography className={classes.text} variant="body1" color="textSecondary"  {...otherProps}>
         {text}
     </Typography>);
 };
 
-export default withStyles(styles)(SubHeader);
+export default withStyles(styles)(BodyText);

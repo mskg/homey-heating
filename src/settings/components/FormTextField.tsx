@@ -1,24 +1,16 @@
 import React from 'react';
-import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
 import TextField, { TextFieldProps } from '@material-ui/core/TextField';
-import defautStyles from "./DefaultStyles";
+import InputContainer from './InputContainer';
 
-const styles: StyleRulesCallback = (theme) => ({
-    ...defautStyles(theme, theme.spacing.unit * 8), ...{
-    }
-});
-
-const FormTextField = ({ classes, ...otherProps }: WithStyles<typeof styles> & TextFieldProps) => {
+const FormTextField = ({ classes, ...otherProps }: TextFieldProps) => {
     return (
-        <div className={classes.inputContainer}>
+        <InputContainer>
             <TextField
                 fullWidth
                 margin="normal"
-                className={classes.input}
-
                 {...otherProps}
             />
-        </div>)
+        </InputContainer>)
 };
 
-export default withStyles(styles)(FormTextField);
+export default FormTextField;

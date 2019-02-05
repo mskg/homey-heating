@@ -3,9 +3,9 @@ import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/st
 import Switch from '@material-ui/core/Switch';
 import React from 'react';
 import { OverrideMode } from '../../../app/model';
+import { TARGET_TEMPERATURE_MAX, TARGET_TEMPERATURE_MIN } from '../../../app/services/homey-api/declarations';
 import translate from '../../i18n/Translation';
 import FormTextField from '../FormTextField';
-import {TARGET_TEMPERATURE_MIN, TARGET_TEMPERATURE_MAX} from '../../../app/services/homey-api/declarations';
 
 const styles: StyleRulesCallback = (theme) => ({
     planOverride: {
@@ -54,7 +54,7 @@ const OverrideSetting: React.StatelessComponent<PlanOverrideProps> = (props) => 
                     onChange={(evt) => {
                         props.setOverride(props.mode, parseFloat(evt.target.value));
                     }}
-                />
+                    />
             </div>
         </React.Fragment>
     );

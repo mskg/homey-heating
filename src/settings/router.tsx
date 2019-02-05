@@ -1,10 +1,12 @@
 import * as React from "react";
 import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
 
-import PlansPage from "./components/plans/page";
-import PlanDetailPage from "./components/plan-overview/page";
-import SchedulesPage from "./components/schedule/page";
-import SettingsPage from "./components/settings/page";
+import OverviewPage from "./pages/overview";
+import PlanDetailPage from "./pages/plan";
+import PlanExceptionsPage from "./pages/plan-exceptions";
+import PlanSchedulePage from "./pages/plan-schedule";
+import TemperaturesPage from "./pages/temperatures";
+import SettingsPage from "./pages/settings";
 
 export class AppRouter extends React.Component<any, any> {
 
@@ -18,12 +20,14 @@ export class AppRouter extends React.Component<any, any> {
         <Switch>
           <Route exact path="/settings" component={SettingsPage} />
 
-          <Route exact path="/plans" component={PlansPage} />
-          <Route exact path="/plans/schedule" component={SchedulesPage} />          
+          <Route exact path="/" component={OverviewPage} />
+          <Route exact path="/plans/schedule" component={TemperaturesPage} />          
           <Route path="/plans/new" component={PlanDetailPage} />
-          <Route path="/plans/:id" component={PlanDetailPage} />
+          <Route path="/plans/:id/exceptions" component={PlanExceptionsPage} />
+          <Route path="/plans/:id/schedule" component={PlanSchedulePage} />
+          <Route path="/plans/:id" component={PlanDetailPage} />          
 
-          <Redirect path="*" to="/plans" />
+          <Redirect path="*" to="/" />
         </Switch>
       </React.Fragment>
     </HashRouter>;

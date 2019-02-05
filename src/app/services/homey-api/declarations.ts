@@ -52,9 +52,9 @@ export interface ICapability {
     on(s: "$delete", cb: EventHandler<void>);
 }
 
-export type IdLookupList<T> = {
+export type StringHashMap<T> = {
     [id: string]: T;
-} & ArrayLike<T>;
+} /*& ArrayLike<T>*/;
 
 export interface IDevice {
     id: string;
@@ -87,7 +87,7 @@ export interface IDevice {
         url: string;
     }
 
-    makeCapabilityInstance<T>(id: string): Promise<ICapabilityInstance<T>>;
+    makeCapabilityInstance<T>(id: string, callback?: EventHandler<IDevice>): Promise<ICapabilityInstance<T>>;
 
     setting: {},
     capabilities: string[],
@@ -118,14 +118,16 @@ export interface IDevice {
 }
 
 export interface IZoneManager {
-    getZones(): Promise<IdLookupList<IZone>>;
+    getZones(): Promise<StringHashMap<IZone>>;
 
     on(s: "zone.create" | "zone.update" | "zone.delete", cb: EventHandler<IZone>);
     destroy();
 }
 
 export interface IDeviceManager {
-    getDevices(): Promise<IdLookupList<IDevice>>;
+    getDevices(): Promise<StringHashMap<IDevice>>;
+
+    getDevice(opts: {id: string}): Promise<IDevice>;
 
     setCapabilityValue(options: {
         deviceId: string,

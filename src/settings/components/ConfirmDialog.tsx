@@ -54,7 +54,7 @@ export const useConfirmDialog = (props: { onConfirm: () => void } & ExternalProp
   );
 
   return {
-    dialog, open: () => {
+    dialog, isOpen:open, open: () => {
       setIsOpen(true);
     }
   };

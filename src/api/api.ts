@@ -1,11 +1,11 @@
 import { app, ManagerSettings } from "homey";
-import { filter, find, forEach, map, remove } from "lodash";
+import { find, forEach, map, remove } from "lodash";
 import { HeatingSchedulerApp } from "../app/app";
 import { DEFAULT_HEATING_PLAN } from "../app/helper/defaultPlan";
-import { IHeatingDevice, IHeatingPlan, IHeatingZone, Settings, OperationMode, IScheduleInformation } from "../app/model";
-import { CLASS_THERMOSTAT } from "../app/services/homey-api";
+import { IHeatingDevice, IHeatingPlan, IHeatingZone, IScheduleInformation, OperationMode, Settings } from "../app/model";
 import { LogService } from "../app/services/log";
-import { HeatingManagerService } from "../app/services/heating-manager";
+
+declare var PRODUCTION: boolean;
 
 interface IAPIParams {
     body: any;
@@ -141,7 +141,7 @@ module.exports = [
             logger.debug("GET devices");
             
             const myApp = app as HeatingSchedulerApp;
-            const result = map(filter(myApp.manager.devices, HeatingManagerService.CanSetTargetTemperature),
+            const result = map(myApp.manager.devices, 
                 z => {
                     return {
                         id: z.id,

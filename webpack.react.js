@@ -14,7 +14,7 @@ var scriptConfig = (env, argv) => {
 
     entry: {
       app: './index.tsx',
-      appStyles: './css/site.css',
+      // appStyles: './css/site.css',
       vendor: [
         'react',
         'react-dom',

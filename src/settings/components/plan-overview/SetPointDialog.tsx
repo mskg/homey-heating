@@ -1,6 +1,5 @@
 import DateFnsUtils from '@date-io/date-fns';
-import { Button, Dialog, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
+import { Button, Dialog, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
 import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import { MuiPickersUtilsProvider, TimePicker } from 'material-ui-pickers';
@@ -9,13 +8,19 @@ import { ISetPoint } from '../../../app/model';
 import { TARGET_TEMPERATURE_MAX, TARGET_TEMPERATURE_MIN } from '../../../app/services/homey-api/declarations';
 import translate from '../../i18n/Translation';
 import AppHeader from "../AppHeader";
-import defautStyles from "../DefaultStyles";
+import FormTextField from '../FormTextField';
+import InputContainer from '../InputContainer';
+import { MenuButton } from '../Menu';
 import Transition from "../Transition";
 
 const styles: StyleRulesCallback = (theme) => ({
-    ...defautStyles(theme, theme.spacing.unit * 3), ...{
+    resetPadding: {
+        paddingLeft: 0,
+        paddingRight: 0,
+        paddingTop: 36,
     }
 });
+
 
 type Props = WithStyles<typeof styles> & {
     open: boolean;
@@ -62,9 +67,7 @@ const SetPointDialog: React.StatelessComponent<Props> = (props: Props) => {
                     {{
                         title: translate("setpoint.title"),
                         button: (
-                            <IconButton className={classes.menuButton} color="inherit" onClick={onCancelDialog} aria-label="Close">
-                                <CloseIcon />
-                            </IconButton>
+                            <MenuButton onClick={onCancelDialog} icon={<CloseIcon />} />
                         ),
                         actions: (
                             <Button color="inherit" onClick={onSaveDialog}>
@@ -77,7 +80,7 @@ const SetPointDialog: React.StatelessComponent<Props> = (props: Props) => {
 
             <DialogContent className={classes.resetPadding}>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <div className={classes.inputContainer}>
+                    <InputContainer>
                         <TimePicker
                             ampm={false}
                             label={translate("setpoint.start.label")}
@@ -87,8 +90,10 @@ const SetPointDialog: React.StatelessComponent<Props> = (props: Props) => {
                             onChange={(d: Date) => { setSetPointValue('hour', d.getHours()); setSetPointValue('minute', d.getMinutes()); }}
                             className={classes.input}
                         />
+                    </InputContainer>
 
-                        <FormControl className={classes.formControl} style={{ marginTop: 16 }}>
+                    <InputContainer>
+                        <FormControl className={classes.formControl} style={{ marginTop: 16 }} fullWidth>
                             <InputLabel >{translate("setpoint.temperature.label")}</InputLabel>
 
                             <Select
@@ -107,22 +112,18 @@ const SetPointDialog: React.StatelessComponent<Props> = (props: Props) => {
                                 <MenuItem value={21.5}>{translate("setpoint.temperature.warmer")}</MenuItem>
                             </Select>
                         </FormControl>
+                    </InputContainer>
 
-                        <TextField
-                            type="number"
-                            InputProps={{ inputProps: { min: TARGET_TEMPERATURE_MIN, max: TARGET_TEMPERATURE_MAX, step: 0.5 } }}
+                    <FormTextField
+                        type="number"
+                        InputProps={{ inputProps: { min: TARGET_TEMPERATURE_MIN, max: TARGET_TEMPERATURE_MAX, step: 0.5 } }}
 
-                            className={classes.input}
-                            label={translate("setpoint.target.label")}
-                            placeholder={translate("setpoint.target.label")}
+                        label={translate("setpoint.target.label")}
+                        placeholder={translate("setpoint.target.label")}
 
-                            fullWidth
-                            margin="normal"
-
-                            value={editedSetPoint.targetTemperature}
-                            onChange={(e) => { setSetPointValue('targetTemperature', e.target.value); }}
-                        />
-                    </div>
+                        value={editedSetPoint.targetTemperature}
+                        onChange={(e) => { setSetPointValue('targetTemperature', e.target.value); }}
+                    />
                 </MuiPickersUtilsProvider>
             </DialogContent>
         </Dialog>
