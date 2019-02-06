@@ -1,0 +1,193 @@
+{
+  "settings": {
+    "title": "Settings",
+    "saved": "Settings have been updated",
+
+    "category_log": "console.re Logging",
+    "enabled": {
+      "label": "Enabled?"
+    },
+
+    "category": {
+      "label": "Log category",
+      "placeholder": "Log category"
+    },
+
+    "backup": {
+      "section": "Backup and restore your heating plans",
+      "label": "Heating plan configuration",
+      "placeholder": "Heating plan configuration"
+    }
+  },
+
+  "clone": {
+    "title": "Duplicate heating plan",
+    "text": " Enter a new name and presss OK to create a copy of the heating plan '__name__'.",
+    "name": {
+      "label": "Plan name",
+      "placeholder": "New name of your plan"
+    },
+    "cancel": "Cancel",
+    "ok": "OK"
+  },
+  
+  "copy": {
+    "title": "Copy schedule",
+    "text": "Select the days, you want the current schedule also be applied to.",
+    "cancel": "Cancel",
+    "ok": "OK",
+
+    "Monday": "Monday",
+    "Tuesday": "Tuesday",
+    "Wednesday": "Wednesday",
+    "Thursday": "Thursday",
+    "Friday": "Friday",
+    "Saturday": "Saturday",
+    "Sunday": "Sunday"
+  },
+  
+  "overrides": {
+    "title": "Edit schedule exceptions",
+    "section": "Pause schedule when",
+    "text": "Pause the configured schedule when something special happens, e.g. you leave home unplanned, or you return earlier. To activate the special behavior, you have to set the scheduler to the appropriate mode using the plans overview page.",
+
+    "athome": "...you are a day at home?",
+    "away": "...when you are a day away from home?",
+    "sleeping": "...you are sleeping?",
+    "holiday": "...you are on holiday?"
+  },
+
+  "plan": {
+    "unnamed": "Unnamed plan",
+    "saved": "Plan __name__ has been saved.",
+    "removed": "Plan __name__ has been removed.",
+    "duplicated": "Plan __name__ has been duplicated.",
+
+    "target": {
+      "label": "Target temperature",
+      "placeholder": "Target temperature"
+    },
+
+    "confirm": {
+      "title": "Do you really want to remove the heating plan?",
+      "content": "Press OK to permanently remove the heating plan. This action cannot be undone."
+    },
+
+    "save": "save",
+
+    "overview": {
+      "section": "Overview",
+      "text": "Give your plan a speaking name.",
+      "name": {
+        "label": "Display name of your plan",
+        "placeholder": "Display name"
+      },
+      "text_enable": "If you disable the plan, it is not applied automatically, but can still apply it manually via Flow.",
+      "enabled": {
+        "label": "Enabled?"
+      },
+      "text_schedule": "Configure the schedules when your heating devices' temperature need to be adjusted. Additional exceptions can be configured e.g. when something special happens: You leave home unplanned, or you return earlier.",
+      "edit": "Normal Schedule",
+      "exceptions": "Exceptions"
+    },
+   
+    "zones": {
+      "section": "Associate zones",
+      "text": "Check the zones to which you want this plan to be applied to. All devices that support setting a target temperature inside such zones are included."
+    },
+    "devices": {
+      "section": "Associate devices",
+      "text": "Check the devices you want this plan to be applied to. You can mix zones and individual devices, no problem."
+    }
+  },
+
+  "schedule": {
+    "title": "Edit schedules",
+    "save": "save",
+
+    "Monday": "MO",
+    "Tuesday": "TU",
+    "Wednesday": "WE",
+    "Thursday": "TH",
+    "Friday": "FR",
+    "Saturday": "SA",
+    "Sunday": "SU"
+  },
+  
+  "setpoint": {
+    "title": "Edit set point",
+    "save": "save",
+    "start": {
+      "label": "Start time",
+      "placeholder": "Start time"
+    },
+
+    "temperature": {
+      "label": "Temperature",
+      "low": "Night",
+      "middle": "Economy",
+      "warm": "Comfort",
+      "warmer": "Comfort plus"
+    },
+
+    "target": {
+      "label": "Target temperature",
+      "placeholder": "Target temperature"
+    }
+  },
+
+  "temperatures": {
+    "title": "Current temperatures",
+    "list": "Temperatures",
+    "mode": "Operation mode",
+    "next": "Next operation",
+    "schedule": "Schedule"
+  },
+
+  "plans": {
+    "title": "Overview",
+
+    "toggled": "Plan __name__ has been updated.",
+    "modechanged": "Mode has been changed to __name__.",
+
+    "heatingmode": {
+      "section": "Change heating mode",
+      "label": "Heating mode"
+    },
+    "plans": {
+      "section": "Heating plans"
+    }
+  },
+
+  "error": {
+    "title": "Whoops! Something went wrong."
+  },
+
+  "menu": {
+    "title": "Homey Heating Scheduler",
+    "plans": "Overview",
+    "schedule": "Current temperatures",
+    "settings": "Settings",
+    "about": "About"
+  },
+
+  "confirm": {
+    "title": "Please confirm your action",
+    "cancel": "Cancel",
+    "ok": "OK"
+  },
+
+  "Modes": {
+    "0": "Automatic",
+    "1": "One day at home",
+    "2": "One day away from home",
+    "3": "Sleeping",
+    "4": "On Holiday"
+  },
+
+  "Notification": {
+    "set_operation_mode": "Heating mode changed to '__mode__'",
+    "set_target_temperature": "Setting thermostat '__name__' to __value__° (__plan__)",
+    "failed_set_target_temperature": "Failed to set thermostat '__name__' to __value__° (__error__)"
+  }
+}

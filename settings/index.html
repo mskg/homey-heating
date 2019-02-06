@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script type="text/javascript" src="/homey.js" data-origin="settings"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
+
+  <script type="text/javascript">
+    var loadScript = function (src) {
+      var tag = document.createElement('script');
+      tag.async = false;
+      tag.src = src;
+
+      window.document.body.appendChild(tag);
+    }
+
+    function onHomeyReady(Homey) {
+      Homey.ready();
+
+      var links = window.document.head.getElementsByTagName("link");
+      for (var i = 0; i < links.length; ++i) {
+        var el = links[i];
+        if (el.href.match(/homey\.css/ig)) {
+          el.remove();
+        }
+      }
+      
+      loadScript("app.js");
+      loadScript("appStyles.js");
+      loadScript("vendor.js");
+    }
+  </script>
+</head>
+
+<body class="hy-nostyle">
+  <div id="root" />
+</body>
+
+</html>
