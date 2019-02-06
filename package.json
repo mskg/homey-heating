@@ -53,7 +53,7 @@
   "scripts": {
     "homey:run": "npm run build:app:dev && athom -p ../homey-heating-dist app run",
     "homey:install": "npm run build:app:prod && npm run build:web:prod && athom -p ../homey-heating-dist app install",
-    "dist": "npm run build:app:prod && npm run build:web:prod && athom -p ../homey-heating-dist validate --level publish",
+    "dist": "npm run build:app:prod && npm run build:web:prod && athom -p ../homey-heating-dist app validate --level publish",
     "build:app:dev": "webpack --mode development --config webpack.app.js",
     "build:app:prod": "webpack --mode production --config webpack.app.js",
     "build:web:dev": "webpack --mode development --config webpack.react.js",
