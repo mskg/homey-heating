@@ -101,7 +101,7 @@ function FixedDigits(value: number, digits: number) {
     return (Math.round(value * Math.pow(10,digits)) / Math.pow(10,digits)).toFixed(digits);
 }
 
-const BaseFilledTemperatureAvatar: React.StatelessComponent<FilledProps> = (props) => {
+const BaseFilledTemperatureAvatar: React.FunctionComponent<FilledProps> = (props) => {
     const { value, classes, fill } = props;
     let { digits } = props;
 
@@ -118,11 +118,6 @@ const BaseFilledTemperatureAvatar: React.StatelessComponent<FilledProps> = (prop
 
             <Typography variant="body1" color="textSecondary" component="div">{FixedDigits(value, digits)}°</Typography>
         </div>
-
-        // <div style={{ borderColor: color }} className={classes.root}>
-        //     <span>{value} %</span>
-        //     <span style={{height: `${value}%`, background: color }} className={classes.fill}></span>
-        // </div>
     );
 }
 
@@ -130,7 +125,7 @@ type Props = {
     value: number;
 }
 
-const BaseTemperatureAvatar: React.StatelessComponent<Props> = (props) => {
+const BaseTemperatureAvatar: React.FunctionComponent<Props> = (props) => {
     const { value } = props;
 
     return (

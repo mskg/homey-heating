@@ -14,7 +14,7 @@ type SubHeaderProps = {
     text: string,
 } & WithStyles<typeof styles> & TypographyProps;
 
-const SubHeader: React.StatelessComponent<SubHeaderProps> = (props) => {
+const SubHeader: React.FunctionComponent<SubHeaderProps> = (props) => {
     const {classes, text, ...otherProps} = props;
 
     return (<Typography className={classes.headline} variant="h5" color="textSecondary" gutterBottom {...otherProps}>

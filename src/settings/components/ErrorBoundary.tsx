@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component, Fragment } from 'react';
 import translate from "../i18n/Translation";
 
 type State = {  
@@ -11,7 +11,7 @@ type State = {
 type Props = {
 }
 
-export class ErrorBoundary extends React.Component<Props, State> {
+export class ErrorBoundary extends Component<Props, State> {
 
   constructor(props) {
     super(props);
@@ -25,14 +25,14 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
-      return <React.Fragment>        
+      return <Fragment>        
         <h1>{translate("confirm.title")}</h1>
         <div style={{ whiteSpace: 'pre-wrap' }}>
           {this.state.error && this.state.error.toString()}
           <br />
           {this.state.info.componentStack}
         </div>
-      </React.Fragment>;
+      </Fragment>;
     }
 
     return this.props.children;

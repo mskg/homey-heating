@@ -14,6 +14,7 @@ import { AppMenuButton, MenuButton } from '../components/Menu';
 import SubHeader from '../components/SubHeader';
 import translate from "../i18n/Translation";
 import Page from '../layouts/Page';
+import { InjectedNotistackProps, withSnackbar } from 'notistack';
 
 const styles: StyleRulesCallback = (theme) => ({  
 });
@@ -23,9 +24,9 @@ type Params = {
 };
 
 type SettingsName = keyof typeof Settings;
-type Props = WithStyles<typeof styles> & RouteComponentProps<Params>;
+type Props = WithStyles<typeof styles> & RouteComponentProps<Params> & InjectedNotistackProps;
 
-const SettingsPage: React.StatelessComponent<Props> = (props) => {
+const SettingsPage: React.FunctionComponent<Props> = (props) => {
     const { settings, setSettings, loadSettings } = useSettings();
     const [isDirty, setDirty] = React.useState<boolean>(false);
 
@@ -45,6 +46,7 @@ const SettingsPage: React.StatelessComponent<Props> = (props) => {
 
     const save = () => {
         settingsAPI.updateSettings(settings).then(p => {
+            props.enqueueSnackbar(translate("settings.saved"));
             setDirty(false);
         })
     };
@@ -120,4 +122,4 @@ const SettingsPage: React.StatelessComponent<Props> = (props) => {
     );
 }
 
-export default withRouter(withStyles(styles)(SettingsPage));
+export default withSnackbar(withRouter(withStyles(styles)(SettingsPage)));

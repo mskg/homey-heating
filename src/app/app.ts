@@ -29,13 +29,17 @@ export class HeatingSchedulerApp extends App {
     private logger: ILogger;
     private flowLogger: ILogger;
 
+    public createLogger(category: string): ILogger {
+        return LogService.createLogger(category);
+    }
+
     public get repository(): HeatingPlanRepositoryService {
         return this.repositoryService;
     }
 
     public get manager(): HeatingManagerService {
         return this.heatingManager;
-    }
+    }    
 
     public get scheduler(): HeatingSchedulerService {
         return this.heatingScheduler;

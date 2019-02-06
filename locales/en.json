@@ -1,6 +1,7 @@
 {
   "settings": {
     "title": "Settings",
+    "saved": "Settings have been updated",
 
     "category_log": "console.re Logging",
     "enabled": {
@@ -58,6 +59,9 @@
 
   "plan": {
     "unnamed": "Unnamed plan",
+    "saved": "Plan __name__ has been saved.",
+    "removed": "Plan __name__ has been removed.",
+    "duplicated": "Plan __name__ has been duplicated.",
 
     "target": {
       "label": "Target temperature",
@@ -142,6 +146,10 @@
 
   "plans": {
     "title": "Overview",
+
+    "toggled": "Plan __name__ has been updated.",
+    "modechanged": "Mode has been changed to __name__.",
+
     "heatingmode": {
       "section": "Change heating mode",
       "label": "Heating mode"

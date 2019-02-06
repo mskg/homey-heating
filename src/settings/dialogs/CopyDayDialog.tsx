@@ -7,9 +7,9 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { find, map, remove } from "lodash";
 import React from 'react';
-import { Day } from '../../../app/model';
-import translate from '../../i18n/Translation';
-import Transition from "../Transition";
+import { Day } from '../../app/model';
+import translate from '../i18n/Translation';
+import Transition from "../components/Transition";
 
 type Props = {
   open: boolean;
@@ -18,7 +18,7 @@ type Props = {
   onCancel: () => void;
 };
 
-const CopyDayDialog: React.StatelessComponent<Props> = (props: Props) => {
+const CopyDayDialog: React.FunctionComponent<Props> = (props: Props) => {
   const [days, setDays] = React.useState<Day[]>([]);
 
   React.useEffect(() => {

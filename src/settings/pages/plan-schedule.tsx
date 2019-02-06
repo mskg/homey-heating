@@ -11,19 +11,20 @@ import BackIcon from '@material-ui/icons/ArrowBackIos';
 import CancelIcon from '@material-ui/icons/Cancel';
 import TrashIcon from '@material-ui/icons/Delete';
 import CopyIcon from '@material-ui/icons/FileCopy';
-import { filter, forEach, map, remove, sortBy } from 'lodash';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { ScrollLocky } from 'react-scroll-locky';
-import { Day, IHeatingPlan, ISetPoint } from '../../app/model';
+import { Day, ISetPoint } from '../../app/model';
 import AddFab from "../components/AddFab";
 import AppHeader from "../components/AppHeader";
 import { MenuButton } from '../components/Menu';
-import CopyDayDialog from '../components/plan-overview/CopyDayDialog';
-import SetPointDialog from "../components/plan-overview/SetPointDialog";
+import CopyDayDialog from '../dialogs/CopyDayDialog';
+import SetPointDialog from "../dialogs/SetPointDialog";
 import { TemperatureAvatar } from '../components/TemperatureAvatar';
 import translate from '../i18n/Translation';
 import Page from '../layouts/Page';
+import { useHistory, useModifySetPoints, usePlan } from '../state/planHooks';
+import { usePlanDispatch } from '../state/PlanProvider';
 
 const styles: StyleRulesCallback = (theme) => ({
     list: {
@@ -52,201 +53,84 @@ function dateToTab(dateDay: number): number {
     return dateDay == 0 ? 6 : dateDay - 1;
 }
 
-type FilteredSchedule = {
-    lastSchedule: IndexedSetPoint
-    schedules: IndexedSetPoint[],
-};
-
-function determineSchedules(schedules: ISetPoint[], day: number = 0): FilteredSchedule {
-    const sortPoints = [(d: IndexedSetPoint) => (d.day == 0 ? 7 : d.day), "hour", "minute"];
-
-    const globalSort = sortBy(schedules, sortPoints)
-        .map<IndexedSetPoint>((sp, i) => { return { ...sp, index: i }; }) as IndexedSetPoint[];
-
-    // filtered and sorted based on day
-    const newSchedules = globalSort.filter(sp => sp.day == tabToDate(day))
-
-    // previous is last
-    const lastSchedule = (() => {
-        // no elements
-        if (globalSort.length == 0) { return null; }
-
-        // first element is first element
-        if (newSchedules.length != 0 && newSchedules[0].index == 0) {
-            if (globalSort[globalSort.length - 1].day !== newSchedules[0].day) {
-                return globalSort[globalSort.length - 1];
-            }
-
-            return null;
-        }
-
-        if (newSchedules.length == 0) {
-            let nd = day - 1;
-
-            // we search from right to left
-            while (nd >= 0) {
-                let last = globalSort.filter(sp => sp.day == tabToDate(nd));
-                if (last.length > 0) {
-                    // already sorted
-                    return last[last.length - 1];
-                }
-
-                nd -= 1;
-            }
-
-            // cannot happen
-            return null;
-        }
-
-        // highest from last schedule
-        return globalSort[newSchedules[0].index - 1];
-    })();
-
-    // the filtered list
-    return {
-        lastSchedule: lastSchedule,
-        schedules: newSchedules
-    }
-}
-
-const defaultSetpoint: IndexedSetPoint = {
-    index: -1,
-    day: 0,
-    hour: 0,
-    minute: 0,
-    targetTemperature: 0
-};
-
 type IndexedSetPoint = {
     index: number,
 } & ISetPoint;
 
-type Props = WithStyles<typeof styles> & RouteComponentProps<void, {}, IHeatingPlan>;
+type Params = {
+    id: string;
+};
 
-const SchedulePage: React.StatelessComponent<Props> = (props: Props) => {
+type Props = WithStyles<typeof styles> & RouteComponentProps<Params, {}, boolean>;
+
+const SchedulePage: React.FunctionComponent<Props> = (props: Props) => {
     const { classes, location, history } = props;
 
-    const tempSchedules = JSON.parse(JSON.stringify(location.state.schedule || []));
-    const [schedules, setSchedules] = React.useState(tempSchedules);
-    const [selectedTab, setTab] = React.useState(0);
+    const dispatch = usePlanDispatch();
 
-    const newSchedules = determineSchedules(tempSchedules, selectedTab);
-    const [selectedSchedules, setSelectedSchedules] = React.useState<IndexedSetPoint[]>(newSchedules.schedules);
-    const [previousSchedule, setPreviousSchedule] = React.useState<IndexedSetPoint>(newSchedules.lastSchedule);
-
-    const [isDirty, setDirty] = React.useState<boolean>(false);
-
-    const [setPoint, setSetPoint] = React.useState<IndexedSetPoint>(defaultSetpoint);
     const [isSetPointDialogOpen, setSetPointDialogOpen] = React.useState(false);
-
     const [isCopyDayDialogOpen, setIsCopyDayDialogOpen] = React.useState(false);
+    const [selectedTab, setTab] = React.useState(0); 
+    
+    const { plan, loaded } = usePlan(props.match.params.id);
+    const { undo, commit } = useHistory();
 
     React.useEffect(() => {
-        const newSchedule = JSON.parse(JSON.stringify(location.state.schedule || []));
+        selectTab(0);
 
-        setSchedules(newSchedule);
-        setTab(0);
-        updateSchedules(newSchedule, 0);
-
+        setSetPointDialogOpen(false);
         setIsCopyDayDialogOpen(false);
+    }, [location, loaded]);
+
+    const { 
+        isDirty, setDirty, 
+        selectedDay, copyDays, loadSetPoint, newSetPoint, selectDay, removeSetPoint: removeSetPointFunc 
+    } = useModifySetPoints();
+
+    const selectTab = useCallback((tab) => {
+        setTab(tab);
+        selectDay(tabToDate(tab));
+    }, [dispatch]);    
+
+    // depends on local variables
+    const removeSetPoint = (idx) => {
+        removeSetPointFunc(idx);
+        selectTab(selectedTab);
+    };
+
+    // depends on local variables
+    const copyDay = (days: Day[]) => {
+        copyDays(tabToDate(selectedTab), days);
+        selectTab(selectedTab);
         setIsCopyDayDialogOpen(false);
+    };
 
-        setDirty(false);
-    }, [location]);
+     function onCancelDialog() {
+        undo();
 
-    function onCancelDialog() {
         history.replace({
-            pathname: `/plans/${location.state.id}`,
-            state: location.state
+            pathname: `/plans/${plan.id}`,
+            state: true
         });
     }
 
     function onSaveDialog() {
+        commit();
+
         history.replace({
-            pathname: `/plans/${location.state.id}`,
-            state: { ...location.state, schedule: schedules }
+            pathname: `/plans/${plan.id}`,
+            state: true
         });
-    }
-
-    function updateSchedules(updatedPoints: ISetPoint[], newValue: number) {
-        const update = determineSchedules(updatedPoints, newValue);
-        setSelectedSchedules(update.schedules);
-        setPreviousSchedule(update.lastSchedule);
-    }
-
-    function changeTab(event, newValue: number) {
-        setTab(newValue);
-        updateSchedules(schedules, newValue);
     }
 
     function onEditSetPoint(sp: ISetPoint, index: number) {
-        // we need to make a copy
-        setSetPoint({ ...sp, index: index });
+        loadSetPoint({ ...sp, index: index });
         setSetPointDialogOpen(true);
-    }
-
-    function removeSetPoint(index: number) {
-        setSchedules(ns => {
-            ns.splice(index, 1);
-            updateSchedules(ns, selectedTab);
-            return ns;
-        });
-        setDirty(true);
     }
 
     function addSetPoint() {
-        setSetPoint({
-            index: -1,
-            day: tabToDate(selectedTab),
-            hour: 0,
-            minute: 0,
-            targetTemperature: 16
-        });
-
+        newSetPoint(tabToDate(selectedTab));
         setSetPointDialogOpen(true);
-    }
-
-    function onSaveSetPoint(newSetPoint: IndexedSetPoint) {
-        if (newSetPoint.index == -1) {
-            setSchedules(ns => {
-                ns.push(newSetPoint);
-                updateSchedules(ns, selectedTab);
-                return ns;
-            });
-        } else {
-            setSchedules(ns => {
-                ns[newSetPoint.index] = newSetPoint;
-                updateSchedules(ns, selectedTab);
-                return ns;
-            });
-        }
-
-        setDirty(true);
-        setSetPointDialogOpen(false);
-    }
-
-    function copyDay(days: Day[]) {
-        if (days != null && days.length != 0) {
-            setSchedules((old: ISetPoint[]) => {
-                var templateDay = filter(old, o => o.day == tabToDate(selectedTab));
-                var newSchedule = map(old, oldEntry => ({...oldEntry}));
-
-                forEach(days, (day: Day) => {
-                    // remove all
-                    remove(newSchedule, old => old.day == day);
-
-                    // new from template
-                    forEach(templateDay, s => { newSchedule.push({ ...s, day: day }) });
-                });
-
-                return newSchedule;
-            });
-
-            changeTab(null, selectedTab);
-            setDirty(true);
-        }
-
-        setIsCopyDayDialogOpen(false);
     }
 
     return (
@@ -256,10 +140,12 @@ const SchedulePage: React.StatelessComponent<Props> = (props: Props) => {
                 onCancel={() => { setIsCopyDayDialogOpen(false); }
                 } />
 
-            <SetPointDialog open={isSetPointDialogOpen} setPoint={setPoint}
-                onSave={onSaveSetPoint}
-                onCancel={() => { setSetPointDialogOpen(false); }
-                } />
+            <SetPointDialog 
+                open={isSetPointDialogOpen}
+                onClose={(d) => { 
+                    if (d) { setDirty(true); selectTab(selectedTab); } 
+                    setSetPointDialogOpen(false); 
+                }} />
 
             <Page>
                 {{
@@ -282,7 +168,7 @@ const SchedulePage: React.StatelessComponent<Props> = (props: Props) => {
                                     </React.Fragment>
                                 ),
                                 subBar: (
-                                    <Tabs value={selectedTab} onChange={changeTab} variant="fullWidth">
+                                    <Tabs value={selectedTab} onChange={(e,v) => selectTab(v)} variant="fullWidth">
                                         <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Monday")} />
                                         <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Tuesday")} />
                                         <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Wednesday")} />
@@ -296,25 +182,26 @@ const SchedulePage: React.StatelessComponent<Props> = (props: Props) => {
                         </AppHeader>
                     ),
                     paddingTop: 100,
+                    paddingBottom: 60,
                     body: (
                         <React.Fragment>
                             <ScrollLocky enabled={isSetPointDialogOpen || isCopyDayDialogOpen} isolation={false}>
                                 <List className={classes.list}>
                                     {
-                                        previousSchedule &&
+                                        selectedDay.last &&
                                         <React.Fragment key="-1">
-                                            <ListItem button onClick={() => changeTab(null, dateToTab(previousSchedule.day))}>
-                                                <TemperatureAvatar value={previousSchedule.targetTemperature} />
+                                            <ListItem button onClick={() => selectTab(dateToTab(selectedDay.last.day))}>
+                                                <TemperatureAvatar value={selectedDay.last.targetTemperature} />
 
                                                 <ListItemText
-                                                    primary={`${Day[previousSchedule.day]}`}
-                                                    secondary={`${formatNumber(previousSchedule.hour)}:${formatNumber(previousSchedule.minute)}`} />
+                                                    primary={`${Day[selectedDay.last.day]}`}
+                                                    secondary={`${formatNumber(selectedDay.last.hour)}:${formatNumber(selectedDay.last.minute)}`} />
                                             </ListItem>
                                             <Divider />
                                         </React.Fragment>
                                     }
                                     {
-                                        selectedSchedules.map((schedule: IndexedSetPoint) =>
+                                        selectedDay.schedules.map((schedule: IndexedSetPoint) =>
                                             <React.Fragment key={schedule.index}>
                                                 <ListItem button onClick={() => onEditSetPoint(schedule, schedule.index)}>
                                                     <TemperatureAvatar value={schedule.targetTemperature} />

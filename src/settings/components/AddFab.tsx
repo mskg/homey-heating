@@ -18,7 +18,7 @@ type Props = WithStyles<typeof styles> & {
     onClick: () => void
 };
 
-const AddFabComponent: React.StatelessComponent<Props> = (props) => {
+const AddFabComponent: React.FunctionComponent<Props> = (props) => {
     const { classes } = props;
 
     return (

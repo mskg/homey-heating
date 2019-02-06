@@ -13,7 +13,7 @@ type Props = {
     children: React.ReactElement<any>
 } & WithStyles<typeof styles>;
 
-const InputContainer: React.StatelessComponent<Props> = (props) => {
+const InputContainer: React.FunctionComponent<Props> = (props) => {
     return (<div className={props.classes.inputContainer}>{props.children}</div>);
 };
 

@@ -31,7 +31,7 @@ function percent(a, b) {
     return Math.round(a / b * 100);
 }
 
-const TemperaturesPage: React.StatelessComponent<Props> = (props) => {
+const TemperaturesPage: React.FunctionComponent<Props> = (props) => {
     const { classes } = props;
     const { scheduleInformation } = useScheduleInformation();
 

@@ -30,7 +30,7 @@ type Props = {
     onClose: () => void;
 } & WithStyles<typeof styles> & RouteComponentProps;
 
-const AppMenuBase: React.StatelessComponent<Props> = (props) => {
+const AppMenuBase: React.FunctionComponent<Props> = (props) => {
     const {classes} = props;
 
     const elements = [
@@ -39,22 +39,18 @@ const AppMenuBase: React.StatelessComponent<Props> = (props) => {
             text: translate("menu.plans"),
         },
         {
-            to: "/plans/schedule",
+            to: "/temperatures",
             text: translate("menu.schedule"),
         },
         {
             to: "/settings",
             text: translate("menu.settings"),
         },
-        // {
-        //     to: "/about",
-        //     text: translate("menu.about"),
-        // }
     ]
 
     return (
         <Drawer open={props.open} onClose={props.onClose}>
-            <Typography className={classes.text} variant="subtitle1" gutterBottom>
+            <Typography className={classes.text} variant="h5" gutterBottom>
                 {translate("menu.title")}
             </Typography>
 
@@ -78,7 +74,7 @@ type MenuButtonProps = {
     icon: React.ReactElement<any>
 } & WithStyles<typeof styles> & IconButtonProps;
 
-export const MenuButtonBase: React.StatelessComponent<MenuButtonProps> = (props) => {
+export const MenuButtonBase: React.FunctionComponent<MenuButtonProps> = (props) => {
     const { classes, icon, ...otherProps } = props;
 
     return (
@@ -88,7 +84,7 @@ export const MenuButtonBase: React.StatelessComponent<MenuButtonProps> = (props)
     );
 }
 
-export const AppMenuButton: React.StatelessComponent = (props) => {
+export const AppMenuButton: React.FunctionComponent = (props) => {
     const [openMenu, setOpenMenu] = React.useState<boolean>(false);
 
     return (

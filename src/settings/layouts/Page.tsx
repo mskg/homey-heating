@@ -24,21 +24,24 @@ type NamedSlots = {
     header: ReactChild,
     body: ReactChild,
     paddingTop: number | string,
+    paddingBottom?: number | string,
 };
 
 type Props = WithStyles<typeof styles> & {
     children: NamedSlots
 };
 
-const PageComponent: React.StatelessComponent<Props> = (props) => {
+const PageComponent: React.FunctionComponent<Props> = (props) => {
     const { classes } = props;
-    const { header, body, paddingTop } = props.children;
+    const { header, body, paddingTop, paddingBottom } = props.children;
+
+    const newPadding = paddingBottom || "auto";
 
     return (
         <React.Fragment>
             <div className={classes.root}>
                 {header}
-                <div className={classes.body} style={{paddingTop: paddingTop}}>
+                <div className={classes.body} style={{paddingTop: paddingTop, paddingBottom: newPadding}}>
                     {body}
                 </div>
             </div>

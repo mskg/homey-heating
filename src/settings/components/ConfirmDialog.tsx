@@ -1,10 +1,10 @@
-import React from 'react';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import React, { useState } from 'react';
 import translate from '../i18n/Translation';
 import Transition from "./Transition";
 
@@ -20,7 +20,7 @@ type Props = {
   onCancel: () => void;
 } & ExternalProps;
 
-const ConfirmDialog: React.StatelessComponent<Props> = (props: Props) => {
+const ConfirmDialog: React.FunctionComponent<Props> = (props: Props) => {
   const { open, title, content, onOK, onCancel, ...others } = props;
 
   return (
@@ -47,7 +47,7 @@ const ConfirmDialog: React.StatelessComponent<Props> = (props: Props) => {
 
 export const useConfirmDialog = (props: { onConfirm: () => void } & ExternalProps) => {
   const { onConfirm, ...others } = props;
-  const [open, setIsOpen] = React.useState(false);
+  const [open, setIsOpen] = useState(false);
 
   var dialog = (
     <ConfirmDialog open={open} onCancel={() => { setIsOpen(false) }} onOK={onConfirm} {...others} />

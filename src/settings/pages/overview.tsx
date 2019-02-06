@@ -20,6 +20,7 @@ import { AppMenuButton } from '../components/Menu';
 import SubHeader from '../components/SubHeader';
 import translate from '../i18n/Translation';
 import Page from "../layouts/Page";
+import { withSnackbar, InjectedNotistackProps } from 'notistack';
 
 const styles: StyleRulesCallback = (theme) => ({
     list: {
@@ -28,14 +29,15 @@ const styles: StyleRulesCallback = (theme) => ({
     }
 });
 
-type Props = WithStyles<typeof styles> & RouteComponentProps;
+type Props = WithStyles<typeof styles> & RouteComponentProps & InjectedNotistackProps;
 
-const OverviewPage: React.StatelessComponent<Props> = (props) => {
+const OverviewPage: React.FunctionComponent<Props> = (props) => {
     const { classes } = props;
     const { plans, loadPlans } = usePlans();
     const { zones } = useZones();
     const { devices } = useDevices();
     const { mode, loadMode } = useMode();
+    const [ modeChange, setModeChange ] = React.useState(false);
 
     function formatAttachments(plan: IHeatingPlan): string {
         let elements: string[] = [];
@@ -57,15 +59,38 @@ const OverviewPage: React.StatelessComponent<Props> = (props) => {
         return sortBy(elements, e => e).join(", ");
     }
 
+    const setHeatingMode = mode => {
+        (async () => { 
+            setModeChange(true);
+            await modeAPI.setMode(parseInt(mode));
+            props.enqueueSnackbar(translate("plans.modechanged", {
+                name: translate(`Modes.${mode}`)
+            }));
+            await loadMode();
+            setModeChange(false);
+        })();
+    };
+
+    const toggleState = (plan) => {
+        (async () => { 
+            await planAPI.togglePlanState(plan); 
+            props.enqueueSnackbar(translate("plans.toggled", {
+                name: plan.name
+            }));
+            await loadPlans(); 
+        })();
+    };
+
     const createNew = () => {
         props.history.push(`/plans/new`);
-    }
+    };
 
-    return (
+    return (        
         <Page>
             {{
                 header: (<AppHeader title={translate("plans.title")} button={<AppMenuButton />} />),
                 paddingTop: 50,
+                paddingBottom: 50,
 
                 body: (
                     <React.Fragment>
@@ -73,10 +98,8 @@ const OverviewPage: React.StatelessComponent<Props> = (props) => {
                         <InputContainer>
                             <Select
                                 fullWidth
-                                onChange={async (evt) => {
-                                    await modeAPI.setMode(parseInt(evt.target.value));
-                                    await loadMode();
-                                }}
+                                disabled={modeChange}
+                                onChange={(evt) => setHeatingMode(evt.target.value)}
                                 value={mode}
                             >
                                 <MenuItem value={0}>{translate("Modes.0")}</MenuItem>
@@ -97,7 +120,7 @@ const OverviewPage: React.StatelessComponent<Props> = (props) => {
 
                                         <ListItemSecondaryAction>
                                             <Switch
-                                                onChange={async () => { await planAPI.togglePlanState(plan); await loadPlans(); }}
+                                                onChange={() => toggleState(plan)}
                                                 checked={plan.enabled} />
                                         </ListItemSecondaryAction>
                                     </ListItem>
@@ -113,4 +136,4 @@ const OverviewPage: React.StatelessComponent<Props> = (props) => {
     );
 }
 
-export default withRouter(withStyles(styles)(OverviewPage));
+export default withSnackbar(withRouter(withStyles(styles)(OverviewPage)));

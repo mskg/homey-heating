@@ -8,10 +8,11 @@ import { IHeatingPlan, OverrideMode } from '../../app/model';
 import AppHeader from "../components/AppHeader";
 import BodyText from '../components/BodyText';
 import { MenuButton } from '../components/Menu';
-import OverrideSetting from '../components/plan-overview/OverrideSetting';
+import OverrideSetting from '../components/OverrideSetting';
 import SubHeader from '../components/SubHeader';
 import translate from '../i18n/Translation';
 import Page from '../layouts/Page';
+import { useHistory, usePlan, useModifyPlan, useModifyExceptions } from '../state/planHooks';
 
 const styles: StyleRulesCallback = (theme) => ({
     resetPadding: {
@@ -21,38 +22,41 @@ const styles: StyleRulesCallback = (theme) => ({
     },
 });
 
-type Props = WithStyles<typeof styles> & RouteComponentProps<void,{},IHeatingPlan>;
+type Params = {
+    id: string;
+};
 
-const ScheduleExceptionsPage: React.StatelessComponent<Props> = (props: Props) => {
-    const { location, history, classes } = props;
+type Props = WithStyles<typeof styles> & RouteComponentProps<Params, {}, IHeatingPlan>;
 
-    const [isDirty, setDirty] = React.useState<boolean>(false);
-    const [overrides, setOverrides] = React.useState(JSON.parse(JSON.stringify(location.state.overrides || [])));
-    
-    React.useEffect(() => {
-        // we need a deep copy
-        setOverrides(JSON.parse(JSON.stringify(location.state.overrides || [])));
-        setDirty(false);
-    }, [location]);
+const ScheduleExceptionsPage: React.FunctionComponent<Props> = (props: Props) => {
+    const { history, classes } = props;
+
+    const { plan } = usePlan(props.match.params.id);
+    const { isDirty, updateOverride } = useModifyExceptions();
+    const { undo, commit } = useHistory();
 
     function onCancelDialog() {
+        undo();
+
         history.replace({
-            pathname: `/plans/${location.state.id}`,
-            state: location.state
-        });    
+            pathname: `/plans/${plan.id}`,
+            state: true
+        });
     }
 
     function onSaveDialog() {
+        commit();
+
         history.replace({
-            pathname: `/plans/${location.state.id}`,
-            state: {...location.state, overrides: overrides}
+            pathname: `/plans/${plan.id}`,
+            state: true
         });
     }
 
     const getOverride = (mode: OverrideMode) => {
-        var override = overrides != null
+        var override = plan.overrides != null
             // made an error in first implementation storing the number instead of the value
-            ? (overrides[OverrideMode[mode]] || overrides[mode])
+            ? (plan.overrides[OverrideMode[mode]] || plan.overrides[mode])
             : null;
 
         return {
@@ -61,67 +65,42 @@ const ScheduleExceptionsPage: React.StatelessComponent<Props> = (props: Props) =
             targetTemperature: override != null ? override.targetTemperature : 0
         }
     };
-
-    const updateOverride = (mode: OverrideMode, target: number) => {
-        setOverrides(old => {
-            let newOverrides= old;
-
-            if (newOverrides == null && target == 0) return old;
-            if (newOverrides == null) {
-                newOverrides = {};
-            }
-
-            if (target == 0) {
-                delete newOverrides[OverrideMode[mode]];
-                delete newOverrides[mode];
-            }
-            else {
-                newOverrides[OverrideMode[mode]] = {
-                    targetTemperature: target
-                };
-            }
-
-            return newOverrides;
-        });
-
-        setDirty(true);
-    }
-
+    
     return (
         <Page>
-        {{
-            header: (
-                <AppHeader>
-                {{
-                    title: translate("overrides.title"),
-                    button: (
-                        <MenuButton onClick={onCancelDialog} icon={isDirty ? <CancelIcon /> : <BackIcon />} />
-                    ),
-                    actions: (
-                        <React.Fragment>
-                            {isDirty &&
-                                <Button color="inherit" onClick={onSaveDialog}>
-                                    {translate("schedule.save")}
-                                </Button>
-                            }
-                        </React.Fragment>
-                    )
-                }}
-                </AppHeader>                
-            ),
-            paddingTop: 50,
-            body: (
-                <div className={classes.resetPadding}>
-                    <SubHeader text={translate("overrides.section")} />
-                    <BodyText text={translate("overrides.text")} />
+            {{
+                header: (
+                    <AppHeader>
+                        {{
+                            title: translate("overrides.title"),
+                            button: (
+                                <MenuButton onClick={onCancelDialog} icon={isDirty ? <CancelIcon /> : <BackIcon />} />
+                            ),
+                            actions: (
+                                <React.Fragment>
+                                    {isDirty &&
+                                        <Button color="inherit" onClick={onSaveDialog}>
+                                            {translate("schedule.save")}
+                                        </Button>
+                                    }
+                                </React.Fragment>
+                            )
+                        }}
+                    </AppHeader>
+                ),
+                paddingTop: 50,
+                body: (
+                    <div className={classes.resetPadding}>
+                        <SubHeader text={translate("overrides.section")} />
+                        <BodyText text={translate("overrides.text")} />
 
-                    <OverrideSetting text={translate("overrides.athome")} setOverride={updateOverride} {...getOverride(OverrideMode.DayAtHome)} />
-                    <OverrideSetting text={translate("overrides.away")} setOverride={updateOverride} {...getOverride(OverrideMode.DayAway)} />
-                    <OverrideSetting text={translate("overrides.sleeping")} setOverride={updateOverride} {...getOverride(OverrideMode.Sleep)} />
-                    <OverrideSetting text={translate("overrides.holiday")} setOverride={updateOverride} {...getOverride(OverrideMode.Holiday)} />
-                </div>
-            )
-        }}
+                        <OverrideSetting text={translate("overrides.athome")} setOverride={updateOverride} {...getOverride(OverrideMode.DayAtHome)} />
+                        <OverrideSetting text={translate("overrides.away")} setOverride={updateOverride} {...getOverride(OverrideMode.DayAway)} />
+                        <OverrideSetting text={translate("overrides.sleeping")} setOverride={updateOverride} {...getOverride(OverrideMode.Sleep)} />
+                        <OverrideSetting text={translate("overrides.holiday")} setOverride={updateOverride} {...getOverride(OverrideMode.Holiday)} />
+                    </div>
+                )
+            }}
         </Page>
     );
 }

@@ -1,8 +1,8 @@
 import AppBar from '@material-ui/core/AppBar';
-import { withStyles, WithStyles, StyleRulesCallback } from '@material-ui/core/styles';
+import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import React, { ReactChild } from 'react';
+import React, { Fragment, ReactChild } from 'react';
 
 const styles: StyleRulesCallback = (theme) => ({
     appBar: {
@@ -35,7 +35,7 @@ type Props = WithStyles<typeof styles> & {
     children?: NamedSlots,
 };
 
-const AppHeaderComponent: React.StatelessComponent<Props> = (props) => {
+const AppHeaderComponent: React.FunctionComponent<Props> = (props) => {
     const { classes } = props;
     const { button, title, actions, subBar } = props.children || {
         button: null,
@@ -45,7 +45,7 @@ const AppHeaderComponent: React.StatelessComponent<Props> = (props) => {
     };
 
     return (
-        <React.Fragment>
+        <Fragment>
             <AppBar position="absolute" color="primary" className={classes.appBar}>
                 <Toolbar className={classes.toolbar}>
                     {props.button || button}
@@ -64,7 +64,7 @@ const AppHeaderComponent: React.StatelessComponent<Props> = (props) => {
 
                 {subBar != null && subBar}
             </AppBar>
-        </React.Fragment>
+        </Fragment>
     );
 }
 

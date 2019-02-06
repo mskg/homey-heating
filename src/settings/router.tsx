@@ -1,5 +1,5 @@
 import * as React from "react";
-import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
+import { HashRouter, Route, Switch, Redirect, RouteComponentProps } from "react-router-dom";
 
 import OverviewPage from "./pages/overview";
 import PlanDetailPage from "./pages/plan";
@@ -7,6 +7,18 @@ import PlanExceptionsPage from "./pages/plan-exceptions";
 import PlanSchedulePage from "./pages/plan-schedule";
 import TemperaturesPage from "./pages/temperatures";
 import SettingsPage from "./pages/settings";
+import { PlanProvider } from "./state/PlanProvider";
+
+const PlanRoutes: React.FunctionComponent<RouteComponentProps> = ({match}) => {
+  return (
+    <PlanProvider>
+      {/* <Route path={`${match.url}/new`} exact component={PlanDetailPage} /> */}
+      <Route path={`${match.url}/:id/exceptions`} exact component={PlanExceptionsPage} />
+      <Route path={`${match.url}/:id/schedule`} exact component={PlanSchedulePage} />
+      <Route path={`${match.url}/:id`} exact component={PlanDetailPage} />
+    </PlanProvider>
+  );
+};
 
 export class AppRouter extends React.Component<any, any> {
 
@@ -21,13 +33,10 @@ export class AppRouter extends React.Component<any, any> {
           <Route exact path="/settings" component={SettingsPage} />
 
           <Route exact path="/" component={OverviewPage} />
-          <Route exact path="/plans/schedule" component={TemperaturesPage} />          
-          <Route path="/plans/new" component={PlanDetailPage} />
-          <Route path="/plans/:id/exceptions" component={PlanExceptionsPage} />
-          <Route path="/plans/:id/schedule" component={PlanSchedulePage} />
-          <Route path="/plans/:id" component={PlanDetailPage} />          
+          <Route exact path="/temperatures" component={TemperaturesPage} />
+          <Route path="/plans" component={PlanRoutes} />
 
-          <Redirect path="*" to="/" />
+          {/* <Redirect path="*" to="/" /> */}
         </Switch>
       </React.Fragment>
     </HashRouter>;

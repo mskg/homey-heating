@@ -14,6 +14,7 @@
     "date-fns": "^2.0.0-alpha.21",
     "lodash": "^4.17.11",
     "material-ui-pickers": "^2.1.2",
+    "notistack": "^0.4.2",
     "react": "^16.7.0-alpha.0",
     "react-dom": "^16.7.0-alpha.0",
     "react-material-ui": "0.0.1",
@@ -57,7 +58,7 @@
     "build:app:prod": "webpack --mode production --config webpack.app.js",
     "build:web:dev": "webpack --mode development --config webpack.react.js",
     "build:web:prod": "webpack --mode production --config webpack.react.js",
-    "start:web": "webpack-dev-server --mode development --config webpack.react.js --open --host 192.168.178.23",
+    "start:web": "webpack-dev-server --mode development --config webpack.react.js --open",
     "start:web:prod": "webpack-dev-server --mode production --config webpack.react.js --open"
   },
   "repository": {

@@ -14,10 +14,10 @@ type Props = {
     text: string,
 } & WithStyles<typeof styles> & TypographyProps;
 
-const BodyText: React.StatelessComponent<Props> = (props) => {
+const BodyText: React.FunctionComponent<Props> = (props) => {
     const {classes,text, ...otherProps} = props;
 
-    return (<Typography className={classes.text} variant="body1" color="textSecondary"  {...otherProps}>
+    return (<Typography className={classes.text} color="textSecondary"  {...otherProps}>
         {text}
     </Typography>);
 };

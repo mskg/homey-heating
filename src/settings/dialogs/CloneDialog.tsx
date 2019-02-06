@@ -6,8 +6,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import React from 'react';
-import translate from '../../i18n/Translation';
-import Transition from "../Transition";
+import translate from '../i18n/Translation';
+import Transition from "../components/Transition";
 
 type Props = {
   open: boolean;
@@ -16,7 +16,7 @@ type Props = {
   onCancel: () => void;
 };
 
-const CloneDialog: React.StatelessComponent<Props> = (props: Props) => {
+const CloneDialog: React.FunctionComponent<Props> = (props: Props) => {
   const [name, setName] = React.useState('');
 
   React.useEffect(() => {

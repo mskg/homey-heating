@@ -3,12 +3,12 @@ import { sortBy } from "lodash";
 import { IHeatingDevice } from "../../../app/model";
 import callAPI from "../callAPI";
 
-type hashType = {
+export type HashType = {
   [key: string] : IHeatingDevice;
 } & ArrayLike<IHeatingDevice>;
 
 // Homey.api( String method, String path, Mixed body, Function callback )
-const fetchHeatingDevices = async (): Promise<hashType> => {
+const fetchHeatingDevices = async (): Promise<HashType> => {
   var devices = await callAPI<any[]>("GET", "/devices");
 
   var result = sortBy(devices,"name").reduce((map, obj, idx) => {

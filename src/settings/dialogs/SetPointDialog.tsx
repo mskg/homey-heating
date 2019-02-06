@@ -4,14 +4,15 @@ import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/st
 import CloseIcon from '@material-ui/icons/Close';
 import { MuiPickersUtilsProvider, TimePicker } from 'material-ui-pickers';
 import React from 'react';
-import { ISetPoint } from '../../../app/model';
-import { TARGET_TEMPERATURE_MAX, TARGET_TEMPERATURE_MIN } from '../../../app/services/homey-api/declarations';
-import translate from '../../i18n/Translation';
-import AppHeader from "../AppHeader";
-import FormTextField from '../FormTextField';
-import InputContainer from '../InputContainer';
-import { MenuButton } from '../Menu';
-import Transition from "../Transition";
+import { ISetPoint } from '../../app/model';
+import { TARGET_TEMPERATURE_MAX, TARGET_TEMPERATURE_MIN } from '../../app/services/homey-api/declarations';
+import AppHeader from "../components/AppHeader";
+import FormTextField from '../components/FormTextField';
+import InputContainer from '../components/InputContainer';
+import { MenuButton } from '../components/Menu';
+import Transition from "../components/Transition";
+import translate from '../i18n/Translation';
+import { useModifySetPoints } from '../state/planHooks';
 
 const styles: StyleRulesCallback = (theme) => ({
     resetPadding: {
@@ -21,25 +22,23 @@ const styles: StyleRulesCallback = (theme) => ({
     }
 });
 
-
 type Props = WithStyles<typeof styles> & {
     open: boolean;
-    setPoint: ISetPoint;
-
-    onSave: (newSetPoint: ISetPoint) => void;
-    onCancel: () => void;
+    onClose: (save: boolean) => void;
 }
 
-const SetPointDialog: React.StatelessComponent<Props> = (props: Props) => {
-    const { classes, onSave, onCancel, setPoint, ...otherProps } = props;
-    const [editedSetPoint, setSetPoint] = React.useState(props.setPoint);
+const SetPointDialog: React.FunctionComponent<Props> = (props: Props) => {
+    const { classes, onClose, ...otherProps } = props;
+
+    const {setPoint, setStart,saveSetPoint,setTargetTemperature } = useModifySetPoints();
 
     function onCancelDialog() {
-        onCancel();
+        onClose(false);
     }
 
     function onSaveDialog() {
-        onSave(editedSetPoint);
+        saveSetPoint(setPoint);
+        onClose(true);
     }
 
     function getDate(p: ISetPoint) {
@@ -48,16 +47,6 @@ const SetPointDialog: React.StatelessComponent<Props> = (props: Props) => {
         d.setMinutes(p.minute);
 
         return d;
-    }
-
-    React.useEffect(() => {
-        // original Setpoint
-        setSetPoint(setPoint);
-    }, [props.open]);
-
-
-    function setSetPointValue(name: keyof (ISetPoint), val: any) {
-        setSetPoint(sp => { return { ...sp, [name]: val } });
     }
 
     return (
@@ -86,8 +75,8 @@ const SetPointDialog: React.StatelessComponent<Props> = (props: Props) => {
                             label={translate("setpoint.start.label")}
                             placeholder={translate("setpoint.start.placeholder")}
                             fullWidth
-                            value={getDate(editedSetPoint)}
-                            onChange={(d: Date) => { setSetPointValue('hour', d.getHours()); setSetPointValue('minute', d.getMinutes()); }}
+                            value={getDate(setPoint)}
+                            onChange={setStart}
                             className={classes.input}
                         />
                     </InputContainer>
@@ -98,13 +87,8 @@ const SetPointDialog: React.StatelessComponent<Props> = (props: Props) => {
 
                             <Select
                                 fullWidth
-                                onChange={(evt) => {
-                                    setSetPointValue(
-                                        'targetTemperature',
-                                        evt.target.value
-                                    )
-                                }}
-                                value={editedSetPoint.targetTemperature}
+                                onChange={setTargetTemperature}
+                                value={setPoint.targetTemperature}
                             >
                                 <MenuItem value={16}>{translate("setpoint.temperature.low")}</MenuItem>
                                 <MenuItem value={18.5}>{translate("setpoint.temperature.middle")}</MenuItem>
@@ -121,8 +105,8 @@ const SetPointDialog: React.StatelessComponent<Props> = (props: Props) => {
                         label={translate("setpoint.target.label")}
                         placeholder={translate("setpoint.target.label")}
 
-                        value={editedSetPoint.targetTemperature}
-                        onChange={(e) => { setSetPointValue('targetTemperature', e.target.value); }}
+                        value={setPoint.targetTemperature}
+                        onChange={setTargetTemperature}
                     />
                 </MuiPickersUtilsProvider>
             </DialogContent>
