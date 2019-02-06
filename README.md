@@ -25,9 +25,8 @@ See [Issue Tracker](https://github.com/mskg/homey-heating/issues)
 * If you enable remote logging inside the app, you can watch the live trace of the application via [console.re/yourcategory](console.re)
 
 ## Change Log
-
-### v1.0.0
-Initial release
+* **1.0.0** Initial release
+* **1.1.0** [Release notes](docs/release-notes/v01-01-00.md)
 
 ## Feedback
 
