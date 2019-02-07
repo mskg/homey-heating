@@ -1,8 +1,6 @@
 
-// https://github.com/Lemoncode/react-typescript-samples/tree/master/18%20Hooks/src/api
-
 import { map, sortBy } from "lodash";
-import { IHeatingPlan, ICalculatedTemperature } from "../../../app/model";
+import { IHeatingPlan, ICalculatedTemperature, OperationMode, IScheduleInformation } from "../../../app/model";
 import callAPI from "../callAPI";
 
 const fetchPlans = async (): Promise<IHeatingPlan[]> => {
@@ -24,10 +22,12 @@ const togglePlanState = async (plan: IHeatingPlan): Promise<boolean> => {
 };
 
 const updatePlan = async (newPlan: IHeatingPlan): Promise<IHeatingPlan> => {
-  if (!newPlan.zones || newPlan.zones.length == 0) { newPlan.zones = null; }
-  if (!newPlan.devices || newPlan.devices.length == 0) { newPlan.devices = null; }
+  const planCopy = {...newPlan};
 
-  return await callAPI<IHeatingPlan>("PUT", `/plans/${newPlan.id}`, newPlan);
+  if (!planCopy.zones || planCopy.zones.length == 0) { planCopy.zones = null; }
+  if (!planCopy.devices || planCopy.devices.length == 0) { planCopy.devices = null; }
+
+  return await callAPI<IHeatingPlan>("PUT", `/plans/${newPlan.id}`, planCopy);
 }
 
 const removePlan = async (id: string): Promise<IHeatingPlan> => {
@@ -44,9 +44,20 @@ const fetchPlanById = async (id: string): Promise<IHeatingPlan> => {
   return plan;
 }
 
-const fetchSchedule = async (): Promise<ICalculatedTemperature[]> => {
-  var settings = await callAPI<ICalculatedTemperature[]>("GET", `/plans/evaluate`);
-  return sortBy(settings, [(s:ICalculatedTemperature) => s.device.name]);
+const fetchSchedule = async (): Promise<IScheduleInformation> => {
+  var schedule = await callAPI<IScheduleInformation>("GET", `/schedule`);
+  schedule.temperatures = sortBy(schedule.temperatures, [(s:ICalculatedTemperature) => s.device.name]);
+
+  return schedule;
+}
+
+const fetchMode = async (): Promise<OperationMode> => {
+  var res = await callAPI<OperationMode>("GET", "/mode");
+  return res;
+};
+
+const setMode = async (mode: OperationMode): Promise<void> => {
+   return await callAPI<void>("PUT", `/mode`, {mode: mode});
 }
 
 export const planAPI = {
@@ -56,4 +67,9 @@ export const planAPI = {
   updatePlan,
   removePlan,
   togglePlanState
+};
+
+export const modeAPI = {
+  fetchMode,
+  setMode,
 };

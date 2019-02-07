@@ -2,11 +2,11 @@ import { sortBy } from "lodash";
 import { IHeatingZone } from "../../../app/model";
 import callAPI from "../callAPI";
 
-type hashType = {
+export type HashType = {
   [key: string]: IHeatingZone;
 } & ArrayLike<IHeatingZone>;
 
-const fetchHeatingZones = async (): Promise<hashType> => {
+const fetchHeatingZones = async (): Promise<HashType> => {
   var zones = await callAPI<any[]>("GET", "/zones");
 
   var result = sortBy(zones, "name").reduce((map, obj, idx) => {

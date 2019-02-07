@@ -1,8 +1,8 @@
 import AppBar from '@material-ui/core/AppBar';
-import { withStyles, WithStyles, StyleRulesCallback } from '@material-ui/core/styles';
+import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import React, { ReactChild } from 'react';
+import React, { Fragment, ReactChild } from 'react';
 
 const styles: StyleRulesCallback = (theme) => ({
     appBar: {
@@ -16,11 +16,6 @@ const styles: StyleRulesCallback = (theme) => ({
         display: 'flex' as 'flex',
     },
     
-    menuButton: {
-        marginLeft: -12,
-        marginRight: 20,
-    },
-
     toolbar: {
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -35,21 +30,28 @@ type NamedSlots = {
 };
 
 type Props = WithStyles<typeof styles> & {
-    children: NamedSlots
+    title?: string,
+    button?: React.ReactElement<any>,
+    children?: NamedSlots,
 };
 
-const AppHeaderComponent: React.StatelessComponent<Props> = (props) => {
+const AppHeaderComponent: React.FunctionComponent<Props> = (props) => {
     const { classes } = props;
-    const { button, title, actions, subBar } = props.children;
+    const { button, title, actions, subBar } = props.children || {
+        button: null,
+        title: null,
+        actions: null,
+        subBar: null,
+    };
 
     return (
-        <React.Fragment>
-            <AppBar position="fixed" color="primary" className={classes.appBar}>
+        <Fragment>
+            <AppBar position="absolute" color="primary" className={classes.appBar}>
                 <Toolbar className={classes.toolbar}>
-                    {button}
+                    {props.button || button}
 
                     <Typography variant="h6" color="inherit" noWrap>
-                        {title}
+                        {props.title || title}
                     </Typography>
 
                      <div className={classes.grow} />
@@ -62,7 +64,7 @@ const AppHeaderComponent: React.StatelessComponent<Props> = (props) => {
 
                 {subBar != null && subBar}
             </AppBar>
-        </React.Fragment>
+        </Fragment>
     );
 }
 

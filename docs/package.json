@@ -1,0 +1,5 @@
+{
+    "scripts": {
+      "web": "bundle exec jekyll serve --incremental"
+    }
+}

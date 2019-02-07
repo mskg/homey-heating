@@ -1,11 +1,11 @@
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
-import React from 'react';
-import { OverrideMode } from '../../../app/model';
-import translate from '../../i18n/Translation';
-import FormTextField from '../FormTextField';
-
+import React, { Fragment } from 'react';
+import { OverrideMode } from '../../app/model';
+import { TARGET_TEMPERATURE_MAX, TARGET_TEMPERATURE_MIN } from '../../app/services/homey-api/declarations';
+import translate from '../i18n/Translation';
+import FormTextField from './FormTextField';
 const styles: StyleRulesCallback = (theme) => ({
     planOverride: {
         marginBottom: theme.spacing.unit * 2,
@@ -21,9 +21,10 @@ type PlanOverrideProps = {
     setOverride: (mode: OverrideMode, target: number) => void,
 } & WithStyles<typeof styles>;
 
-const OverrideSetting: React.StatelessComponent<PlanOverrideProps> = (props) => {
+const OverrideSetting: React.FunctionComponent<PlanOverrideProps> = (props) => {
+
     return (
-        <React.Fragment>
+        <Fragment>
             <div className={props.classes.planOverride}>
                 <FormControlLabel
                     style={{ marginLeft: 0 }}
@@ -42,16 +43,19 @@ const OverrideSetting: React.StatelessComponent<PlanOverrideProps> = (props) => 
                 <FormTextField
                     label={translate('plan.target.label')}
                     placeholder={translate('plan.target.placeholder')}
-                    type="number"
                     disabled={!props.enabled}
+                    hidden={!props.enabled}
+
+                    type="number"                        
+                    InputProps={{ inputProps: { min: TARGET_TEMPERATURE_MIN, max: TARGET_TEMPERATURE_MAX, step: 0.5 } }}
 
                     value={props.targetTemperature}
                     onChange={(evt) => {
                         props.setOverride(props.mode, parseFloat(evt.target.value));
                     }}
-                />
+                    />
             </div>
-        </React.Fragment>
+        </Fragment>
     );
 };
 

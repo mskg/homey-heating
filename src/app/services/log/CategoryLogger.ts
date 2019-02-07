@@ -12,15 +12,30 @@ export class CategoryLogger implements ILogger {
         }
     }
 
-    public information(message: any) {
-        LogService.defaultLog.information(`[INFO ] [${this.category.padEnd(10)}] ${message}`);
+    public information(...args: any[]) {
+        if (args != null && args.length == 1 && typeof args[0] === "string") {
+            LogService.defaultLog.information(`[INFO ] [${this.category.padEnd(10)}] ${args[0]}`);
+        }
+        else {
+            LogService.defaultLog.information(`[INFO ] [${this.category.padEnd(10)}]`, ...args);
+        }
     }
 
-    public debug(message: any) {
-        LogService.defaultLog.debug(`[DEBUG] [${this.category.padEnd(10)}] ${message}`);
+    public debug(...args: any[]) {
+        if (args != null && args.length == 1 && typeof args[0] === "string") {
+            LogService.defaultLog.information(`[DEBUG] [${this.category.padEnd(10)}] ${args[0]}`);
+        }
+        else {
+            LogService.defaultLog.information(`[DEBUG] [${this.category.padEnd(10)}]`, ...args);
+        }
     }
 
-    public error(message: any) {
-        LogService.defaultLog.error(`[ERROR] [${this.category.padEnd(10)}] ${message}`);
+    public error(...args: any[]) {
+        if (args != null && args.length == 1 && typeof args[0] === "string") {
+            LogService.defaultLog.information(`[ERROR] [${this.category.padEnd(10)}] ${args[0]}`);
+        }
+        else {
+            LogService.defaultLog.information(`[ERROR] [${this.category.padEnd(10)}]`, ...args);
+        }
     }
 }

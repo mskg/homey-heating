@@ -136,6 +136,11 @@ export const DEFAULT_HEATING_PLAN: IHeatingPlan[] = [
     schedule: mainSchedule(),
 
     zones: ["Living Room"],
+    overrides: {
+        DayAtHome: {
+            targetTemperature: 17
+        }
+    }
 },
 {
     id: "2",
@@ -144,6 +149,11 @@ export const DEFAULT_HEATING_PLAN: IHeatingPlan[] = [
     schedule: bathroomSchedule(),
 
     zones: ["Bathroom"],
+    overrides: {
+        DayAway: {
+            targetTemperature: 17
+        }
+    }
 },
 {
     id: "3",
@@ -152,6 +162,12 @@ export const DEFAULT_HEATING_PLAN: IHeatingPlan[] = [
     schedule: utilitySchedule(),
 
     zones: ["Kitchen", "Study"],
+    overrides: {
+        Holiday: {
+            targetTemperature: 17
+        }
+    }
+
 },
 {
     id: "4",
@@ -160,6 +176,11 @@ export const DEFAULT_HEATING_PLAN: IHeatingPlan[] = [
     schedule: bedSchedule,
 
     zones: ["Bedroom"],
+    overrides: {
+        Sleep: {
+            targetTemperature: 17
+        }
+    }
 }];
 
 export const DEFAULT_HEATING_ZONES: IHeatingZone[] = [

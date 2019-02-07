@@ -53,6 +53,10 @@ var appConfig = (env, argv) => ({
         to: distPath
       },
       {
+        from: 'src/settings/index.remote.html',
+        to: distPath + "/settings/index.html"
+      },
+      {
         from: 'node_modules/athom-api/dist/index.js',
         to: distPath + '/node_modules/athom-api/index.js'
       },

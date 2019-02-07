@@ -1,12 +1,10 @@
-import React, { Dispatch, SetStateAction } from 'react';
-import { sortBy, forEach } from "lodash";
-import { IHeatingPlan, IHeatingDevice, IHeatingZone, ICalculatedTemperature } from '../../app/model';
-import { planAPI } from './heating';
+import { sortBy } from "lodash";
+import { Dispatch, SetStateAction, useState, useEffect } from 'react';
+import { IHeatingDevice, IHeatingPlan, IHeatingZone, IScheduleInformation, NormalOperationMode, OperationMode } from '../../app/model';
 import { deviceAPI } from './devices';
+import { modeAPI, planAPI } from './heating';
 import { settingsAPI, SettingsHashMap } from './settings';
-
 import { zoneAPI } from './zones';
-import * as uuidv1 from 'uuid/v1';
 
 /***
  * Call the apiMethod asynchronously. 
@@ -19,8 +17,6 @@ async function tryApiMethod<T>(apiMethod: () => Promise<T>, setStateAction: Disp
         setStateAction(await apiMethod()); 
     }
     catch (e) {
-        debugger
-
         // required for the error to popup the hierarchy
         setStateAction (t => { throw e; });
     }
@@ -30,54 +26,27 @@ async function tryApiMethod<T>(apiMethod: () => Promise<T>, setStateAction: Disp
 }
 
 export const usePlans = () => {
-    const [plans, setPlans] = React.useState<IHeatingPlan[]>([]);
+    const [plans, setPlans] = useState<IHeatingPlan[]>([]);
 
     const loadPlans = async () => {
         await tryApiMethod(async () => sortBy(await planAPI.fetchPlans(), p => p.name), setPlans);
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
         loadPlans();
     }, []);
 
     return { plans, loadPlans };
 }
 
-export const usePlan =  (id?: string) => {
-    const [plan, setPlan] = React.useState<IHeatingPlan>({
-        id: "",
-        name: "",
-        enabled: false,
-        schedule: [],
-        zones: [],
-        devices: []
-    });
-
-    const loadPlan = async (id?: string) => {
-        // new case
-        if (id == null) {
-            setPlan((old) => { return { ...old, id: uuidv1() } });
-            return;
-        }
-
-        await tryApiMethod(async () => await planAPI.fetchPlanById(id), setPlan);
-    }
-
-    React.useEffect(() => {
-        loadPlan(id);
-    }, [id]);
-
-    return { plan, setPlan, loadPlan };
-}
-
 export const useDevices = () => {
-    const [devices, setDevices] = React.useState<ArrayLike<IHeatingDevice>>([]);
+    const [devices, setDevices] = useState<ArrayLike<IHeatingDevice>>([]);
 
     const loadDevices = async () => {
         await tryApiMethod(deviceAPI.fetchHeatingDevices, setDevices);
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
         loadDevices();
     }, []);
 
@@ -85,43 +54,60 @@ export const useDevices = () => {
 }
 
 export const useZones = () => {
-    const [zones, setZones] = React.useState<ArrayLike<IHeatingZone>>([]);
+    const [zones, setZones] = useState<ArrayLike<IHeatingZone>>([]);
 
     const loadZones = async () => {
         await tryApiMethod(zoneAPI.fetchHeatingZones, setZones);
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
         loadZones();
     }, []);
 
     return { zones, loadZones };
 }
 
-export const useSchedules = () => {
-    const [schedules, setSchedules] = React.useState<ICalculatedTemperature[]>([]);
+export const useScheduleInformation = () => {
+    const [scheduleInformation, setSchedules] = useState<IScheduleInformation>({
+        mode: NormalOperationMode.Automatic,
+        temperatures: [],
+    });
 
-    const loadSchedule = async () => {
+    const loadScheduleInformation = async () => {
         await tryApiMethod(planAPI.fetchSchedule, setSchedules);
     }
 
-    React.useEffect(() => {
-        loadSchedule();
+    useEffect(() => {
+        loadScheduleInformation();
     }, []);
 
-    return { schedules, loadSchedule };
+    return { scheduleInformation, loadScheduleInformation };
 }
 
 export const useSettings =  () => {
-    const [settings, setSettings] = React.useState<SettingsHashMap>({});
+    const [settings, setSettings] = useState<SettingsHashMap>({});
 
     const loadSettings = async () => {
         await tryApiMethod(settingsAPI.fetchSettings, setSettings);
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
         loadSettings();
     }, []);
 
     return { settings, setSettings, loadSettings };
+}
+
+export const useMode = () => {
+    const [mode, setMode] = useState<OperationMode>(NormalOperationMode.Automatic);
+
+    const loadMode = async () => {
+        await tryApiMethod(modeAPI.fetchMode, setMode);
+    }
+
+    useEffect(() => {
+        loadMode();
+    }, []);
+
+    return { mode, loadMode };
 }

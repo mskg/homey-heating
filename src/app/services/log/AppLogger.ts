@@ -7,15 +7,15 @@ export class AppLogger implements ILogger {
         this.app = app;
     }
     
-    public information(message: any) {
-        this.app.log(message);
+    public information(...args: any[]) {
+        this.app.log(...args);
     }
 
-    public debug(message: any) {
-        this.app.log(message);
+    public debug(...args: any[]) {
+        this.app.log(...args);
     }
 
-    public error(message: any) {
-        this.app.error(message);
+    public error(...args: any[]) {
+        this.app.error(...args);
     }
 }

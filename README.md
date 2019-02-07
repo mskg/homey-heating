@@ -3,11 +3,6 @@
 Easily control the temperature of your thermostats.
 
 ## Known Issues
-
-* If you change devices, and zones you have to reload the application
-* Devices are not checked for inactivity
-* Dialogs don't prompt if you exit without saving changes
-
 See [Issue Tracker](https://github.com/mskg/homey-heating/issues)
 
 ## Supported Languages
@@ -22,14 +17,13 @@ See [Issue Tracker](https://github.com/mskg/homey-heating/issues)
   * __npm run start:web__ to run the settings app localy. Don't forget to set your Homey url below.
   * __npm run homey:install__ to drop a propduction build onto your Homey.
 
-* Change environemt variable HOMEY_DEV_URL to point to your Homey's url, e.g. http://192.168.0.1
+* Change environment variable HOMEY_DEV_URL to point to your Homey's url, e.g. http://192.168.0.1
 
 * If you enable remote logging inside the app, you can watch the live trace of the application via [console.re/yourcategory](console.re)
 
 ## Change Log
-
-### v1.0.0
-Initial release
+* **1.0** Initial release
+* **1.1** [Release notes](docs/release-notes/v01-01.md)
 
 ## Feedback
 
