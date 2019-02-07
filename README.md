@@ -23,7 +23,7 @@ See [Issue Tracker](https://github.com/mskg/homey-heating/issues)
 
 ## Change Log
 * **1.0** Initial release
-* **1.1** [Release notes](docs/release-notes/v01-01.md)
+* **1.1** [Release notes](docs/releasenotes/v01-01.md)
 
 ## Feedback
 
