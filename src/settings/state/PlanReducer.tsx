@@ -409,7 +409,7 @@ const reducerImplementation = (state: State, action: Action) => {
                 ...state,
                 selectedDay: {
                     last: lastSchedule,
-                    schedules: sortList(newSchedules)
+                    schedules: newSchedules
                 }
             }
         };
