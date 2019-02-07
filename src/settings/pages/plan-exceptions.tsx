@@ -74,7 +74,7 @@ const ScheduleExceptionsPage: React.FunctionComponent<Props> = (props: Props) =>
                         {{
                             title: translate("overrides.title"),
                             button: (
-                                <MenuButton onClick={onCancelDialog} icon={isDirty ? <CancelIcon /> : <BackIcon />} />
+                                <MenuButton first onClick={onCancelDialog} icon={isDirty ? <CancelIcon /> : <BackIcon />} />
                             ),
                             actions: (
                                 <React.Fragment>

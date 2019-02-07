@@ -144,7 +144,7 @@ const PlanOverviewPage: React.FunctionComponent<Props> = (props) => {
                             {{
                                 title: plan.name || translate("plan.unnamed"),
                                 button: (
-                                    <MenuButton {...{ to: `/` }} component={Link} icon={isDirty ? <CancelIcon /> : <BackIcon />} />
+                                    <MenuButton first {...{ to: `/` }} component={Link} icon={isDirty ? <CancelIcon /> : <BackIcon />} />
                                 ),
                                 actions: (
                                     <Fragment>

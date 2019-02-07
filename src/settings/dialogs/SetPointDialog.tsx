@@ -56,7 +56,7 @@ const SetPointDialog: React.FunctionComponent<Props> = (props: Props) => {
                     {{
                         title: translate("setpoint.title"),
                         button: (
-                            <MenuButton onClick={onCancelDialog} icon={<CloseIcon />} />
+                            <MenuButton first onClick={onCancelDialog} icon={<CloseIcon />} />
                         ),
                         actions: (
                             <Button color="inherit" onClick={onSaveDialog}>

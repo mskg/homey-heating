@@ -154,7 +154,7 @@ const SchedulePage: React.FunctionComponent<Props> = (props: Props) => {
                             {{
                                 title: translate("schedule.title"),
                                 button: (
-                                    <MenuButton onClick={onCancelDialog} icon={isDirty ? <CancelIcon /> : <BackIcon />} />
+                                    <MenuButton first onClick={onCancelDialog} icon={isDirty ? <CancelIcon /> : <BackIcon />} />
                                 ),
                                 actions: (
                                     <React.Fragment>

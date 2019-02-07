@@ -62,7 +62,7 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
                                 <React.Fragment>
                                     {!isDirty && <AppMenuButton />}
                                     {isDirty &&
-                                        <MenuButton onClick={async () => {
+                                        <MenuButton first onClick={async () => {
                                             await loadSettings();
                                             setDirty(false);
                                         }} icon={<CancelIcon />} />

@@ -19,9 +19,13 @@ const styles: StyleRulesCallback = (theme) => ({
         color: theme.palette.primary.main
     },
 
-    menuButton: {
+    otherButton: {
+
+    },
+
+    firstButton: {
         marginLeft: -12,
-        marginRight: 20,
+        // marginRight: 20,
     },
 });
 
@@ -71,14 +75,15 @@ const AppMenuBase: React.FunctionComponent<Props> = (props) => {
 
 
 type MenuButtonProps = {
-    icon: React.ReactElement<any>
+    icon: React.ReactElement<any>,
+    first?: boolean,
 } & WithStyles<typeof styles> & IconButtonProps;
 
-export const MenuButtonBase: React.FunctionComponent<MenuButtonProps> = (props) => {
-    const { classes, icon, ...otherProps } = props;
+const MenuButtonBase: React.FunctionComponent<MenuButtonProps> = (props) => {
+    const { classes, first, icon, ...otherProps } = props;
 
     return (
-        <IconButton className={classes.menuButton} color="inherit" {...otherProps}>
+        <IconButton className={first ? classes.firstButton : classes.otherButton} color="inherit" {...otherProps}>
             {icon}
         </IconButton>    
     );
@@ -90,7 +95,7 @@ export const AppMenuButton: React.FunctionComponent = (props) => {
     return (
         <React.Fragment>
             <AppMenu open={openMenu} onClose={() => { setOpenMenu(false); }} />
-            <MenuButton onClick={() => { setOpenMenu(true); }} icon={<MenuIcon />} />
+            <MenuButton first onClick={() => { setOpenMenu(true); }} icon={<MenuIcon />} />
         </React.Fragment>
     );
 }
