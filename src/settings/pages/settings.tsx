@@ -15,6 +15,7 @@ import SubHeader from '../components/SubHeader';
 import translate from "../i18n/Translation";
 import Page from '../layouts/Page';
 import { InjectedNotistackProps, withSnackbar } from 'notistack';
+import BodyText from '../components/BodyText';
 
 const styles: StyleRulesCallback = (theme) => ({  
 });
@@ -84,7 +85,8 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
                 paddingTop: 50,
                 body: (
                     <React.Fragment>
-                        <SubHeader text={translate("settings.category_log")} />
+                        <SubHeader text={translate("settings.log.category")} />
+                        <BodyText text={translate("settings.log.text")} />
                         
                         <FormControlLabel
                             control={
@@ -104,7 +106,8 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
                             onChange={updateField('LogCategory')}
                         />
 
-                        <SubHeader text={translate("settings.backup.section")} />
+                        <SubHeader text={translate("settings.backup.title")} />
+                        <BodyText text={translate("settings.backup.text")} />
                         <FormTextField
                             label={translate("settings.backup.label")}
                             placeholder={translate("settings.backup.placeholder")}

@@ -15,6 +15,7 @@ import SubHeader from '../components/SubHeader';
 import { FilledTemperatureAvatar, TemperatureAvatar } from '../components/TemperatureAvatar';
 import translate from "../i18n/Translation";
 import Page from '../layouts/Page';
+import BodyText from '../components/BodyText';
 
 const styles: StyleRulesCallback = (theme) => ({
     list: {
@@ -97,7 +98,9 @@ const TemperaturesPage: React.FunctionComponent<Props> = (props) => {
                             disabled={true}
                         />
         
-                        <SubHeader text={translate("temperatures.list")} />
+                        <SubHeader text={translate("temperatures.list.title")} />
+                        <BodyText text={translate("temperatures.list.text")} />
+                        
                         <List className={classes.list}>
                             {scheduleInformation.temperatures.length > 0 && <Divider />}
                             {scheduleInformation.temperatures.map((schedule) => (

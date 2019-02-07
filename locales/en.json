@@ -3,7 +3,11 @@
     "title": "Settings",
     "saved": "Settings have been updated",
 
-    "category_log": "console.re Logging",
+    "log": {
+      "category": "console.re Logging",
+      "text": "If you want to view live logs of the application, enable the switch and enter a unique log category. You can view the logs by visiting console.re/<yourcategory>. Don't forget to switch it off, once done."
+    },
+
     "enabled": {
       "label": "Enabled?"
     },
@@ -14,7 +18,8 @@
     },
 
     "backup": {
-      "section": "Backup and restore your heating plans",
+      "title": "Backup and restore your heating plans",
+      "text": "Just copy the whole text from the textfield and store it in a regular text file. Be careful: Changing the contents overrides all existing plans.",
       "label": "Heating plan configuration",
       "placeholder": "Heating plan configuration"
     }
@@ -82,22 +87,22 @@
         "label": "Display name of your plan",
         "placeholder": "Display name"
       },
-      "text_enable": "If you disable the plan, it is not applied automatically, but can still apply it manually via Flow.",
+      "text_enable": "If you disable the plan, it is not applied automatically. Yut can still apply it manually via Flow.",
       "enabled": {
         "label": "Enabled?"
       },
-      "text_schedule": "Configure the schedules when your heating devices' temperature need to be adjusted. Additional exceptions can be configured e.g. when something special happens: You leave home unplanned, or you return earlier.",
+      "text_schedule": "Configure the schedules when your heating devices' temperature need to be adjusted. Additional exceptions can be configured: You leave home unplanned, or you return earlier.",
       "edit": "Normal Schedule",
       "exceptions": "Exceptions"
     },
    
     "zones": {
       "section": "Associate zones",
-      "text": "Check the zones to which you want this plan to be applied to. All devices that support setting a target temperature inside such zones are included."
+      "text": "Tick the zones, to which you want this plan to be applied to. All devices that support setting a target temperature inside such zones are included."
     },
     "devices": {
       "section": "Associate devices",
-      "text": "Check the devices you want this plan to be applied to. You can mix zones and individual devices, no problem."
+      "text": "Tick the devices, you want this plan to be applied to. You can mix zones and individual devices, no problem."
     }
   },
 
@@ -138,10 +143,13 @@
 
   "temperatures": {
     "title": "Current temperatures",
-    "list": "Temperatures",
-    "mode": "Operation mode",
-    "next": "Next operation",
-    "schedule": "Schedule"
+    "list": {
+      "title": "Setpoints overview",
+      "text": "The list shows, what the application is configuring. On the left is the current setpoints, versus read temperature on the right. If a device is not showing up, it's not configured by any active plan."
+    },
+    "mode": "Current operation mode",
+    "next": "Next temperature change on",
+    "schedule": "Schedule overview"
   },
 
   "plans": {
