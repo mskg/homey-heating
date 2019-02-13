@@ -70,7 +70,7 @@
     "test": "tsc -p ./tsconfig.test.json && mocha --opts ./src/test/mocha.opts",
  
     "install": "node scripts/install.js",
-    "travis:setversion": "node scripts/setversion.js",
+    "travis:setversion": "node scripts/update-version.js",
  
     "lint:app": "tslint --project tsconfig.json",
     "lint:web": "tslint --project tsconfig.react.json",
