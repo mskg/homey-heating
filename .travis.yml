@@ -11,7 +11,9 @@ git:
   depth: 1
 
 before_script:
-  - npm run travis:setversion $TRAVIS_TAG
+  - if [ $TRAVIS_TAG != '' ]; then 
+    npm run travis:setversion $TRAVIS_TAG; 
+    fi
   - npm install -g athom-cli
 
 script: 
