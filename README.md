@@ -1,4 +1,4 @@
-# Heating scheduler for Athom Homey
+# [Heating scheduler for Athom Homey](https://homey-heating.app.mskg) &middot; [![Build Status](https://travis-ci.com/mskg/homey-heating.svg?branch=master)](https://travis-ci.com/mskg/homey-heating)
 
 Easily control the temperature of your thermostats.
 
