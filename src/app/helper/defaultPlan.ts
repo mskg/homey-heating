@@ -1,5 +1,5 @@
 
-import { Day, IHeatingPlan, ISetPoint, IHeatingZone, IHeatingDevice } from "@app/model";
+import { Day, IHeatingDevice, IHeatingPlan, IHeatingZone, ISetPoint } from "@app/model";
 
 export const WARM: number = 20.5;
 export const INTERMEDIATE: number = 18.5;
@@ -138,9 +138,9 @@ export const DEFAULT_HEATING_PLAN: IHeatingPlan[] = [
     zones: ["Living Room"],
     overrides: {
         DayAtHome: {
-            targetTemperature: 17
-        }
-    }
+            targetTemperature: 17,
+        },
+    },
 },
 {
     id: "2",
@@ -151,9 +151,9 @@ export const DEFAULT_HEATING_PLAN: IHeatingPlan[] = [
     zones: ["Bathroom"],
     overrides: {
         DayAway: {
-            targetTemperature: 17
-        }
-    }
+            targetTemperature: 17,
+        },
+    },
 },
 {
     id: "3",
@@ -164,9 +164,9 @@ export const DEFAULT_HEATING_PLAN: IHeatingPlan[] = [
     zones: ["Kitchen", "Study"],
     overrides: {
         Holiday: {
-            targetTemperature: 17
-        }
-    }
+            targetTemperature: 17,
+        },
+    },
 
 },
 {
@@ -178,65 +178,65 @@ export const DEFAULT_HEATING_PLAN: IHeatingPlan[] = [
     zones: ["Bedroom"],
     overrides: {
         Sleep: {
-            targetTemperature: 17
-        }
-    }
+            targetTemperature: 17,
+        },
+    },
 }];
 
 export const DEFAULT_HEATING_ZONES: IHeatingZone[] = [
     {
-        id: "Bathroom", 
+        id: "Bathroom",
         name: "Bathroom",
     },
     {
-        id: "Bedroom", 
+        id: "Bedroom",
         name: "Bedroom",
     },
     {
-        id: "Kitchen", 
+        id: "Kitchen",
         name: "Kitchen",
     },
     {
-        id: "Living Room", 
+        id: "Living Room",
         name: "Living Room",
     },
     {
-        id: "Study", 
+        id: "Study",
         name: "Study",
-    },    
+    },
 ];
 
 export const DEFAULT_HEATING_DEVICES: IHeatingDevice[] = [
     {
-        id: "Bad", 
+        id: "Bad",
         name: "Bad",
     },
     {
-        id: "Bett", 
+        id: "Bett",
         name: "Bett",
     },
     {
-        id: "Flur", 
+        id: "Flur",
         name: "Flur",
     },
     {
-        id: "Tür", 
+        id: "Tür",
         name: "Tür",
     },
     {
-        id: "Mitte", 
+        id: "Mitte",
         name: "Mitte",
-    },    
+    },
     {
-        id: "Sofa", 
+        id: "Sofa",
         name: "Sofa",
-    },    
+    },
     {
-        id: "Tisch", 
+        id: "Tisch",
         name: "Tisch",
-    },      
+    },
     {
-        id: "Büro", 
+        id: "Büro",
         name: "Büro",
-    },            
-]
+    },
+];

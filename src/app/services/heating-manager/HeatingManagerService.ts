@@ -1,11 +1,11 @@
 import { ICalculatedTemperature, IHeatingPlan, ISetPoint, NormalOperationMode, OperationMode, OverrideMode } from "@app/model";
-import { Notification, __ } from "homey";
+import { __, Notification } from "homey";
 import { forEach, isEmpty } from "lodash";
 import { container, singleton } from "tsyringe";
 import { HeatingPlanCalculator } from "../calculator";
 import { AuditedDevice, DeviceManagerService } from "../device-manager";
 import { HeatingPlanRepositoryService } from "../heating-plan-repository";
-import { ILogger, LoggerFactory, trycatchlog, asynctrycatchlog } from "../log";
+import { asynctrycatchlog, ILogger, LoggerFactory, trycatchlog } from "../log";
 import { InternalSettings, SettingsManagerService } from "../settings-manager";
 import { ISetTemperaturePolicy, PolicyType } from "./types";
 
@@ -30,8 +30,7 @@ export class HeatingManagerService {
         this.plans.onChanged.subscribe(async () => {
             try {
                 await this.applyPlans();
-            }
-            catch (e) {
+            } catch (e) {
                 this.logger.error("Refresh of plans failed.", e);
             }
         });
@@ -53,7 +52,7 @@ export class HeatingManagerService {
         this.settings.set(InternalSettings.OperationMode, mode);
 
         this.sendNotification("set_operation_mode", {
-            mode: __(`Modes.${mode}`)
+            mode: __(`Modes.${mode}`),
         });
     }
 
@@ -66,7 +65,7 @@ export class HeatingManagerService {
             this.isRunning = true;
             this.logger.debug("Applying active plans");
 
-            var settings = await this.evaluateActivePlans();
+            const settings = await this.evaluateActivePlans();
             await this.applySettings(settings);
         } finally {
             this.isRunning = false;
@@ -91,11 +90,11 @@ export class HeatingManagerService {
 
     private async applySettings(settings: ICalculatedTemperature[]) {
         await Promise.all(
-            settings.map(async newSetting => 
-                await this.setTemperature(newSetting.plan.name, 
-                    this.deviceManager.findDevice(newSetting.device.id), 
-                    newSetting.targetTemperature)
-            )
+            settings.map(async (newSetting) =>
+                await this.setTemperature(newSetting.plan.name,
+                    this.deviceManager.findDevice(newSetting.device.id),
+                    newSetting.targetTemperature),
+            ),
         );
     }
 
@@ -115,11 +114,11 @@ export class HeatingManagerService {
                 hour: date.getHours(),
                 minute: date.getMinutes(),
 
-                targetTemperature: override.targetTemperature
-            }
+                targetTemperature: override.targetTemperature,
+            };
         } else {
             setPoint = this.calc.getSetPoint(plan);
-            if (setPoint == null) return [];
+            if (setPoint == null) { return []; }
         }
 
         this.logger.debug(`> Target temperature is ${setPoint.targetTemperature}`);
@@ -130,6 +129,7 @@ export class HeatingManagerService {
             this.logger.debug("Setpoint has wrong datatype for temperature, trying to correct", setPoint);
             targetTemperature = parseFloat(targetTemperature);
 
+            // tslint:disable-next-line: use-isnan
             if (targetTemperature === NaN) {
                 this.logger.error("Setpoint has wrong datatype for temperature", setPoint);
                 return [];
@@ -150,20 +150,19 @@ export class HeatingManagerService {
                 if (isEmpty(devices)) {
                     this.logger.debug("> No devices found");
                     return;
-                }
-                else {
+                } else {
                     this.logger.debug(`> found ${devices.length} device(s)`);
                 }
 
-                forEach(devices, d => {
+                forEach(devices, (d) => {
                     targets.push({
                         device: { id: d.id, name: d.name },
                         plan: {
                             id: plan.id,
-                            name: plan.name
+                            name: plan.name,
                         },
                         temperature: this.deviceManager.getMeasuredTemperature(d),
-                        targetTemperature: targetTemperature,
+                        targetTemperature,
                     });
                 });
             });
@@ -183,10 +182,10 @@ export class HeatingManagerService {
                     device: { id: device.id, name: device.name },
                     plan: {
                         id: plan.id,
-                        name: plan.name
+                        name: plan.name,
                     },
                     temperature: this.deviceManager.getMeasuredTemperature(device),
-                    targetTemperature: targetTemperature
+                    targetTemperature,
                 });
             });
         }
@@ -201,20 +200,20 @@ export class HeatingManagerService {
             this.sendNotification("failed_set_target_temperature", {
                 name: d.name,
                 value: targetTemperature,
-                error: result.error
+                error: result.error,
             });
         } else {
             this.sendNotification("set_target_temperature", {
                 name: d.name,
                 value: targetTemperature,
-                plan: plan
-            })
+                plan,
+            });
         }
     }
 
     private sendNotification(name: string, args?: {}) {
         const notification = new Notification({
-            excerpt: __(`Notification.${name}`, args)
+            excerpt: __(`Notification.${name}`, args),
         });
         notification.register();
     }

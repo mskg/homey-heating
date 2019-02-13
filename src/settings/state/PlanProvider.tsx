@@ -1,6 +1,6 @@
-import * as React from 'react';
+import * as React from "react";
 
-import { Action, initialState, reducer, State } from './PlanReducer';
+import { Action, initialState, reducer, State } from "./PlanReducer";
 const { createContext, useContext, useReducer } = React;
 
 const planStateCtx = createContext(initialState);

@@ -9,7 +9,7 @@ export class SettingsManagerService {
     private logger: ILogger;
     private onChangedDispatcher = new EventDispatcher<SettingsManagerService, {
         setting: AllSettings,
-        value: any
+        value: any,
     }>();
 
     private devSettings: { [key: string]: string } = {};
@@ -29,7 +29,7 @@ export class SettingsManagerService {
             ? ManagerSettings.get(setting)
             : this.devSettings[setting];
 
-        if (val == null || val == undefined) val = def;
+        if (val == null || val === undefined) { val = def; }
 
         this.logger.debug(`Get '${setting}' => '${val}'`);
         return val;
@@ -42,17 +42,14 @@ export class SettingsManagerService {
 
         try {
             if (PRODUCTION) {
-                if (val == null) ManagerSettings.unset(setting);
-                else ManagerSettings.set(setting, val);
-            }
-            else {
-                if (val == null) delete this.devSettings[setting];
-                else this.devSettings[setting] = "" + val;
+                if (val == null) { ManagerSettings.unset(setting); } else { ManagerSettings.set(setting, val); }
+            } else {
+                if (val == null) { delete this.devSettings[setting]; } else { this.devSettings[setting] = "" + val; }
             }
         } finally {
             this.onChangedDispatcher.dispatch(this, {
-                setting: setting,
-                value: val
+                setting,
+                value: val,
             });
         }
     }

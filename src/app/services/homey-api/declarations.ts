@@ -10,7 +10,6 @@ export const TARGET_TEMPERATURE: string = "target_temperature";
 export const MEASURE_TEMPERATURE: string = "measure_temperature";
 export const CLASS_THERMOSTAT: string = "thermostat";
 
-
 // from Capability — target_temperature
 export const TARGET_TEMPERATURE_MIN = 4;
 export const TARGET_TEMPERATURE_MAX = 35;
@@ -31,7 +30,7 @@ export interface ICapabilityInstance<T> {
     readonly title: string;
     readonly units: string;
     readonly desc: Date;
-    
+
     setValue(val: T): Promise<void>;
     destroy();
 }
@@ -43,25 +42,25 @@ type EventHandler<T> = (param: T) => void;
 // }
 
 export interface ICapability {
-    id: string,
-    uri: string
-    title: string,
-    desc: string,
-    type: "boolean" | "number" | "string" | "enum"
-    getable: boolean,
-    setable: boolean,
-    chartType: "line" | "area" | "stepLine" | "column" | "spline" | "splineArea" | "scatter",
-    decimals: number,
-    min: number,
-    max: number,
-    step: number,
-    units: string,
+    id: string;
+    uri: string;
+    title: string;
+    desc: string;
+    type: "boolean" | "number" | "string" | "enum";
+    getable: boolean;
+    setable: boolean;
+    chartType: "line" | "area" | "stepLine" | "column" | "spline" | "splineArea" | "scatter";
+    decimals: number;
+    min: number;
+    max: number;
+    step: number;
+    units: string;
 
     value: any;
     values: [{
         id: string,
         title: string,
-    }],
+    }];
 
     on(s: "$update", cb: EventHandler<ICapability>);
     on(s: "$delete", cb: EventHandler<void>);
@@ -69,19 +68,19 @@ export interface ICapability {
 
 export type StringHashMap<T> = {
     [id: string]: T;
-} /*& ArrayLike<T>*/;
+}; /*& ArrayLike<T>*/
 
 export interface IDevice {
     id: string;
     name: string;
-    driverUri: string,
-    driverId: string,    
+    driverUri: string;
+    driverId: string;
     zone: string;
-    icon: string,
-    
-    settings?: {[key: string]: string|boolean|number},
+    icon: string;
+
+    settings?: {[key: string]: string|boolean|number};
     // true if settings exist
-    settingObj: boolean,
+    settingObj: boolean;
 
     class: string;
     virtualClass: string;
@@ -90,9 +89,9 @@ export interface IDevice {
         quickAction?: string,
         components: [{
             id: string,
-            capabilities: string[]
+            capabilities: string[],
         }],
-    },
+    };
 
     ready: boolean;
     available: boolean;
@@ -100,26 +99,24 @@ export interface IDevice {
     iconObj?: {
         id: string;
         url: string;
-    }
+    };
 
-    makeCapabilityInstance<T>(id: string, callback?: EventHandler<IDevice>): Promise<ICapabilityInstance<T>>;
-
-    setting: {},
-    capabilities: string[],
+    setting: {};
+    capabilities: string[];
     capabilitiesObj: {
-        [key: string]: ICapability
-    }
-    capabilitiesOptions: any,
+        [key: string]: ICapability,
+    };
+    capabilitiesOptions: any;
 
-    repair: boolean,
-    unpair: boolean,
+    repair: boolean;
+    unpair: boolean;
     images: [
         {
             type: string,
             id: string,
-            imageObj: any
+            imageObj: any,
         }
-    ],
+    ];
     insights: {
         uri: string,
         id: string,
@@ -127,9 +124,11 @@ export interface IDevice {
         titleTrue: string,
         titleFalse: string,
         units: string,
-        decimals: number
-    },
-    color: string
+        decimals: number,
+    };
+    color: string;
+
+    makeCapabilityInstance<T>(id: string, callback?: EventHandler<IDevice>): Promise<ICapabilityInstance<T>>;
 }
 
 export interface IZoneManager {
@@ -149,12 +148,12 @@ export interface IDeviceManager {
         capabilityId: string,
         value: any,
         opts?: {},
-        transactionId?: string
+        transactionId?: string,
     }): Promise<any>;
 
     getCapability(options: {
         uri: string,
-        id: string
+        id: string,
     }): Promise<ICapability>;
 
     on(s: "device.create" | "device.update" | "device.delete", cb: EventHandler<IDevice>);

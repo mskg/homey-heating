@@ -1,10 +1,10 @@
 import { AsyncThrottle } from "@app/helper";
 import { injectable, registry } from "tsyringe";
 import { AuditedDevice } from "../device-manager";
-import { SettingsManagerService, InternalSettings } from "../settings-manager";
+import { InternalSettings, SettingsManagerService } from "../settings-manager";
 import { CheckTemperaturePolicy } from "./CheckTemperaturePolicy";
-import { ISetTemperaturePolicy, PolicyType } from "./types";
 import { EnforceTemperaturePolicy } from "./EnforceTemperaturePolicy";
+import { ISetTemperaturePolicy, PolicyType } from "./types";
 
 @injectable()
 @registry([{ token: PolicyType.Throtteled_Enforce, useToken: ThrottledEnforce }])
@@ -13,7 +13,7 @@ class ThrottledEnforce implements ISetTemperaturePolicy {
     private setMethod;
 
     constructor(inner: EnforceTemperaturePolicy, settings: SettingsManagerService) {
-        const throttle = parseInt(settings.get(InternalSettings.SetTemperatureThrottle, "2000"));
+        const throttle = parseInt(settings.get(InternalSettings.SetTemperatureThrottle, "2000"), 10);
         this.setMethod = AsyncThrottle(async (d, n) => await inner.setTargetTemperature(d, n), throttle);
     }
 
@@ -29,7 +29,7 @@ class ThrottledCheck implements ISetTemperaturePolicy {
     private setMethod;
 
     constructor(inner: CheckTemperaturePolicy, settings: SettingsManagerService) {
-        const throttle = parseInt(settings.get(InternalSettings.SetTemperatureThrottle, "2000"));
+        const throttle = parseInt(settings.get(InternalSettings.SetTemperatureThrottle, "2000"), 10);
         this.setMethod = AsyncThrottle(async (d, n) => await inner.setTargetTemperature(d, n), throttle);
     }
 

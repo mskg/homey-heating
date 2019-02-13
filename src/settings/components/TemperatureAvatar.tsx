@@ -1,16 +1,18 @@
-import Avatar from '@material-ui/core/Avatar';
-import blue from '@material-ui/core/colors/lightBlue';
-import deepOrange from '@material-ui/core/colors/deepOrange';
-import green from '@material-ui/core/colors/green';
-import React from 'react';
-import { WithStyles, StyleRulesCallback, withStyles, Typography } from '@material-ui/core';
-const Icon = require('../../../assets/icon_black.svg');
+import { StyleRulesCallback, Typography, WithStyles, withStyles } from "@material-ui/core";
+import Avatar from "@material-ui/core/Avatar";
+import deepOrange from "@material-ui/core/colors/deepOrange";
+import green from "@material-ui/core/colors/green";
+import blue from "@material-ui/core/colors/lightBlue";
+import React from "react";
+
+// tslint:disable-next-line: no-var-requires
+const Icon = require("../../../assets/icon_black.svg");
 
 const getColor = (temp: number) => {
-    if (temp <= 16) return blue;
-    if (temp <= 20) return green;
+    if (temp <= 16) { return blue; }
+    if (temp <= 20) { return green; }
     return deepOrange;
-}
+};
 
 const AVATAR_DIMENSION = 35;
 const styles: StyleRulesCallback = (theme) => ({
@@ -51,14 +53,14 @@ const styles: StyleRulesCallback = (theme) => ({
         display: "block",
 
         width: AVATAR_DIMENSION,
-        height: AVATAR_DIMENSION-2,
+        height: AVATAR_DIMENSION - 2,
 
         zIndex: 1,
 
         position: "absolute",
         left: 0,
         bottom: 1,
-    }
+    },
 
     // root: {
     //     fontSize: "1em",
@@ -98,32 +100,31 @@ type FilledProps = {
 } & WithStyles<typeof styles>;
 
 function FixedDigits(value: number, digits: number) {
-    return (Math.round(value * Math.pow(10,digits)) / Math.pow(10,digits)).toFixed(digits);
+    return (Math.round(value * Math.pow(10, digits)) / Math.pow(10, digits)).toFixed(digits);
 }
 
 const BaseFilledTemperatureAvatar: React.FunctionComponent<FilledProps> = (props) => {
     const { value, classes, fill } = props;
     let { digits } = props;
 
-    const color = (fill == 100 ? blue : deepOrange)[500];
+    const color = (fill === 100 ? blue : deepOrange)[500];
     if (digits == null) { digits = 2; }
 
     return (
         <div className={classes.root}>
             <div className={classes.avatar} >
-                <object className={classes.img} data={Icon} type="image/svg+xml">
-                </object>
-                <span style={{ height: `calc(${fill}% - 5px)`, background: color }} className={classes.fill}></span>
+                <object className={classes.img} data={Icon} type="image/svg+xml" />
+                <span style={{ height: `calc(${fill}% - 5px)`, background: color }} className={classes.fill} />
             </div>
 
             <Typography variant="body1" color="textSecondary" component="div">{FixedDigits(value, digits)}°</Typography>
         </div>
     );
-}
+};
 
 type Props = {
     value: number;
-}
+};
 
 const BaseTemperatureAvatar: React.FunctionComponent<Props> = (props) => {
     const { value } = props;
@@ -131,7 +132,7 @@ const BaseTemperatureAvatar: React.FunctionComponent<Props> = (props) => {
     return (
         <Avatar style={{ padding: "25px", background: getColor(value)[500], fontSize: "1em" }}>{FixedDigits(value, 1)}°</Avatar>
     );
-}
+};
 
 export function normalize(min: number, max: number, x: number) {
     return (x - min) / (max - min);
@@ -139,4 +140,3 @@ export function normalize(min: number, max: number, x: number) {
 
 export const FilledTemperatureAvatar = withStyles(styles)(BaseFilledTemperatureAvatar);
 export const TemperatureAvatar = withStyles(styles)(BaseTemperatureAvatar);
-

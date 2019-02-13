@@ -1,7 +1,10 @@
 import { LogService } from "./LogService";
 
+type AnyFunc = (...args) => any;
+type AnyAsyncFunc = (...args) => Promise<any>;
+
 function checkResult(promise, val) {
-    var isPromise = typeof val.then == 'function';
+    const isPromise = typeof val.then === "function";
     const ok = (promise && isPromise) || (!promise && !isPromise);
 
     if (!ok) {
@@ -10,24 +13,22 @@ function checkResult(promise, val) {
 }
 
 // must not be called directly, needs wrapped this context!
-function WrapSync(property: string, func: Function, catchAll: boolean, defaultValue: any) {
+function WrapSync(property: string, func: AnyFunc, catchAll: boolean, defaultValue: any) {
     // needs to be a real function to have this context
-    function wrapper (...args) {
+    function wrapper(...args) {
         try {
             // wrap outer this context
             const result = func.apply(this, args);
-            if (!PRODUCTION && result != null) checkResult(false, result);
+            if (!PRODUCTION && result != null) { checkResult(false, result); }
             return result;
-        }
-        catch (e) {
+        } catch (e) {
             if (this.logger != null) {
                 this.logger.error(`Calling ${property} failed due to ${e}`, e);
             } else {
                 LogService.defaultLog.error(`Calling ${property} failed due to ${e}`, e);
             }
 
-            if (!catchAll) { throw e; }
-            else { return defaultValue; }
+            if (!catchAll) { throw e; } else { return defaultValue; }
         }
     }
 
@@ -35,24 +36,22 @@ function WrapSync(property: string, func: Function, catchAll: boolean, defaultVa
 }
 
 // must not be called directly, needs wrapped this context!
-function WrapAsync(property: string, func: Function, catchAll: boolean, defaultValue: any) {
+function WrapAsync(property: string, func: AnyAsyncFunc, catchAll: boolean, defaultValue: any) {
     // needs to be a real function to have this context
-    async function wrapper (...args) {
+    async function wrapper(...args) {
         try {
             // wrap outer this context
             const result = func.apply(this, args);
-            if (!PRODUCTION) checkResult(true, result);
+            if (!PRODUCTION) { checkResult(true, result); }
             return await result;
-        }
-        catch (e) {
+        } catch (e) {
             if (this.logger != null) {
                 this.logger.error(`Calling ${property} failed due to ${e}`, e);
             } else {
                 LogService.defaultLog.error(`Calling ${property} failed due to ${e}`, e);
             }
 
-            if (!catchAll) { throw e; }
-            else { return defaultValue; }
+            if (!catchAll) { throw e; } else { return defaultValue; }
         }
     }
 
@@ -65,13 +64,13 @@ function WrapAsync(property: string, func: Function, catchAll: boolean, defaultV
  * @param defaultValue Default value, default null
  */
 export function asynctrycatchlog(catchAll = false, defaultValue = null) {
-    return (target, property, descriptor: PropertyDescriptor,...other) => {
+    return (target, property, descriptor: PropertyDescriptor, ...other) => {
 
-        if (descriptor.value != null || descriptor.value != undefined) {
+        if (descriptor.value != null || descriptor.value !== undefined) {
             return {
                 ...descriptor,
                 value: WrapAsync.apply(this, [property, descriptor.value, catchAll, defaultValue]),
-            };                
+            };
         }
 
         return {
@@ -79,7 +78,7 @@ export function asynctrycatchlog(catchAll = false, defaultValue = null) {
             set: WrapAsync.apply(this, [property, descriptor.set, catchAll, defaultValue]),
             get: WrapAsync.apply(this, [property, descriptor.get, catchAll, defaultValue]),
         };
-    }
+    };
 }
 
 /***
@@ -88,13 +87,13 @@ export function asynctrycatchlog(catchAll = false, defaultValue = null) {
  * @param defaultValue Default value, default null
  */
 export function trycatchlog(catchAll = false, defaultValue = null) {
-    return (target, property, descriptor: PropertyDescriptor,...other) => {
+    return (target, property, descriptor: PropertyDescriptor, ...other) => {
 
-        if (descriptor.value != null || descriptor.value != undefined) {
+        if (descriptor.value != null || descriptor.value !== undefined) {
             return {
                 ...descriptor,
                 value: WrapSync.apply(this, [property, descriptor.value, catchAll, defaultValue]),
-            };                
+            };
         }
 
         return {
@@ -102,5 +101,5 @@ export function trycatchlog(catchAll = false, defaultValue = null) {
             set: WrapSync.apply(this, [property, descriptor.set, catchAll, defaultValue]),
             get: WrapSync.apply(this, [property, descriptor.get, catchAll, defaultValue]),
         };
-    }
+    };
 }

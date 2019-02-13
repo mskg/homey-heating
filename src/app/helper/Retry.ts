@@ -2,7 +2,7 @@ import { ILogger } from "@app/services";
 
 /**
  * Retry the async function.
- * 
+ *
  * @param func call that
  * @param logger dump errors here
  * @param maxRetries so often
@@ -10,12 +10,12 @@ import { ILogger } from "@app/services";
  * @param incrementalBackoff double the time on each execution?
  * @param maxRetryInterval maximum duration per cycle
  */
-export function Retry<T>(func: () => Promise<T>, 
-    logger?: ILogger,
-    maxRetries = 5,
-    retryInterval = 1000,
-    incrementalBackoff = false,
-    maxRetryInterval = 10000): Promise<T> {
+export function Retry<T>(func: () => Promise<T>,
+                         logger?: ILogger,
+                         maxRetries = 5,
+                         retryInterval = 1000,
+                         incrementalBackoff = false,
+                         maxRetryInterval = 10000): Promise<T> {
 
     return new Promise((resolve, reject) => {
         // call the func
@@ -23,14 +23,14 @@ export function Retry<T>(func: () => Promise<T>,
             .then(resolve)
             // if it fails
             .catch((error) => {
-                if (logger != null) logger.error(`Retry action ${maxRetries} times, waiting for ${retryInterval}`, error);
+                if (logger != null) { logger.error(`Retry action ${maxRetries} times, waiting for ${retryInterval}`, error); }
 
                 // we're done
-                if (maxRetries -1 <= 0) {
-                    reject(error);                        
+                if (maxRetries - 1 <= 0) {
+                    reject(error);
                     return;
                 }
-                
+
                 // reexecute after retryInterval
                 setTimeout(() => {
                     // leave or double the time on incremental backoff
@@ -38,7 +38,7 @@ export function Retry<T>(func: () => Promise<T>,
 
                     // retry one time less
                     Retry(func, logger, maxRetries - 1, nextInterval, incrementalBackoff, maxRetryInterval)
-                        .then(resolve, reject);                
+                        .then(resolve, reject);
                 }, retryInterval);
             });
     });

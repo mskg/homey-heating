@@ -1,23 +1,23 @@
-import { Button } from '@material-ui/core';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
-import Switch from '@material-ui/core/Switch';
-import CancelIcon from '@material-ui/icons/Cancel';
-import React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { Settings } from '../../app/services/settings-manager';
-import { useSettings } from '../api/hooks';
-import { settingsAPI } from '../api/settings';
+import { Button } from "@material-ui/core";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import { StyleRulesCallback, withStyles, WithStyles } from "@material-ui/core/styles";
+import Switch from "@material-ui/core/Switch";
+import CancelIcon from "@material-ui/icons/Cancel";
+import { InjectedNotistackProps, withSnackbar } from "notistack";
+import React from "react";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import { Settings } from "../../app/services/settings-manager";
+import { useSettings } from "../api/hooks";
+import { settingsAPI } from "../api/settings";
 import AppHeader from "../components/AppHeader";
-import FormTextField from '../components/FormTextField';
-import { AppMenuButton, MenuButton } from '../components/Menu';
-import SubHeader from '../components/SubHeader';
+import BodyText from "../components/BodyText";
+import FormTextField from "../components/FormTextField";
+import { AppMenuButton, MenuButton } from "../components/Menu";
+import SubHeader from "../components/SubHeader";
 import translate from "../i18n/Translation";
-import Page from '../layouts/Page';
-import { InjectedNotistackProps, withSnackbar } from 'notistack';
-import BodyText from '../components/BodyText';
+import Page from "../layouts/Page";
 
-const styles: StyleRulesCallback = (theme) => ({  
+const styles: StyleRulesCallback = (theme) => ({
 });
 
 type Params = {
@@ -36,20 +36,20 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
         return val == null ? def : val;
     }
 
-    const updateField = (name: SettingsName) => event => {
-        var val = event.target.value || (event.target.checked != null ? event.target.checked : null);
+    const updateField = (name: SettingsName) => (event) => {
+        const val = event.target.value || (event.target.checked != null ? event.target.checked : null);
 
-        setSettings(old => {
-            return { ...old, [name]: val }
+        setSettings((old) => {
+            return { ...old, [name]: val };
         });
         setDirty(true);
     };
 
     const save = () => {
-        settingsAPI.updateSettings(settings).then(p => {
+        settingsAPI.updateSettings(settings).then((p) => {
             props.enqueueSnackbar(translate("settings.saved"));
             setDirty(false);
-        })
+        });
     };
 
     return (
@@ -63,10 +63,14 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
                                 <React.Fragment>
                                     {!isDirty && <AppMenuButton />}
                                     {isDirty &&
-                                        <MenuButton first onClick={async () => {
-                                            await loadSettings();
-                                            setDirty(false);
-                                        }} icon={<CancelIcon />} />
+                                        <MenuButton
+                                            first={true}
+                                            onClick={async () => {
+                                                await loadSettings();
+                                                setDirty(false);
+                                                }}
+                                            icon={<CancelIcon />}
+                                        />
                                     }
                                 </React.Fragment>
                             ),
@@ -78,7 +82,7 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
                                         </Button>
                                     }
                                 </React.Fragment>
-                            )
+                            ),
                         }}
                     </AppHeader>
                 ),
@@ -87,12 +91,13 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
                     <React.Fragment>
                         <SubHeader text={translate("settings.log.category")} />
                         <BodyText text={translate("settings.log.text")} />
-                        
+
                         <FormControlLabel
                             control={
                                 <Switch
-                                    checked={getFieldValue('LogEnabled') == true}
-                                    onChange={updateField('LogEnabled')} />
+                                    checked={getFieldValue("LogEnabled") === true}
+                                    onChange={updateField("LogEnabled")}
+                                />
                             }
                             label={translate("settings.enabled.label")}
                             labelPlacement="start"
@@ -102,8 +107,8 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
                             label={translate("settings.category.label")}
                             placeholder={translate("settings.category.placeholder")}
 
-                            value={getFieldValue('LogCategory', '')}
-                            onChange={updateField('LogCategory')}
+                            value={getFieldValue("LogCategory", "")}
+                            onChange={updateField("LogCategory")}
                         />
 
                         <SubHeader text={translate("settings.backup.title")} />
@@ -112,17 +117,17 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
                             label={translate("settings.backup.label")}
                             placeholder={translate("settings.backup.placeholder")}
 
-                            multiline
+                            multiline={true}
                             rowsMax="5"
 
-                            value={getFieldValue('Plans', '')}
-                            onChange={updateField('Plans')}
+                            value={getFieldValue("Plans", "")}
+                            onChange={updateField("Plans")}
                         />
                     </React.Fragment>
-                )
+                ),
             }}
         </Page>
     );
-}
+};
 
 export default withSnackbar(withRouter(withStyles(styles)(SettingsPage)));

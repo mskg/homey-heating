@@ -1,19 +1,19 @@
 // must not be removed
-import 'reflect-metadata';
+import "reflect-metadata";
 // position must not be changed
 
-import { asynctrycatchlog, DeviceManagerService, HeatingManagerService, HeatingPlanRepositoryService, HeatingSchedulerService, 
-    ILogger, LoggerFactory, LogService, SettingsManagerService, } from "@app/services";
+import { Actions } from "@app/flows";
+import { asynctrycatchlog, DeviceManagerService, HeatingManagerService, HeatingPlanRepositoryService,
+    HeatingSchedulerService, ILogger, LoggerFactory, LogService, SettingsManagerService } from "@app/services";
 import { App as HomeyApp } from "homey";
 import { container, injectable } from "tsyringe";
-import { Actions } from "@app/flows";
 
 @injectable()
 export class HeatingSchedulerApp {
     private logger: ILogger;
 
     constructor(
-        private loggerFactory: LoggerFactory, 
+        private loggerFactory: LoggerFactory,
         private settingsManager: SettingsManagerService,
         private repositoryService: HeatingPlanRepositoryService,
         private heatingScheduler: HeatingSchedulerService,
@@ -28,23 +28,23 @@ export class HeatingSchedulerApp {
     public async run() {
         this.logger.information("Bootstrapping");
 
-        process.on('uncaughtException', (err) => {
+        process.on("uncaughtException", (err) => {
             this.logger.error(err);
         });
 
-        process.on('unhandledRejection', (reason, p) => {
-            this.logger.error('Unhandled Rejection at:', p, 'reason:', reason);
+        process.on("unhandledRejection", (reason, p) => {
+            this.logger.error("Unhandled Rejection at:", p, "reason:", reason);
         });
-        
+
         // prepare device caches
-        await this.deviceManager.init();        
+        await this.deviceManager.init();
 
         // load plans
         this.repositoryService.load();
 
         // apply what we have
         await this.heatingManager.applyPlans();
-        
+
         // startup scheduler
         await this.heatingScheduler.start();
 
@@ -53,7 +53,7 @@ export class HeatingSchedulerApp {
     }
 
     private runFlowHooks() {
-        var ctx = {
+        const ctx = {
             logger: this.loggerFactory.createLogger("Flow"),
             manager: this.heatingManager,
             repository: this.repositoryService,
@@ -61,7 +61,7 @@ export class HeatingSchedulerApp {
             settings: this.settingsManager,
         };
 
-        Actions.forEach(action => action(ctx));
+        Actions.forEach((action) => action(ctx));
     }
 }
 
@@ -70,11 +70,12 @@ export class HeatingSchedulerApp {
  */
 export default class App extends HomeyApp {
     public async onInit() {
+        // tslint:disable-next-line: no-console
         console.log("Bootstrapping App");
         LogService.init(this);
-        
+
         // we let the container do our stuff
-        var app = container.resolve(HeatingSchedulerApp);
+        const app = container.resolve(HeatingSchedulerApp);
         await app.run();
     }
 }

@@ -6,7 +6,7 @@ export class AppLogger implements ILogger {
     public constructor(app: any) {
         this.app = app;
     }
-    
+
     public information(...args: any[]) {
         this.app.log(...args);
     }

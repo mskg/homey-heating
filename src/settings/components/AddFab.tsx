@@ -1,21 +1,21 @@
-import Fab from '@material-ui/core/Fab';
-import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
-import AddIcon from '@material-ui/icons/Add';
-import React from 'react';
+import Fab from "@material-ui/core/Fab";
+import { StyleRulesCallback, withStyles, WithStyles } from "@material-ui/core/styles";
+import AddIcon from "@material-ui/icons/Add";
+import React from "react";
 
 const styles: StyleRulesCallback = (theme) => ({
     fabButton: {
         zIndex: 1,
-        margin: '0 auto',
+        margin: "0 auto",
 
-        position: 'absolute' as 'absolute',
+        position: "absolute" as "absolute",
         bottom: theme.spacing.unit * 2,
         right: theme.spacing.unit * 2,
     },
 });
 
 type Props = WithStyles<typeof styles> & {
-    onClick: () => void
+    onClick: () => void,
 };
 
 const AddFabComponent: React.FunctionComponent<Props> = (props) => {
@@ -26,6 +26,6 @@ const AddFabComponent: React.FunctionComponent<Props> = (props) => {
             <AddIcon />
         </Fab>
     );
-}
+};
 
 export default withStyles(styles)(AddFabComponent);

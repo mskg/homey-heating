@@ -14,15 +14,14 @@ export class HomeyAPIService {
     }
 
     // if that fails we're dead anyhow
-    //  All pathes capture the failure 
+    //  All pathes capture the failure
     public async getInstance(): Promise<IHomeyAPI> {
         if (this.homeyAPI == null) {
             try {
                 this.logger.debug("Connecting to API");
                 this.homeyAPI = await AthomAPI.HomeyAPI.forCurrentHomey();
-            }
-            catch (e) {
-                this.logger.console.error("CATASTROPHIC FAILURE **** CANNOT BE HANDELED *****", e);                
+            } catch (e) {
+                this.logger.console.error("CATASTROPHIC FAILURE **** CANNOT BE HANDELED *****", e);
 
                 this.homeyAPI = null;
                 throw e;

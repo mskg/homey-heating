@@ -14,14 +14,14 @@ export class HeatingPlanCalculator {
 
     /**
      * Get the next date when a scheduler needs to apply the heating plan.
-     * 
+     *
      * @param zone The heating zone to look at
      * @param date The point in time to check
      */
     public getNextSchedule({ schedule }: IHeatingPlan, date: Date = new Date()): Date {
         // tslint:disable-next-line: max-line-length
         this.logger.debug(`Searching next trigger for ${Day[date.getDay()]}@${date.getHours()}:${date.getMinutes()}`);
-        if (schedule == null || schedule.length == 0) { return null; }
+        if (schedule == null || schedule.length === 0) { return null; }
 
         // can be done in the model
         const sortedSchedule = sortBy(schedule, [(d) => this.transposeDay(d.day), "hour", "minute"]);
@@ -64,13 +64,13 @@ export class HeatingPlanCalculator {
 
     /**
      * Returns the active setpoint for a given zone and date
-     * 
+     *
      * @param zone The heating zone to look at
      * @param now The point in time to check
      */
     public getSetPoint({ schedule }: IHeatingPlan, now: Date = new Date()): ISetPoint {
         this.logger.debug(`Investigating ${Day[now.getDay()]}@${now.getHours()}:${now.getMinutes()}`);
-        if (schedule == null || schedule.length == 0) { return null; }
+        if (schedule == null || schedule.length === 0) { return null; }
 
         const sortedSchedule = sortBy(schedule, [(d) => this.transposeDay(d.day), "hour", "minute"]);
         let lastIndex = this.findLastIndex(sortedSchedule, now);
@@ -111,7 +111,7 @@ export class HeatingPlanCalculator {
                     return true;
                 }
 
-                if (date.getHours() === sp.hour && date.getMinutes() >= sp.minute) { 
+                if (date.getHours() === sp.hour && date.getMinutes() >= sp.minute) {
                     return true;
                 }
             }

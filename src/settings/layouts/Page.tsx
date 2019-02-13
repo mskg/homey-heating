@@ -1,6 +1,5 @@
-import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
-import React, { ReactChild } from 'react';
-import AppMenu from '../components/Menu';
+import { StyleRulesCallback, withStyles, WithStyles } from "@material-ui/core/styles";
+import React, { ReactChild } from "react";
 
 const styles: StyleRulesCallback = (theme) => ({
     root: {
@@ -17,7 +16,7 @@ const styles: StyleRulesCallback = (theme) => ({
         margin: 0,
         maxWidth: "100%",
         overflowY: "scroll",
-    }
+    },
 });
 
 type NamedSlots = {
@@ -28,7 +27,7 @@ type NamedSlots = {
 };
 
 type Props = WithStyles<typeof styles> & {
-    children: NamedSlots
+    children: NamedSlots,
 };
 
 const PageComponent: React.FunctionComponent<Props> = (props) => {
@@ -41,12 +40,12 @@ const PageComponent: React.FunctionComponent<Props> = (props) => {
         <React.Fragment>
             <div className={classes.root}>
                 {header}
-                <div className={classes.body} style={{paddingTop: paddingTop, paddingBottom: newPadding}}>
+                <div className={classes.body} style={{paddingTop, paddingBottom: newPadding}}>
                     {body}
                 </div>
             </div>
         </React.Fragment>
     );
-}
+};
 
 export default withStyles(styles)(PageComponent);

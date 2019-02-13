@@ -16,13 +16,13 @@ export class HeatingSchedulerService {
     private next: Date = null;
 
     constructor(
-        private manager: HeatingManagerService, 
+        private manager: HeatingManagerService,
         private calculator: HeatingPlanCalculator,
         private repository: HeatingPlanRepositoryService,
-        
+
         loggerFactory: LoggerFactory) {
         this.logger = loggerFactory.createLogger("Scheduler");
-        
+
         this.repository.onChanged.subscribe(async () => {
             await this.start();
         });
@@ -83,8 +83,8 @@ export class HeatingSchedulerService {
 
         await ManagerCron.unregisterAllTasks();
 
-        if (this.manager.operationMode == OverrideMode.Holiday 
-            || this.manager.operationMode == OverrideMode.OutOfSeason) {
+        if (this.manager.operationMode === OverrideMode.Holiday
+            || this.manager.operationMode === OverrideMode.OutOfSeason) {
             this.logger.information(`Mode is ${OverrideMode[this.manager.operationMode]}, no check required.`);
             return;
         }
@@ -93,23 +93,21 @@ export class HeatingSchedulerService {
         let resetMode = false;
 
         const allDates: Date[] = [];
-        if (this.manager.operationMode == OverrideMode.DayAtHome 
-            || this.manager.operationMode == OverrideMode.Sleep 
-            || this.manager.operationMode == OverrideMode.DayAway)
-        {
+        if (this.manager.operationMode === OverrideMode.DayAtHome
+            || this.manager.operationMode === OverrideMode.Sleep
+            || this.manager.operationMode === OverrideMode.DayAway) {
             // check again tomorrow
-            const eod = new Date();                
-            eod.setHours(0,0,0,0);
+            const eod = new Date();
+            eod.setHours(0, 0, 0, 0);
             eod.setDate(eod.getDate() + 1);
 
             resetMode = true;
             allDates.push(eod);
-        }
-        else {
+        } else {
             const plans = await this.repository.activePlans;
             plans.forEach((plan) => {
                 this.logger.debug(`Checking plan ${plan.id}`);
-            
+
                 const next = this.calculator.getNextSchedule(plan);
                 if (next != null) {
                     allDates.push(next);
@@ -129,6 +127,6 @@ export class HeatingSchedulerService {
         this.logger.information(`Next execution is at ${this.next.toLocaleString()}`);
 
         const task = await ManagerCron.registerTask("HeatingManagerService", this.next, resetMode);
-        task.once("run", (data) => {this.run(data)});
+        task.once("run", (data) => {this.run(data); });
     }
 }

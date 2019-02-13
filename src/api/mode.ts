@@ -1,16 +1,16 @@
 import { OperationMode } from "@app/model";
 import { HeatingManagerService, HeatingSchedulerService } from "@app/services";
-import { ApiBase, SUCCESS, IAPIParams } from "./types";
 import { injectable } from "tsyringe";
+import { ApiBase, IAPIParams, SUCCESS } from "./types";
 
 type Body = {
     mode: OperationMode;
-}
+};
 
 @injectable()
 class PutMode extends ApiBase<Body> {
     constructor(private manager: HeatingManagerService,
-        private scheduler: HeatingSchedulerService) {
+                private scheduler: HeatingSchedulerService) {
         super("PUT", "/mode");
     }
 
@@ -38,5 +38,5 @@ class GetMode extends ApiBase {
 
 export default [
     PutMode,
-    GetMode
+    GetMode,
 ];

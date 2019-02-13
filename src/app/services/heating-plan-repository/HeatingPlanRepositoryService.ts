@@ -26,14 +26,13 @@ export class HeatingPlanRepositoryService {
                 this.changed = false;
                 return;
             }
-            if (e.setting == Settings.Plans) {
+            if (e.setting === Settings.Plans) {
                 this.logger.information("Reload due to settings change.");
-                
+
                 try {
                     this.load();
                     this.onChangedDispatcher.dispatch(this, this.planList);
-                } 
-                catch (e) {
+                } catch (e) {
                     this.logger.information("Reload of plans failed", e);
                     // TOOD: is this ok to kill?
                 }

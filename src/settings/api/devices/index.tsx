@@ -4,14 +4,14 @@ import { IHeatingDevice } from "../../../app/model";
 import callAPI from "../callAPI";
 
 export type HashType = {
-  [key: string] : IHeatingDevice;
+  [key: string]: IHeatingDevice;
 } & ArrayLike<IHeatingDevice>;
 
 // Homey.api( String method, String path, Mixed body, Function callback )
 const fetchHeatingDevices = async (): Promise<HashType> => {
-  var devices = await callAPI<any[]>("GET", "/devices");
+  const devices = await callAPI<any[]>("GET", "/devices");
 
-  var result = sortBy(devices,"name").reduce((map, obj, idx) => {
+  const result = sortBy(devices, "name").reduce((map, obj, idx) => {
     map[idx] = obj;
     map[obj.id] = obj;
     return map;

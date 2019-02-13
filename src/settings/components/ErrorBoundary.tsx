@@ -1,15 +1,15 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment } from "react";
 import translate from "../i18n/Translation";
 
-type State = {  
+type State = {
   hasError: boolean;
 
   error?: Error;
   info?: any
-}
+};
 
 type Props = {
-}
+};
 
 export class ErrorBoundary extends Component<Props, State> {
 
@@ -18,21 +18,22 @@ export class ErrorBoundary extends Component<Props, State> {
     this.state = { hasError: false };
   }
 
-  componentDidCatch(error, info) {
-    this.setState({ hasError: true, error: error, info: info });
-    console.error(error, info);
+  public componentDidCatch(error, info) {
+    this.setState({ hasError: true, error, info });
   }
 
-  render() {
+  public render() {
     if (this.state.hasError) {
-      return <Fragment>        
-        <h1>{translate("confirm.title")}</h1>
-        <div style={{ whiteSpace: 'pre-wrap' }}>
-          {this.state.error && this.state.error.toString()}
-          <br />
-          {this.state.info.componentStack}
-        </div>
-      </Fragment>;
+      return (
+        <Fragment>
+          <h1>{translate("confirm.title")}</h1>
+          <div style={{ whiteSpace: "pre-wrap" }}>
+            {this.state.error && this.state.error.toString()}
+            <br />
+            {this.state.info.componentStack}
+          </div>
+        </Fragment>
+      );
     }
 
     return this.props.children;

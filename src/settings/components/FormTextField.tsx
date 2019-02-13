@@ -1,16 +1,16 @@
-import TextField, { TextFieldProps } from '@material-ui/core/TextField';
-import React from 'react';
-import InputContainer from './InputContainer';
+import TextField, { TextFieldProps } from "@material-ui/core/TextField";
+import React from "react";
+import InputContainer from "./InputContainer";
 
 const FormTextField = ({ classes, ...otherProps }: TextFieldProps) => {
     return (
         <InputContainer>
             <TextField
-                fullWidth
+                fullWidth={true}
                 margin="normal"
                 {...otherProps}
             />
-        </InputContainer>)
+        </InputContainer>);
 };
 
 export default FormTextField;

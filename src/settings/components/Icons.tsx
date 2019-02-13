@@ -1,9 +1,9 @@
-import { BusinessCenter, DirectionsWalk, FreeBreakfast, Home, Hotel, HotTub, People } from '@material-ui/icons';
-import React from 'react';
+import { BusinessCenter, DirectionsWalk, FreeBreakfast, Home, Hotel, HotTub, People } from "@material-ui/icons";
+import React from "react";
 
 type Props = {
-    name: string
-}
+    name: string,
+};
 
 export default function ZoneIcon(props: Props) {
     switch (props.name) {

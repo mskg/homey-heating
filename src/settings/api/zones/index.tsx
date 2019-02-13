@@ -7,9 +7,9 @@ export type HashType = {
 } & ArrayLike<IHeatingZone>;
 
 const fetchHeatingZones = async (): Promise<HashType> => {
-  var zones = await callAPI<any[]>("GET", "/zones");
+  const zones = await callAPI<any[]>("GET", "/zones");
 
-  var result = sortBy(zones, "name").reduce((map, obj, idx) => {
+  const result = sortBy(zones, "name").reduce((map, obj, idx) => {
     map[idx] = obj;
     map[obj.id] = obj;
     return map;

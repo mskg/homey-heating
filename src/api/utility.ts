@@ -1,8 +1,8 @@
 import { IHeatingDevice, IHeatingZone } from "@app/model";
 import { DeviceManagerService } from "@app/services";
 import { map } from "lodash";
-import { ApiBase } from "./types";
 import { injectable } from "tsyringe";
+import { ApiBase } from "./types";
 
 @injectable()
 class GetZones extends ApiBase {
@@ -12,13 +12,13 @@ class GetZones extends ApiBase {
 
     protected async execute() {
         const result = map(this.manager.zones,
-            z => {
+            (z) => {
                 return {
                     id: z.id,
                     name: z.name,
                     icon: z.icon,
-                } as IHeatingZone
-            }
+                } as IHeatingZone;
+            },
         );
 
         return result;
@@ -33,13 +33,13 @@ class GetDevices extends ApiBase {
 
     protected async execute() {
         const result = map(this.manager.devices,
-            z => {
+            (z) => {
                 return {
                     id: z.id,
                     name: z.name,
                     icon: z.iconObj && z.iconObj.url,
-                } as IHeatingDevice
-            }
+                } as IHeatingDevice;
+            },
         );
 
         return result;
@@ -48,5 +48,5 @@ class GetDevices extends ApiBase {
 
 export default [
     GetDevices,
-    GetZones
+    GetZones,
 ];

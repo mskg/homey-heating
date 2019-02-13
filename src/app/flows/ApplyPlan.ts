@@ -1,5 +1,5 @@
 
-import { FlowContext, flowCardFactory } from "./args";
+import { flowCardFactory, IFlowContext } from "./args";
 
 type PlaceHolderArg = {
     name: string;
@@ -10,7 +10,7 @@ type PlanRefArgs = {
     plan: PlaceHolderArg;
 };
 
-export const ApplyPlanAction = ({ logger, manager, repository }: FlowContext) => {
+export const ApplyPlanAction = ({ logger, manager, repository }: IFlowContext) => {
     return flowCardFactory<PlanRefArgs>("apply_plan", logger, async (args, state) => {
         const plan = await repository.find(args.plan.id);
         if (plan == null) { return Promise.resolve(false); }

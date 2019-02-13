@@ -8,8 +8,8 @@ export enum Day {
     Sunday = 0,
 }
 
-export enum NormalOperationMode {  
-    Automatic = 0
+export enum NormalOperationMode {
+    Automatic = 0,
 }
 
 export enum OverrideMode {
@@ -23,7 +23,7 @@ export enum OverrideMode {
 export type OperationMode = NormalOperationMode | OverrideMode;
 
 export interface ITemperatureOverride {
-    targetTemperature: number,
+    targetTemperature: number;
 }
 
 export interface IExternalReference {
@@ -51,7 +51,7 @@ export interface IHeatingPlan extends IExternalReference {
     devices?: string[];
     zones?: string[];
 
-    overrides?: Overrides
+    overrides?: Overrides;
 }
 
 export interface IHeatingDevice extends IExternalReference {
@@ -63,9 +63,9 @@ export interface IHeatingZone extends IExternalReference {
 }
 
 export interface IScheduleInformation {
-    mode: OperationMode,
-    nextDate?: Date,
-    temperatures: ICalculatedTemperature[]
+    mode: OperationMode;
+    nextDate?: Date;
+    temperatures: ICalculatedTemperature[];
 }
 
 export interface ICalculatedTemperature {
