@@ -1,0 +1,16 @@
+# Travis build file
+
+dist: trusty
+
+language: node_js
+node_js: 
+  - 11
+
+git:
+  quiet: true
+  depth: 1
+
+before_script:
+  - npm install -g athom-cli
+
+script: npm run dist
