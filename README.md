@@ -11,15 +11,17 @@ See [Issue Tracker](https://github.com/mskg/homey-heating/issues)
 
 ## Notes
 * Build
-  * __npm run homey:run__ to run the dev build of the App on your homey. 
+  * `npm run homey:run` to run the dev build of the App on your homey. 
     * This exposes the API public but does not change thermostat values.
     * Schedules are not read from configuration and are not persisted. You always start with clean values.
-  * __npm run start:web__ to run the settings app localy. Don't forget to set your Homey url below.
-  * __npm run homey:install__ to drop a propduction build onto your Homey.
+  * `npm run start:web` to run the settings app localy. Don't forget to set your Homey url below.
+  * `npm run homey:install` to drop a propduction build onto your Homey.
 
 * Change environment variable HOMEY_DEV_URL to point to your Homey's url, e.g. http://192.168.0.1
 
 * If you enable remote logging inside the app, you can watch the live trace of the application via [console.re/yourcategory](console.re)
+
+* Install a *released build onto your Homey* `npm run install <tag>`. If you omit the tag, all available version will be printed.
 
 ## Change Log
 * **1.0** Initial release

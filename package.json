@@ -35,6 +35,7 @@
     "@types/react-dom": "^16.0.11",
     "@types/react-router": "^4.4.3",
     "@types/react-router-dom": "^4.3.1",
+    "athom-cli": "^2.1.69",
     "awesome-typescript-loader": "^5.2.1",
     "chai": "^4.2.0",
     "clean-webpack-plugin": "^1.0.1",
@@ -42,7 +43,9 @@
     "copyfiles": "^2.1.0",
     "css-loader": "^2.1.0",
     "file-loader": "^3.0.1",
+    "fstream": "^1.0.11",
     "html-webpack-plugin": "^3.2.0",
+    "https": "^1.0.0",
     "license-checker-webpack-plugin": "0.0.9",
     "mini-css-extract-plugin": "^0.5.0",
     "mocha": "^5.2.0",
@@ -54,21 +57,29 @@
     "tslint": "^5.12.1",
     "typescript": "^3.2.4",
     "typescript-tslint-plugin": "^0.3.0",
+    "unzip": "^0.1.11",
     "webpack": "^4.29.0",
     "webpack-cli": "^3.2.1",
     "webpack-dev-server": "^3.1.14"
   },
   "scripts": {
-    "lint:app": "tslint --project tsconfig.json",
-    "lint:web": "tslint --project tsconfig.react.json",
     "homey:run": "npm run build:app:dev && athom -p ../homey-heating-dist app run",
     "homey:install": "npm run build:app:prod && npm run build:web:prod && athom -p ../homey-heating-dist app install",
+ 
     "dist": "npm run build:app:prod && npm run build:web:prod && athom -p ../homey-heating-dist app validate --level publish",
     "test": "tsc -p ./tsconfig.test.json && mocha --opts ./src/test/mocha.opts",
+ 
+    "install": "node scripts/install.js",
+ 
+    "lint:app": "tslint --project tsconfig.json",
+    "lint:web": "tslint --project tsconfig.react.json",
+ 
     "build:app:dev": "webpack --mode development --config webpack.app.js",
     "build:app:prod": "npm run lint:app && webpack --mode production --config webpack.app.js",
+ 
     "build:web:dev": "webpack --mode development --config webpack.react.js",
     "build:web:prod": "npm run lint:web && webpack --mode production --config webpack.react.js",
+ 
     "start:web": "webpack-dev-server --mode development --config webpack.react.js --open",
     "start:web:prod": "webpack-dev-server --mode production --config webpack.react.js --open"
   },
