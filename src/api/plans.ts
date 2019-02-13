@@ -1,102 +1,98 @@
-import { DEFAULT_HEATING_PLAN } from "../app/helper/defaultPlan";
-import { ApiBase } from "./types";
-import { IHeatingPlan } from "../app/model";
-import { remove, find } from "lodash";
+import { DEFAULT_HEATING_PLAN } from "@app/helper";
+import { IHeatingPlan } from "@app/model";
+import { DeviceManagerService, HeatingPlanRepositoryService } from "@app/services";
+import { find, remove } from "lodash";
+import { ApiBase, SUCCESS, IAPIParams } from "./types";
+import { injectable } from "tsyringe";
 
+type Params = {
+    id: string;
+}
+
+@injectable()
 class GetResetPlans extends ApiBase {
-    constructor() {
+    constructor(private manager: HeatingPlanRepositoryService) {
         super("GET", "/resetplans");
     }
 
-    public fn(args, callback) {
-        this.logger.debug("GET resetplans");
-
-        this.myApp.repository.replacePlans(DEFAULT_HEATING_PLAN);
-
-        // callback follows ( err, result )
-        callback(null, "Done.");
+    protected async execute() {
+        this.manager.replacePlans(DEFAULT_HEATING_PLAN);
+        return await this.manager.plans;
     }
 }
 
+@injectable()
 class GetPlans extends ApiBase {
-    constructor() {
+    constructor(private manager: HeatingPlanRepositoryService) {
         super("GET", "/plans");
     }
 
-    public async fn(args, callback) {
-        this.logger.debug("GET plans");
-
-        const result = await this.myApp.repository.plans;
-
-        // callback follows ( err, result )
-        callback(null, result);
+    protected async execute() {
+        const result = await this.manager.plans;
+        return result;
     }
 }
 
-class GetPlan extends ApiBase {
-    constructor() {
+@injectable()
+class GetPlan extends ApiBase<any, Params> {
+    constructor(private manager: HeatingPlanRepositoryService) {
         super("GET", "/plans/:id");
     }
 
-    public async fn(args, callback) {
-        this.logger.debug(`GET plan ${args.params.id}`);
+    protected async execute(args: IAPIParams<any, Params>) {
+        const result = await this.manager.find(args.params.id);
 
-        const result = await this.myApp.repository.find(args.params.id);
-
-        // callback follows ( err, result )
-        callback(null, result);
+        return result;
     }
 }
 
-class PutPlan extends ApiBase {
-    constructor() {
+@injectable()
+class PutPlan extends ApiBase<any, Params> {
+    constructor(
+        private manager: HeatingPlanRepositoryService,
+        private devices: DeviceManagerService) {
         super("PUT", "/plans/:id");
     }
 
-    public async fn(args, callback) {
-        this.logger.debug(`PUT plan ${args.params.id}`);
-
+    protected async execute(args: IAPIParams<any, Params>) {
         const plan = args.body as IHeatingPlan;
         plan.id = args.params.id;
 
         // kill all unkown devices
         if (plan.devices) {
             remove(plan.devices, (r: string) =>
-                find(this.myApp.manager.devices, (d) => d.id == r) == null
+                find(this.devices.devices, (d) => d.id == r) == null
             );
         }
 
         // kill all unkown devices
         if (plan.zones) {
             remove(plan.zones, (r: string) =>
-                find(this.myApp.manager.zones, (z) => z.id == r) == null
+                find(this.devices.zones, (z) => z.id == r) == null
             );
         }
 
-        await this.myApp.repository.update(plan);
-
-        // callback follows ( err, result )
-        callback(null, plan);
+        await this.manager.update(plan);
+        return plan;
     }
 }
 
-class DeletePlan extends ApiBase {
-    constructor() {
+@injectable()
+class DeletePlan extends ApiBase<any, Params> {
+    constructor(private manager: HeatingPlanRepositoryService) {
         super("DELETE", "/plans/:id");
     }
 
-    public async fn(args, callback) {
-        this.logger.debug(`DELETE plan ${args.params.id}`);
-
-        await this.myApp.repository.remove(args.params.id);
-        callback(null, null);
+    protected async execute(args: IAPIParams<any, Params>) {
+        await this.manager.remove(args.params.id);
+        return SUCCESS;
     }
 }
 
 export default [
-    new DeletePlan(),
-    new GetPlan(),
-    new PutPlan(),
-    new GetPlans(),
-    new GetResetPlans()
+    DeletePlan,
+    GetPlan,
+    PutPlan,
+    GetPlans,
+    GetResetPlans
 ];

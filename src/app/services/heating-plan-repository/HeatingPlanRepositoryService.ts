@@ -1,46 +1,74 @@
+import { DEFAULT_HEATING_PLAN, Mutex } from "@app/helper";
+import { IHeatingPlan } from "@app/model";
 import { filter, find, remove } from "lodash";
 import { EventDispatcher } from "strongly-typed-events";
-import { Mutex } from "../../helper/Mutex";
-import { IHeatingPlan, Settings } from "../../model";
-import { ILogger, LogService } from "../log";
-import { ManagerSettings } from "homey";
-import { DEFAULT_HEATING_PLAN } from "../../helper/defaultPlan";
+import { singleton } from "tsyringe";
+import { asynctrycatchlog, ILogger, LoggerFactory, trycatchlog } from "../log";
+import { Settings, SettingsManagerService } from "../settings-manager";
 
+@singleton()
 export class HeatingPlanRepositoryService {
     private planList: IHeatingPlan[] = [];
     private logger: ILogger;
     private mutex: Mutex = new Mutex();
+    private changed = false;
 
-    private onChangedDispatcher = new EventDispatcher<HeatingPlanRepositoryService, IHeatingPlan>();
+    private onChangedDispatcher = new EventDispatcher<HeatingPlanRepositoryService, IHeatingPlan[]>();
 
-    constructor() {
-        this.logger = LogService.createLogger("Repository");
+    constructor(
+        private settings: SettingsManagerService,
+        loggerFactory: LoggerFactory) {
+        this.logger = loggerFactory.createLogger("Repository");
+
+        this.settings.onChanged.subscribe((s, e) => {
+            if (this.changed) {
+                // we skip our save event
+                this.changed = false;
+                return;
+            }
+            if (e.setting == Settings.Plans) {
+                this.logger.information("Reload due to settings change.");
+                
+                try {
+                    this.load();
+                    this.onChangedDispatcher.dispatch(this, this.planList);
+                } 
+                catch (e) {
+                    this.logger.information("Reload of plans failed", e);
+                    // TOOD: is this ok to kill?
+                }
+            }
+        });
     }
 
+    // handled by all callers
     public replacePlans(planList: IHeatingPlan[]) {
-        this.planList = planList;
+        this.planList = planList || [];
         this.save();
     }
 
+    // handled by all callers
     public load() {
-        if (!PRODUCTION) {
-            this.planList = DEFAULT_HEATING_PLAN;
-        } else {
-            const plansString = ManagerSettings.get(Settings.Plans);
-            if (plansString == null) {
-                this.planList = [];
+        const plansString = this.settings.get<string>(Settings.Plans);
+        if (plansString == null) {
+            if (!PRODUCTION) {
+                this.planList = DEFAULT_HEATING_PLAN;
             } else {
-                this.planList = JSON.parse(plansString);
+                this.planList = [];
             }
+        } else {
+            this.planList = JSON.parse(plansString);
         }
     }
 
+    // handled by all callers
     public save() {
-        if (PRODUCTION) {
-            ManagerSettings.set(Settings.Plans, JSON.stringify(this.planList));
-        }
+        this.changed = true;
+        this.settings.set(Settings.Plans, JSON.stringify(this.planList));
     }
 
+    // we don't kill the app if plans might be invalid
+    @asynctrycatchlog(true, [])
     public get plans(): Promise<IHeatingPlan[]> {
         const unlockPromise = this.mutex.lock();
 
@@ -51,10 +79,13 @@ export class HeatingPlanRepositoryService {
         });
     }
 
+    // we don't kill the app if plans might be invalid
+    @asynctrycatchlog(true, [])
     public get activePlans(): Promise<IHeatingPlan[]> {
         const unlockPromise = this.mutex.lock();
 
         return unlockPromise.then((umlock) => {
+
             const list = filter(this.planList, (p: IHeatingPlan) => p.enabled);
             umlock();
             return list;
@@ -65,6 +96,7 @@ export class HeatingPlanRepositoryService {
         return this.onChangedDispatcher.asEvent();
     }
 
+    // caller needs to know
     public async find(id: string): Promise<IHeatingPlan> {
         const unlockPromise = this.mutex.lock();
 
@@ -75,6 +107,7 @@ export class HeatingPlanRepositoryService {
         });
     }
 
+    // caller needs to know
     public async update(plan: IHeatingPlan) {
         const unlock = await this.mutex.lock();
         {
@@ -86,9 +119,10 @@ export class HeatingPlanRepositoryService {
         }
         unlock();
 
-        this.onChangedDispatcher.dispatch(this, plan);
+        this.onChangedDispatcher.dispatch(this, [plan]);
     }
 
+    // caller needs to know
     public async add(plan: IHeatingPlan) {
         const unlock = await this.mutex.lock();
         {
@@ -99,9 +133,10 @@ export class HeatingPlanRepositoryService {
         }
         unlock();
 
-        this.onChangedDispatcher.dispatch(this, plan);
+        this.onChangedDispatcher.dispatch(this, [plan]);
     }
 
+    // caller needs to know
     public async remove(id: string) {
         let plan: IHeatingPlan;
 
@@ -116,6 +151,6 @@ export class HeatingPlanRepositoryService {
         }
         unlock();
 
-        this.onChangedDispatcher.dispatch(this, plan);
+        this.onChangedDispatcher.dispatch(this, [plan]);
     }
 }

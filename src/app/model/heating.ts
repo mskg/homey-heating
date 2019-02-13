@@ -16,7 +16,8 @@ export enum OverrideMode {
     DayAtHome = 1,
     DayAway = 2,
     Sleep = 3,
-    Holiday = 4
+    Holiday = 4,
+    OutOfSeason = 5,
 }
 
 export type OperationMode = NormalOperationMode | OverrideMode;

@@ -1,4 +1,4 @@
-import { ILogger } from "./declarations";
+import { ILogger } from "./types";
 
 export class ConsoleLogger implements ILogger {
 

@@ -1,9 +1,9 @@
 
-import { Day, IHeatingPlan, ISetPoint, IHeatingZone, IHeatingDevice } from "../model/heating";
+import { Day, IHeatingPlan, ISetPoint, IHeatingZone, IHeatingDevice } from "@app/model";
 
-const WARM: number = 20.5;
-const INTERMEDIATE: number = 18.5;
-const COOL: number = 16;
+export const WARM: number = 20.5;
+export const INTERMEDIATE: number = 18.5;
+export const COOL: number = 16;
 
 function bathroomSchedule(): ISetPoint[] {
     const setPoints: ISetPoint[] = [];

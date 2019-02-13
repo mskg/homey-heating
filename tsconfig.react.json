@@ -9,6 +9,8 @@
         "jsx": "react",
         "noLib": false,
         "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
         "suppressImplicitAnyIndexErrors": true
     },
     "include": [

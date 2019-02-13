@@ -1,13 +1,15 @@
 
+import { Day, IHeatingPlan, ISetPoint } from "@app/model";
 import { findLastIndex, sortBy } from "lodash";
-import { Day, ISetPoint, IHeatingPlan } from "../model/heating";
-import { ILogger, LogService } from "../services/log";
+import { injectable } from "tsyringe";
+import { ILogger, LoggerFactory } from "../log";
 
+@injectable()
 export class HeatingPlanCalculator {
     private logger: ILogger;
 
-    constructor() {
-        this.logger = LogService.createLogger("Calculator");
+    constructor(loggerFactory: LoggerFactory) {
+        this.logger = loggerFactory.createLogger("Calculator");
     }
 
     /**

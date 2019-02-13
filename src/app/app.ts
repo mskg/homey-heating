@@ -1,163 +1,84 @@
-import { App, FlowCardAction, ManagerSettings } from "homey";
-import { OperationMode, Settings } from "./model";
-import { HeatingManagerService } from "./services/heating-manager";
-import { HeatingPlanRepositoryService } from "./services/heating-plan-repository";
-import { HeatingSchedulerService } from "./services/heating-scheduler/HeatingSchedulerService";
-import { ILogger, LogService } from "./services/log";
+// must not be removed
+import 'reflect-metadata';
+// position must not be changed
 
-type PlaceHolderArg = {
-    name: string;
-    id: string;
-};
+import { asynctrycatchlog, DeviceManagerService, HeatingManagerService, HeatingPlanRepositoryService, HeatingSchedulerService, 
+    ILogger, LoggerFactory, LogService, SettingsManagerService, } from "@app/services";
+import { App as HomeyApp } from "homey";
+import { container, injectable } from "tsyringe";
+import { Actions } from "@app/flows";
 
-type PlanRefArgs = {
-    plan: PlaceHolderArg;
-};
-
-type ChangePlanArgs = PlanRefArgs & {
-    state: string;
-};
-
-type ChangeLogArgs = {
-    state: string;
-};
-
-export class HeatingSchedulerApp extends App {
-    private repositoryService: HeatingPlanRepositoryService = null;
-    private heatingManager: HeatingManagerService = null;
-    private heatingScheduler: HeatingSchedulerService = null;
+@injectable()
+export class HeatingSchedulerApp {
     private logger: ILogger;
-    private flowLogger: ILogger;
 
-    public createLogger(category: string): ILogger {
-        return LogService.createLogger(category);
+    constructor(
+        private loggerFactory: LoggerFactory, 
+        private settingsManager: SettingsManagerService,
+        private repositoryService: HeatingPlanRepositoryService,
+        private heatingScheduler: HeatingSchedulerService,
+        private deviceManager: DeviceManagerService,
+        private heatingManager: HeatingManagerService) {
+
+        this.logger = this.loggerFactory.createLogger("App");
     }
 
-    public get repository(): HeatingPlanRepositoryService {
-        return this.repositoryService;
-    }
-
-    public get manager(): HeatingManagerService {
-        return this.heatingManager;
-    }    
-
-    public get scheduler(): HeatingSchedulerService {
-        return this.heatingScheduler;
-    }
-
-    public refreshConfig() {
-        LogService.init(this);
-        this.logger.information("Refreshed configuration");
-        this.repositoryService.load();
-    }
-
-    public async onInit() {
-        // force init
-        LogService.init(this);
-        this.logger = LogService.createLogger("App");
-        this.flowLogger = LogService.createLogger("Flow");
-
+    // whatever goes wrong - we log, hide and dump it
+    @asynctrycatchlog(true)
+    public async run() {
         this.logger.information("Bootstrapping");
-        this.bindActions();
 
-        this.repositoryService = new HeatingPlanRepositoryService();
-        this.repositoryService.load();
-
-        this.heatingManager = new HeatingManagerService(this.repositoryService);
-        await this.heatingManager.applyPlans();
-
-        this.heatingScheduler = new HeatingSchedulerService(this.heatingManager);
-        await this.heatingScheduler.start();
-
-        this.repositoryService.onChanged.subscribe(async (rep, plan) => {
-            await this.heatingManager.applyPlans();
-            await this.heatingScheduler.start();
-        });
-
-        process.on('uncaughtException', function(err) {
+        process.on('uncaughtException', (err) => {
             this.logger.error(err);
         });
+
+        process.on('unhandledRejection', (reason, p) => {
+            this.logger.error('Unhandled Rejection at:', p, 'reason:', reason);
+        });
+        
+        // prepare device caches
+        await this.deviceManager.init();        
+
+        // load plans
+        this.repositoryService.load();
+
+        // apply what we have
+        await this.heatingManager.applyPlans();
+        
+        // startup scheduler
+        await this.heatingScheduler.start();
+
+        // Flow hooks
+        this.runFlowHooks();
     }
 
-    private bindActions() {
-        new FlowCardAction("apply_all")
-            .register()
-            .registerRunListener(async (args, state) => {
-                this.flowLogger.information("Apply plans");
-                await this.heatingManager.applyPlans();
-                return true;
-            });
+    private runFlowHooks() {
+        var ctx = {
+            logger: this.loggerFactory.createLogger("Flow"),
+            manager: this.heatingManager,
+            repository: this.repositoryService,
+            scheduler: this.heatingScheduler,
+            settings: this.settingsManager,
+        };
 
-        new FlowCardAction("apply_plan")
-            .register()
-            .registerRunListener(async (args: PlanRefArgs, state) => {
-                this.flowLogger.information(`Apply plan ${args.plan.id}`);
-
-                const plan = await this.repositoryService.find(args.plan.id);
-                if (plan == null) { return Promise.resolve(false); }
-
-                await this.manager.applyPlan(plan);
-                return true;
-            })
-            .getArgument("plan")
-            .registerAutocompleteListener(async (query, args) => {
-                const plans = await this.repositoryService.plans;
-
-                return Promise.resolve(plans.map<PlaceHolderArg>((p) => { return {
-                    id: p.id,
-                    name: p.name || p.id,
-                }; }));
-            });
-
-            
-        new FlowCardAction("set_mode")
-            .register()
-            .registerRunListener(async (args: ChangeLogArgs, state) => {
-                this.flowLogger.information(`Set mode ${args.state}`);
-
-                this.heatingManager.operationMode = parseInt(args.state) as OperationMode;
-                await this.heatingManager.applyPlans();
-                await this.heatingScheduler.start();
-                
-                return true;
-            });
-
-        new FlowCardAction("set_log_state")
-            .register()
-            .registerRunListener((args: ChangeLogArgs, state) => {
-                this.flowLogger.information(`Set remote loggin ${args.state}`);
-
-                ManagerSettings.set(Settings.LogEnabled, args.state === "true");
-                LogService.init(this);
-
-                return Promise.resolve(true);
-            });
-            
-        new FlowCardAction("set_plan_state")
-            .register()
-            .registerRunListener(async (args: ChangePlanArgs, state) => {
-                this.flowLogger.information(`Set plan ${args.plan.id} to ${args.state}`);
-
-                const plan = await this.repositoryService.find(args.plan.id);
-                if (plan == null) { return Promise.resolve(false); }
-
-                plan.enabled = args.state === "true";
-                await this.repositoryService.update(plan);
-
-                return true;
-            })
-            .getArgument("plan")
-            .registerAutocompleteListener(async (query, args) => {
-                const plans = await this.repositoryService.plans;
-
-                return plans.map<PlaceHolderArg>((p) => { return {
-                    id: p.id,
-                    name: p.name || p.id,
-                }; });
-            });
+        Actions.forEach(action => action(ctx));
     }
 }
 
-// we are a script, but the startup class is still bound to the export
+/***
+ * Bootstrapper for the dependency container
+ */
+export default class App extends HomeyApp {
+    public async onInit() {
+        console.log("Bootstrapping App");
+        LogService.init(this);
+        
+        // we let the container do our stuff
+        var app = container.resolve(HeatingSchedulerApp);
+        await app.run();
+    }
+}
+
+// // we are a script, but the startup class is still bound to the export
 declare var module;
-module.exports = HeatingSchedulerApp;
+module.exports = App;

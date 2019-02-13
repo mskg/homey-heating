@@ -5,7 +5,7 @@ import Switch from '@material-ui/core/Switch';
 import CancelIcon from '@material-ui/icons/Cancel';
 import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { Settings } from '../../app/model';
+import { Settings } from '../../app/services/settings-manager';
 import { useSettings } from '../api/hooks';
 import { settingsAPI } from '../api/settings';
 import AppHeader from "../components/AppHeader";
@@ -37,7 +37,7 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
     }
 
     const updateField = (name: SettingsName) => event => {
-        var val = event.target.value || event.target.checked;
+        var val = event.target.value || (event.target.checked != null ? event.target.checked : null);
 
         setSettings(old => {
             return { ...old, [name]: val }

@@ -9,7 +9,13 @@ import { IconButtonProps } from '@material-ui/core/IconButton';
 
 const styles: StyleRulesCallback = (theme) => ({
     text: {
-        padding: theme.spacing.unit * 2
+        padding: theme.spacing.unit * 2,
+        paddingBottom: 0,
+    },
+
+    version: {
+        padding: theme.spacing.unit * 2,
+        paddingTop: 0,
     },
 
     normal: {
@@ -39,6 +45,7 @@ const AppMenuBase: React.FunctionComponent<Props> = (props) => {
 
     const elements = [
         {
+            type: "entry",
             to: "/",
             text: translate("menu.plans"),
         },
@@ -50,6 +57,13 @@ const AppMenuBase: React.FunctionComponent<Props> = (props) => {
             to: "/settings",
             text: translate("menu.settings"),
         },
+        // {
+        //     type: "Divider"
+        // },
+        {
+            to: "https://homey-heating.mskg.app",
+            text: translate("menu.help"),
+        },
     ]
 
     return (
@@ -57,12 +71,16 @@ const AppMenuBase: React.FunctionComponent<Props> = (props) => {
             <Typography className={classes.text} variant="h5" gutterBottom>
                 {translate("menu.title")}
             </Typography>
+            <Typography className={classes.version} variant="body2" color="textSecondary" gutterBottom>
+                Version {VERSION}
+            </Typography>
 
             <Divider />
             <List>
             {
-                elements.map((e) => (
-                    <ListItemLink key={e.to} to={e.to} disabled={props.match.url == e.to} button>
+                elements.map((e) => (e.type == "Divider"
+                    ? <Divider /> 
+                    : <ListItemLink key={e.to} to={e.to} disabled={props.match.url == e.to} button>
                         <ListItemText primary={e.text} 
                             classes={{primary: props.match.url != e.to ? classes.normal : classes.selected}} />
                     </ListItemLink>

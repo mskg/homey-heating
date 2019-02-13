@@ -1,16 +1,17 @@
+import { IHeatingDevice, IHeatingZone } from "@app/model";
+import { DeviceManagerService } from "@app/services";
 import { map } from "lodash";
-import { IHeatingZone, IHeatingDevice } from "../app/model";
 import { ApiBase } from "./types";
+import { injectable } from "tsyringe";
 
+@injectable()
 class GetZones extends ApiBase {
-    constructor() {
+    constructor(private manager: DeviceManagerService) {
         super("GET", "/zones");
     }
 
-    public fn(args, callback) {
-        this.logger.debug("GET zones");
-
-        const result = map(this.myApp.manager.zones,
+    protected async execute() {
+        const result = map(this.manager.zones,
             z => {
                 return {
                     id: z.id,
@@ -20,19 +21,18 @@ class GetZones extends ApiBase {
             }
         );
 
-        callback(null, result);
+        return result;
     }
 }
 
+@injectable()
 class GetDevices extends ApiBase {
-    constructor() {
+    constructor(private manager: DeviceManagerService) {
         super("GET", "/devices");
     }
 
-    public fn(args, callback) {
-        this.logger.debug("GET devices");
-
-        const result = map(this.myApp.manager.devices,
+    protected async execute() {
+        const result = map(this.manager.devices,
             z => {
                 return {
                     id: z.id,
@@ -42,11 +42,11 @@ class GetDevices extends ApiBase {
             }
         );
 
-        callback(null, result);
+        return result;
     }
 }
 
 export default [
-    new GetDevices(),
-    new GetZones()
+    GetDevices,
+    GetZones
 ];

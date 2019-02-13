@@ -21,6 +21,7 @@ import SubHeader from '../components/SubHeader';
 import translate from '../i18n/Translation';
 import Page from "../layouts/Page";
 import { withSnackbar, InjectedNotistackProps } from 'notistack';
+import BodyText from '../components/BodyText';
 
 const styles: StyleRulesCallback = (theme) => ({
     list: {
@@ -102,32 +103,35 @@ const OverviewPage: React.FunctionComponent<Props> = (props) => {
                                 onChange={(evt) => setHeatingMode(evt.target.value)}
                                 value={mode}
                             >
-                                <MenuItem value={0}>{translate("Modes.0")}</MenuItem>
-                                <MenuItem value={1}>{translate("Modes.1")}</MenuItem>
-                                <MenuItem value={2}>{translate("Modes.2")}</MenuItem>
-                                <MenuItem value={3}>{translate("Modes.3")}</MenuItem>
-                                <MenuItem value={4}>{translate("Modes.4")}</MenuItem>
+                            {
+                                [0,1,2,3,4,5].map(m=>
+                                    (<MenuItem value={m}>{translate(`Modes.${m}`)}</MenuItem>)
+                                )
+                            }
                             </Select>
                         </InputContainer>
 
                         <SubHeader text={translate("plans.plans.section")} />
-                        <List className={classes.list}>
-                            {plans.length > 0 && <Divider />}
-                            {plans.map((plan) => (
-                                <React.Fragment key={plan.id}>
-                                    <ListItem {...{ to: `/plans/${plan.id}` }} component={Link} button>
-                                        <ListItemText primary={plan.name} secondary={formatAttachments(plan)} />
+                        { plans.length == 0
+                            ? <BodyText style={{paddingTop: 16}} text={translate("plans.plans.empty")} />
+                            : <List className={classes.list}>
+                                {plans.length > 0 && <Divider />}
+                                {plans.map((plan) => (
+                                    <React.Fragment key={plan.id}>
+                                        <ListItem {...{ to: `/plans/${plan.id}` }} component={Link} button>
+                                            <ListItemText primary={plan.name} secondary={formatAttachments(plan)} />
 
-                                        <ListItemSecondaryAction>
-                                            <Switch
-                                                onChange={() => toggleState(plan)}
-                                                checked={plan.enabled} />
-                                        </ListItemSecondaryAction>
-                                    </ListItem>
-                                    <Divider />
-                                </React.Fragment>
-                            ))}
-                        </List>
+                                            <ListItemSecondaryAction>
+                                                <Switch
+                                                    onChange={() => toggleState(plan)}
+                                                    checked={plan.enabled} />
+                                            </ListItemSecondaryAction>
+                                        </ListItem>
+                                        <Divider />
+                                    </React.Fragment>
+                                ))}
+                            </List>
+                        }
                         <AddFab onClick={createNew} />
                     </React.Fragment>
                 )

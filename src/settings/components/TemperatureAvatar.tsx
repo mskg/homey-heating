@@ -105,7 +105,7 @@ const BaseFilledTemperatureAvatar: React.FunctionComponent<FilledProps> = (props
     const { value, classes, fill } = props;
     let { digits } = props;
 
-    const color = getColor(value)[500];
+    const color = (fill == 100 ? blue : deepOrange)[500];
     if (digits == null) { digits = 2; }
 
     return (

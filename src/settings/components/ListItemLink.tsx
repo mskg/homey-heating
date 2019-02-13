@@ -14,6 +14,10 @@ type Props =  {
 function createLink({innerRef, ...props}: Props) {
     // Remove `innerRef` from properties as the interface is incompatible.
 
+    if (props.to.toString().match(/https/)) {
+        return <a href={props.to.toString()} {...props}>{props.children}</a>
+    }
+
     return <Link {...props} />
 }
 
