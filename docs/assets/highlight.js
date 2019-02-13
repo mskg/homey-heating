@@ -1,5 +1,5 @@
 function highlightMatchesInString(text) {
-    return text.replace(/#(\d\d)/ig, function (m) { 
+    return text.replace(/#(\d)+/ig, function (m) { 
         return '<a href="https://github.com/mskg/homey-heating/issues/' + m.substring(1) + '">' + m + '</a>'; 
     });
 }
