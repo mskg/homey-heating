@@ -70,8 +70,12 @@ export class DeviceManagerService {
             }
 
             this.logger.debug(`Device ${device.id} was created.`);
-            this.deviceList[device.id] = device;
-            await this.attachWatchers(device);
+
+            // updated device does not support capabilityinstance?
+            const refetch = await this.homeyApi.devices.getDevice({id: device.id}) as AuditedDevice;
+
+            this.deviceList[device.id] = refetch;
+            await this.attachWatchers(refetch);
         });
 
         this.homeyApi.devices.on("device.update", async (device: IDevice) => {
@@ -88,8 +92,12 @@ export class DeviceManagerService {
             }
 
             this.logger.debug(`Device ${device.id} was updated.`);
-            await this.attachWatchers(device);
-            this.deviceList[device.id] = device;
+
+            // updated device does not support capabilityinstance?
+            const refetch = await this.homeyApi.devices.getDevice({id: device.id}) as AuditedDevice;
+
+            this.deviceList[device.id] = refetch;
+            await this.attachWatchers(refetch);
         });
 
         this.homeyApi.devices.on("device.delete", async (device: IDevice) => {
