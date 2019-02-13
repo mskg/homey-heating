@@ -1,30 +1,30 @@
-import { Button, ListItemSecondaryAction } from '@material-ui/core';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
-import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
-import BackIcon from '@material-ui/icons/ArrowBackIos';
-import CancelIcon from '@material-ui/icons/Cancel';
-import TrashIcon from '@material-ui/icons/Delete';
-import CopyIcon from '@material-ui/icons/FileCopy';
-import React, { useCallback } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { ScrollLocky } from 'react-scroll-locky';
-import { Day, ISetPoint } from '../../app/model';
+import { Button, ListItemSecondaryAction } from "@material-ui/core";
+import Divider from "@material-ui/core/Divider";
+import IconButton from "@material-ui/core/IconButton";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import { StyleRulesCallback, withStyles, WithStyles } from "@material-ui/core/styles";
+import Tab from "@material-ui/core/Tab";
+import Tabs from "@material-ui/core/Tabs";
+import BackIcon from "@material-ui/icons/ArrowBackIos";
+import CancelIcon from "@material-ui/icons/Cancel";
+import TrashIcon from "@material-ui/icons/Delete";
+import CopyIcon from "@material-ui/icons/FileCopy";
+import React, { useCallback } from "react";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import { ScrollLocky } from "react-scroll-locky";
+import { Day, ISetPoint } from "../../app/model";
 import AddFab from "../components/AddFab";
 import AppHeader from "../components/AppHeader";
-import { MenuButton } from '../components/Menu';
-import CopyDayDialog from '../dialogs/CopyDayDialog';
+import { MenuButton } from "../components/Menu";
+import { TemperatureAvatar } from "../components/TemperatureAvatar";
+import CopyDayDialog from "../dialogs/CopyDayDialog";
 import SetPointDialog from "../dialogs/SetPointDialog";
-import { TemperatureAvatar } from '../components/TemperatureAvatar';
-import translate from '../i18n/Translation';
-import Page from '../layouts/Page';
-import { useHistory, useModifySetPoints, usePlan } from '../state/planHooks';
-import { usePlanDispatch } from '../state/PlanProvider';
+import translate from "../i18n/Translation";
+import Page from "../layouts/Page";
+import { useHistory, useModifySetPoints, usePlan } from "../state/planHooks";
+import { usePlanDispatch } from "../state/PlanProvider";
 
 const styles: StyleRulesCallback = (theme) => ({
     list: {
@@ -33,7 +33,7 @@ const styles: StyleRulesCallback = (theme) => ({
     },
 
     tab: {
-        minWidth: "50px"
+        minWidth: "50px",
     },
 
     avatar: {
@@ -43,14 +43,14 @@ const styles: StyleRulesCallback = (theme) => ({
 
 function formatNumber(i: number) {
     return i > 9 ? i.toString() : "0" + i;
-};
+}
 
 function tabToDate(dateDay: number): number {
     return dateDay + 1 > 6 ? 0 : dateDay + 1;
 }
 
 function dateToTab(dateDay: number): number {
-    return dateDay == 0 ? 6 : dateDay - 1;
+    return dateDay === 0 ? 6 : dateDay - 1;
 }
 
 type IndexedSetPoint = {
@@ -70,8 +70,8 @@ const SchedulePage: React.FunctionComponent<Props> = (props: Props) => {
 
     const [isSetPointDialogOpen, setSetPointDialogOpen] = React.useState(false);
     const [isCopyDayDialogOpen, setIsCopyDayDialogOpen] = React.useState(false);
-    const [selectedTab, setTab] = React.useState(0); 
-    
+    const [selectedTab, setTab] = React.useState(0);
+
     const { plan, loaded } = usePlan(props.match.params.id);
     const { undo, commit } = useHistory();
 
@@ -82,15 +82,15 @@ const SchedulePage: React.FunctionComponent<Props> = (props: Props) => {
         setIsCopyDayDialogOpen(false);
     }, [location, loaded]);
 
-    const { 
-        isDirty, setDirty, 
-        selectedDay, copyDays, loadSetPoint, newSetPoint, selectDay, removeSetPoint: removeSetPointFunc 
+    const {
+        isDirty, setDirty,
+        selectedDay, copyDays, loadSetPoint, newSetPoint, selectDay, removeSetPoint: removeSetPointFunc,
     } = useModifySetPoints();
 
     const selectTab = useCallback((tab) => {
         setTab(tab);
         selectDay(tabToDate(tab));
-    }, [dispatch]);    
+    }, [dispatch]);
 
     // depends on local variables
     const removeSetPoint = (idx) => {
@@ -105,12 +105,12 @@ const SchedulePage: React.FunctionComponent<Props> = (props: Props) => {
         setIsCopyDayDialogOpen(false);
     };
 
-     function onCancelDialog() {
+    function onCancelDialog() {
         undo();
 
         history.replace({
             pathname: `/plans/${plan.id}`,
-            state: true
+            state: true,
         });
     }
 
@@ -119,12 +119,12 @@ const SchedulePage: React.FunctionComponent<Props> = (props: Props) => {
 
         history.replace({
             pathname: `/plans/${plan.id}`,
-            state: true
+            state: true,
         });
     }
 
     function onEditSetPoint(sp: ISetPoint, index: number) {
-        loadSetPoint({ ...sp, index: index });
+        loadSetPoint({ ...sp, index });
         setSetPointDialogOpen(true);
     }
 
@@ -135,17 +135,19 @@ const SchedulePage: React.FunctionComponent<Props> = (props: Props) => {
 
     return (
         <React.Fragment>
-            <CopyDayDialog open={isCopyDayDialogOpen}
+            <CopyDayDialog
+                open={isCopyDayDialogOpen}
                 onConfirm={copyDay}
-                onCancel={() => { setIsCopyDayDialogOpen(false); }
-                } />
+                onCancel={() => { setIsCopyDayDialogOpen(false); }}
+            />
 
-            <SetPointDialog 
+            <SetPointDialog
                 open={isSetPointDialogOpen}
-                onClose={(d) => { 
-                    if (d) { setDirty(true); selectTab(selectedTab); } 
-                    setSetPointDialogOpen(false); 
-                }} />
+                onClose={(d) => {
+                    if (d) { setDirty(true); selectTab(selectedTab); }
+                    setSetPointDialogOpen(false);
+                }}
+            />
 
             <Page>
                 {{
@@ -154,7 +156,7 @@ const SchedulePage: React.FunctionComponent<Props> = (props: Props) => {
                             {{
                                 title: translate("schedule.title"),
                                 button: (
-                                    <MenuButton first onClick={onCancelDialog} icon={isDirty ? <CancelIcon /> : <BackIcon />} />
+                                    <MenuButton first={true} onClick={onCancelDialog} icon={isDirty ? <CancelIcon /> : <BackIcon />} />
                                 ),
                                 actions: (
                                     <React.Fragment>
@@ -168,16 +170,16 @@ const SchedulePage: React.FunctionComponent<Props> = (props: Props) => {
                                     </React.Fragment>
                                 ),
                                 subBar: (
-                                    <Tabs value={selectedTab} onChange={(e,v) => selectTab(v)} variant="fullWidth">
-                                        <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Monday")} />
-                                        <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Tuesday")} />
-                                        <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Wednesday")} />
-                                        <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Thursday")} />
-                                        <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Friday")} />
-                                        <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Saturday")} />
-                                        <Tab classes={{ root: props.classes.tab }} disableRipple label={translate("schedule.Sunday")} />
+                                    <Tabs value={selectedTab} onChange={(e, v) => selectTab(v)} variant="fullWidth">
+                                        <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("schedule.Monday")} />
+                                        <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("schedule.Tuesday")} />
+                                        <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("schedule.Wednesday")} />
+                                        <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("schedule.Thursday")} />
+                                        <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("schedule.Friday")} />
+                                        <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("schedule.Saturday")} />
+                                        <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("schedule.Sunday")} />
                                     </Tabs>
-                                )
+                                ),
                             }}
                         </AppHeader>
                     ),
@@ -190,12 +192,13 @@ const SchedulePage: React.FunctionComponent<Props> = (props: Props) => {
                                     {
                                         selectedDay.last &&
                                         <React.Fragment key="-1">
-                                            <ListItem button onClick={() => selectTab(dateToTab(selectedDay.last.day))}>
+                                            <ListItem button={true} onClick={() => selectTab(dateToTab(selectedDay.last.day))}>
                                                 <TemperatureAvatar value={selectedDay.last.targetTemperature} />
 
                                                 <ListItemText
                                                     primary={`${Day[selectedDay.last.day]}`}
-                                                    secondary={`${formatNumber(selectedDay.last.hour)}:${formatNumber(selectedDay.last.minute)}`} />
+                                                    secondary={`${formatNumber(selectedDay.last.hour)}:${formatNumber(selectedDay.last.minute)}`}
+                                                />
                                             </ListItem>
                                             <Divider />
                                         </React.Fragment>
@@ -203,7 +206,7 @@ const SchedulePage: React.FunctionComponent<Props> = (props: Props) => {
                                     {
                                         selectedDay.schedules.map((schedule: IndexedSetPoint) =>
                                             <React.Fragment key={schedule.index}>
-                                                <ListItem button onClick={() => onEditSetPoint(schedule, schedule.index)}>
+                                                <ListItem button={true} onClick={() => onEditSetPoint(schedule, schedule.index)}>
                                                     <TemperatureAvatar value={schedule.targetTemperature} />
 
                                                     <ListItemText primary={`${formatNumber(schedule.hour)}:${formatNumber(schedule.minute)}`} />
@@ -215,7 +218,7 @@ const SchedulePage: React.FunctionComponent<Props> = (props: Props) => {
                                                     </ListItemSecondaryAction>
                                                 </ListItem>
                                                 <Divider />
-                                            </React.Fragment>
+                                            </React.Fragment>,
                                         )
                                     }
                                 </List>
@@ -228,6 +231,6 @@ const SchedulePage: React.FunctionComponent<Props> = (props: Props) => {
             </Page>
         </React.Fragment>
     );
-}
+};
 
 export default withRouter(withStyles(styles)(SchedulePage));

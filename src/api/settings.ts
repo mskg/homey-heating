@@ -1,7 +1,7 @@
-import { Settings, SettingsManagerService, InternalSettings, AllSettings } from "@app/services";
+import { AllSettings, InternalSettings, Settings, SettingsManagerService } from "@app/services";
 import { forEach } from "lodash";
-import { ApiBase, SUCCESS, IAPIParams } from "./types";
 import { injectable } from "tsyringe";
+import { ApiBase, IAPIParams, SUCCESS } from "./types";
 
 @injectable()
 class GetSettings extends ApiBase {
@@ -10,10 +10,10 @@ class GetSettings extends ApiBase {
     }
 
     protected async execute() {
-        var result = {};
+        const result = {};
         // const manager = this.myApp.getService(SettingsManagerService);
 
-        forEach(Object.keys(Settings), s => {
+        forEach(Object.keys(Settings), (s) => {
             result[s] = this.manager.get(Settings[s]);
         });
 
@@ -21,7 +21,7 @@ class GetSettings extends ApiBase {
     }
 }
 
-type Body = {[key: string]: string }
+type Body = {[key: string]: string; };
 
 @injectable()
 class PutSettings extends ApiBase {
@@ -32,8 +32,8 @@ class PutSettings extends ApiBase {
     protected async execute(args: IAPIParams<Body>) {
         const settings = args.body;
 
-        forEach(Object.keys(Settings), publicKey => {
-            var privateKey = Settings[publicKey];
+        forEach(Object.keys(Settings), (publicKey) => {
+            const privateKey = Settings[publicKey];
 
             if (settings.hasOwnProperty(publicKey)) {
                 this.manager.set(privateKey, settings[publicKey]);
@@ -41,8 +41,8 @@ class PutSettings extends ApiBase {
         });
 
         // also allow internal settings
-        forEach(Object.keys(InternalSettings), publicKey => {
-            var privateKey = InternalSettings[publicKey];
+        forEach(Object.keys(InternalSettings), (publicKey) => {
+            const privateKey = InternalSettings[publicKey];
 
             if (settings.hasOwnProperty(publicKey)) {
                 this.manager.set(privateKey, settings[publicKey]);
@@ -55,5 +55,5 @@ class PutSettings extends ApiBase {
 
 export default [
     GetSettings,
-    PutSettings
+    PutSettings,
 ];

@@ -1,5 +1,5 @@
-import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
-import React from 'react';
+import { StyleRulesCallback, withStyles, WithStyles } from "@material-ui/core/styles";
+import React from "react";
 
 const styles: StyleRulesCallback = (theme) => ({
     inputContainer: {
@@ -10,7 +10,7 @@ const styles: StyleRulesCallback = (theme) => ({
 });
 
 type Props = {
-    children: React.ReactElement<any>
+    children: React.ReactElement<any>,
 } & WithStyles<typeof styles>;
 
 const InputContainer: React.FunctionComponent<Props> = (props) => {

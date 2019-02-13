@@ -1,33 +1,33 @@
-import { MenuItem, Select } from '@material-ui/core';
-import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
-import Switch from '@material-ui/core/Switch';
+import { MenuItem, Select } from "@material-ui/core";
+import Divider from "@material-ui/core/Divider";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import ListItemText from "@material-ui/core/ListItemText";
+import { StyleRulesCallback, withStyles, WithStyles } from "@material-ui/core/styles";
+import Switch from "@material-ui/core/Switch";
 import { forEach, sortBy } from "lodash";
-import React from 'react';
+import { InjectedNotistackProps, withSnackbar } from "notistack";
+import React from "react";
 import { RouteComponentProps } from "react-router";
-import { Link, withRouter } from 'react-router-dom';
-import { IHeatingPlan } from '../../app/model';
-import { modeAPI, planAPI } from '../api/heating';
-import { useDevices, useMode, usePlans, useZones } from '../api/hooks';
+import { Link, withRouter } from "react-router-dom";
+import { IHeatingPlan } from "../../app/model";
+import { modeAPI, planAPI } from "../api/heating";
+import { useDevices, useMode, usePlans, useZones } from "../api/hooks";
 import AddFab from "../components/AddFab";
 import AppHeader from "../components/AppHeader";
+import BodyText from "../components/BodyText";
 import InputContainer from "../components/InputContainer";
-import { AppMenuButton } from '../components/Menu';
-import SubHeader from '../components/SubHeader';
-import translate from '../i18n/Translation';
+import { AppMenuButton } from "../components/Menu";
+import SubHeader from "../components/SubHeader";
+import translate from "../i18n/Translation";
 import Page from "../layouts/Page";
-import { withSnackbar, InjectedNotistackProps } from 'notistack';
-import BodyText from '../components/BodyText';
 
 const styles: StyleRulesCallback = (theme) => ({
     list: {
         marginTop: 0,
         marginBottom: theme.spacing.unit * 2,
-    }
+    },
 });
 
 type Props = WithStyles<typeof styles> & RouteComponentProps & InjectedNotistackProps;
@@ -41,44 +41,44 @@ const OverviewPage: React.FunctionComponent<Props> = (props) => {
     const [ modeChange, setModeChange ] = React.useState(false);
 
     function formatAttachments(plan: IHeatingPlan): string {
-        let elements: string[] = [];
+        const elements: string[] = [];
 
-        forEach(plan.devices, d => {
+        forEach(plan.devices, (d) => {
             const device = devices[d];
             if (device != null) {
                 elements.push(device.name);
             }
         });
 
-        forEach(plan.zones, d => {
+        forEach(plan.zones, (d) => {
             const zone = zones[d];
             if (zone != null) {
                 elements.push(zone.name);
             }
         });
 
-        return sortBy(elements, e => e).join(", ");
+        return sortBy(elements, (e) => e).join(", ");
     }
 
-    const setHeatingMode = mode => {
-        (async () => { 
+    const setHeatingMode = (newMode) => {
+        (async () => {
             setModeChange(true);
-            await modeAPI.setMode(parseInt(mode));
+            await modeAPI.setMode(parseInt(newMode, 10));
             props.enqueueSnackbar(translate("plans.modechanged", {
-                name: translate(`Modes.${mode}`)
+                name: translate(`Modes.${newMode}`),
             }));
             await loadMode();
             setModeChange(false);
         })();
     };
 
-    const toggleState = (plan) => {
-        (async () => { 
-            await planAPI.togglePlanState(plan); 
+    const toggleState = (thePlan) => {
+        (async () => {
+            await planAPI.togglePlanState(thePlan);
             props.enqueueSnackbar(translate("plans.toggled", {
-                name: plan.name
+                name: thePlan.name,
             }));
-            await loadPlans(); 
+            await loadPlans();
         })();
     };
 
@@ -86,7 +86,7 @@ const OverviewPage: React.FunctionComponent<Props> = (props) => {
         props.history.push(`/plans/new`);
     };
 
-    return (        
+    return (
         <Page>
             {{
                 header: (<AppHeader title={translate("plans.title")} button={<AppMenuButton />} />),
@@ -98,33 +98,34 @@ const OverviewPage: React.FunctionComponent<Props> = (props) => {
                         <SubHeader text={translate("plans.heatingmode.section")} />
                         <InputContainer>
                             <Select
-                                fullWidth
+                                fullWidth={true}
                                 disabled={modeChange}
                                 onChange={(evt) => setHeatingMode(evt.target.value)}
                                 value={mode}
                             >
                             {
-                                [0,1,2,3,4,5].map(m=>
-                                    (<MenuItem value={m}>{translate(`Modes.${m}`)}</MenuItem>)
+                                [0, 1, 2, 3, 4, 5].map((m) =>
+                                    (<MenuItem value={m}>{translate(`Modes.${m}`)}</MenuItem>),
                                 )
                             }
                             </Select>
                         </InputContainer>
 
                         <SubHeader text={translate("plans.plans.section")} />
-                        { plans.length == 0
+                        { plans.length === 0
                             ? <BodyText style={{paddingTop: 16}} text={translate("plans.plans.empty")} />
                             : <List className={classes.list}>
                                 {plans.length > 0 && <Divider />}
                                 {plans.map((plan) => (
                                     <React.Fragment key={plan.id}>
-                                        <ListItem {...{ to: `/plans/${plan.id}` }} component={Link} button>
+                                        <ListItem {...{ to: `/plans/${plan.id}` }} component={Link} button={true}>
                                             <ListItemText primary={plan.name} secondary={formatAttachments(plan)} />
 
                                             <ListItemSecondaryAction>
                                                 <Switch
                                                     onChange={() => toggleState(plan)}
-                                                    checked={plan.enabled} />
+                                                    checked={plan.enabled}
+                                                />
                                             </ListItemSecondaryAction>
                                         </ListItem>
                                         <Divider />
@@ -134,10 +135,10 @@ const OverviewPage: React.FunctionComponent<Props> = (props) => {
                         }
                         <AddFab onClick={createNew} />
                     </React.Fragment>
-                )
+                ),
             }}
         </Page>
     );
-}
+};
 
 export default withSnackbar(withRouter(withStyles(styles)(OverviewPage)));

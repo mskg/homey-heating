@@ -1,7 +1,6 @@
-import "mocha";
 import { LogService } from "@app/services";
+import "mocha";
 
-beforeEach(function () {
+beforeEach(() => {
     LogService.setupForTest();
 });
-

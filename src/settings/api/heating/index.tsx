@@ -1,12 +1,12 @@
 
 import { map, sortBy } from "lodash";
-import { IHeatingPlan, ICalculatedTemperature, OperationMode, IScheduleInformation } from "../../../app/model";
+import { ICalculatedTemperature, IHeatingPlan, IScheduleInformation, OperationMode } from "../../../app/model";
 import callAPI from "../callAPI";
 
 const fetchPlans = async (): Promise<IHeatingPlan[]> => {
-  var res = await callAPI<IHeatingPlan[]>("GET", "/plans");
+  const res = await callAPI<IHeatingPlan[]>("GET", "/plans");
 
-  return map(res, plan => {
+  return map(res, (plan) => {
     plan.zones = plan.zones || [];
     plan.devices = plan.devices || [];
 
@@ -24,41 +24,41 @@ const togglePlanState = async (plan: IHeatingPlan): Promise<boolean> => {
 const updatePlan = async (newPlan: IHeatingPlan): Promise<IHeatingPlan> => {
   const planCopy = {...newPlan};
 
-  if (!planCopy.zones || planCopy.zones.length == 0) { planCopy.zones = null; }
-  if (!planCopy.devices || planCopy.devices.length == 0) { planCopy.devices = null; }
+  if (!planCopy.zones || planCopy.zones.length === 0) { planCopy.zones = null; }
+  if (!planCopy.devices || planCopy.devices.length === 0) { planCopy.devices = null; }
 
   return await callAPI<IHeatingPlan>("PUT", `/plans/${newPlan.id}`, planCopy);
-}
+};
 
 const removePlan = async (id: string): Promise<IHeatingPlan> => {
   return await callAPI<IHeatingPlan>("DELETE", `/plans/${id}`);
-}
+};
 
 const fetchPlanById = async (id: string): Promise<IHeatingPlan> => {
-  var plan = await callAPI<IHeatingPlan>("GET", `/plans/${id}`);
-  if (plan == null) throw new Error(`Plan ${id} not found.`);
+  const plan = await callAPI<IHeatingPlan>("GET", `/plans/${id}`);
+  if (plan == null) { throw new Error(`Plan ${id} not found.`); }
 
   plan.zones = plan.zones || [];
   plan.devices = plan.devices || [];
 
   return plan;
-}
+};
 
 const fetchSchedule = async (): Promise<IScheduleInformation> => {
-  var schedule = await callAPI<IScheduleInformation>("GET", `/schedule`);
-  schedule.temperatures = sortBy(schedule.temperatures, [(s:ICalculatedTemperature) => s.device.name]);
+  const schedule = await callAPI<IScheduleInformation>("GET", `/schedule`);
+  schedule.temperatures = sortBy(schedule.temperatures, [(s: ICalculatedTemperature) => s.device.name]);
 
   return schedule;
-}
+};
 
 const fetchMode = async (): Promise<OperationMode> => {
-  var res = await callAPI<OperationMode>("GET", "/mode");
+  const res = await callAPI<OperationMode>("GET", "/mode");
   return res;
 };
 
 const setMode = async (mode: OperationMode): Promise<void> => {
-   return await callAPI<void>("PUT", `/mode`, {mode: mode});
-}
+   return await callAPI<void>("PUT", `/mode`, {mode});
+};
 
 export const planAPI = {
   fetchPlans,
@@ -66,7 +66,7 @@ export const planAPI = {
   fetchSchedule,
   updatePlan,
   removePlan,
-  togglePlanState
+  togglePlanState,
 };
 
 export const modeAPI = {

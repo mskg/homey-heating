@@ -2,12 +2,12 @@ import { DEFAULT_HEATING_PLAN } from "@app/helper";
 import { IHeatingPlan } from "@app/model";
 import { DeviceManagerService, HeatingPlanRepositoryService } from "@app/services";
 import { find, remove } from "lodash";
-import { ApiBase, SUCCESS, IAPIParams } from "./types";
 import { injectable } from "tsyringe";
+import { ApiBase, IAPIParams, SUCCESS } from "./types";
 
 type Params = {
     id: string;
-}
+};
 
 @injectable()
 class GetResetPlans extends ApiBase {
@@ -61,14 +61,14 @@ class PutPlan extends ApiBase<any, Params> {
         // kill all unkown devices
         if (plan.devices) {
             remove(plan.devices, (r: string) =>
-                find(this.devices.devices, (d) => d.id == r) == null
+                find(this.devices.devices, (d) => d.id === r) == null,
             );
         }
 
         // kill all unkown devices
         if (plan.zones) {
             remove(plan.zones, (r: string) =>
-                find(this.devices.zones, (z) => z.id == r) == null
+                find(this.devices.zones, (z) => z.id === r) == null,
             );
         }
 
@@ -94,5 +94,5 @@ export default [
     GetPlan,
     PutPlan,
     GetPlans,
-    GetResetPlans
+    GetResetPlans,
 ];

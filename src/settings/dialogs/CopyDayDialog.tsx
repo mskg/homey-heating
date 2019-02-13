@@ -1,15 +1,15 @@
-import { Checkbox, List, ListItem, ListItemSecondaryAction, ListItemText } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import { Checkbox, List, ListItem, ListItemSecondaryAction, ListItemText } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
 import { find, map, remove } from "lodash";
-import React from 'react';
-import { Day } from '../../app/model';
-import translate from '../i18n/Translation';
+import React from "react";
+import { Day } from "../../app/model";
 import Transition from "../components/Transition";
+import translate from "../i18n/Translation";
 
 type Props = {
   open: boolean;
@@ -25,11 +25,11 @@ const CopyDayDialog: React.FunctionComponent<Props> = (props: Props) => {
     setDays(null);
   }, [props.open]);
 
-  const toggleDay = (day) => setDays(oldDays => {
+  const toggleDay = (day) => setDays((oldDays) => {
     if (oldDays == null) { oldDays = []; }
 
-    const found = find(oldDays, d => d === day);
-    remove(oldDays, d => d === day);
+    const found = find(oldDays, (d) => d === day);
+    remove(oldDays, (d) => d === day);
 
     if (found == null) {
       oldDays.push(day);
@@ -39,7 +39,7 @@ const CopyDayDialog: React.FunctionComponent<Props> = (props: Props) => {
   });
 
   return (
-    <Dialog open={props.open} onClose={() => { props.onCancel() } } TransitionComponent={Transition}>
+    <Dialog open={props.open} onClose={() => { props.onCancel(); }} TransitionComponent={Transition}>
       <DialogTitle>{translate("copy.title")}</DialogTitle>
       <DialogContent>
         <DialogContentText>
@@ -47,27 +47,27 @@ const CopyDayDialog: React.FunctionComponent<Props> = (props: Props) => {
         </DialogContentText>
 
         <List dense={true}>
-          {map([1, 2, 3, 4, 5, 6, 0], day => (
-            <ListItem key={day} button onClick={() => toggleDay(day)}>
+          {map([1, 2, 3, 4, 5, 6, 0], (day) => (
+            <ListItem key={day} button={true} onClick={() => toggleDay(day)}>
               <ListItemText primary={translate(`copy.${Day[day]}`)} />
               <ListItemSecondaryAction>
-                <Checkbox checked={find(days, d => d == day) != null} onClick={() => toggleDay(day)} />
+                <Checkbox checked={find(days, (d) => d === day) != null} onClick={() => toggleDay(day)} />
               </ListItemSecondaryAction>
             </ListItem>
           ))}
         </List>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => { props.onCancel() }} color="primary">
+        <Button onClick={() => { props.onCancel(); }} color="primary">
         {translate("copy.cancel")}
         </Button>
 
-        <Button onClick={() => { props.onConfirm(days) }} color="primary">
+        <Button onClick={() => { props.onConfirm(days); }} color="primary">
         {translate("copy.ok")}
         </Button>
       </DialogActions>
     </Dialog>
   );
-}
+};
 
 export default CopyDayDialog;

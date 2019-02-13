@@ -1,8 +1,8 @@
-import AppBar from '@material-ui/core/AppBar';
-import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import React, { Fragment, ReactChild } from 'react';
+import AppBar from "@material-ui/core/AppBar";
+import { StyleRulesCallback, withStyles, WithStyles } from "@material-ui/core/styles";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import React, { Fragment, ReactChild } from "react";
 
 const styles: StyleRulesCallback = (theme) => ({
     appBar: {
@@ -13,12 +13,12 @@ const styles: StyleRulesCallback = (theme) => ({
     },
 
     buttons: {
-        display: 'flex' as 'flex',
+        display: "flex" as "flex",
     },
-    
+
     toolbar: {
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        alignItems: "center",
+        justifyContent: "space-between",
     },
 });
 
@@ -26,7 +26,7 @@ type NamedSlots = {
     title?: string,
     button?: ReactChild,
     actions?: ReactChild,
-    subBar?: ReactChild
+    subBar?: ReactChild,
 };
 
 type Props = WithStyles<typeof styles> & {
@@ -50,12 +50,12 @@ const AppHeaderComponent: React.FunctionComponent<Props> = (props) => {
                 <Toolbar className={classes.toolbar}>
                     {props.button || button}
 
-                    <Typography variant="h6" color="inherit" noWrap>
+                    <Typography variant="h6" color="inherit" noWrap={true}>
                         {props.title || title}
                     </Typography>
 
                      <div className={classes.grow} />
-                    {actions != null && 
+                    {actions != null &&
                         <div className={classes.buttons}>
                             {actions}
                         </div>
@@ -66,6 +66,6 @@ const AppHeaderComponent: React.FunctionComponent<Props> = (props) => {
             </AppBar>
         </Fragment>
     );
-}
+};
 
 export default withStyles(styles)(AppHeaderComponent);

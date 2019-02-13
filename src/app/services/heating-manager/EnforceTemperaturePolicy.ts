@@ -1,7 +1,7 @@
 import { Retry } from "@app/helper";
-import { registry, injectable } from "tsyringe";
+import { injectable, registry } from "tsyringe";
 import { AuditedDevice, DeviceManagerService } from "../device-manager";
-import { LoggerFactory, asynctrycatchlog } from "../log";
+import { asynctrycatchlog, LoggerFactory } from "../log";
 import { ISetTemperaturePolicy, PolicyType } from "./types";
 
 @injectable()
@@ -10,7 +10,7 @@ export class EnforceTemperaturePolicy implements ISetTemperaturePolicy {
     private logger;
 
     constructor(factory: LoggerFactory,
-        private deviceManager: DeviceManagerService,
+                private deviceManager: DeviceManagerService,
     ) {
         this.logger = factory.createLogger("ST/Enforce");
     }
@@ -24,7 +24,7 @@ export class EnforceTemperaturePolicy implements ISetTemperaturePolicy {
             this.logger.error(`> Device ${device.name} is not ready (${device.unavailableMessage}).`);
             return {
                 success: false,
-                error: "not_ready"
+                error: "not_ready",
             };
         }
 
@@ -46,7 +46,7 @@ export class EnforceTemperaturePolicy implements ISetTemperaturePolicy {
 
             return {
                 success: false,
-                error: e.name
+                error: e.name,
             };
         }
     }

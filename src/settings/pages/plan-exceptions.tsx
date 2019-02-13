@@ -1,18 +1,18 @@
-import { Button } from '@material-ui/core';
-import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
-import BackIcon from '@material-ui/icons/ArrowBackIos';
-import CancelIcon from '@material-ui/icons/Cancel';
-import React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { IHeatingPlan, OverrideMode } from '../../app/model';
+import { Button } from "@material-ui/core";
+import { StyleRulesCallback, withStyles, WithStyles } from "@material-ui/core/styles";
+import BackIcon from "@material-ui/icons/ArrowBackIos";
+import CancelIcon from "@material-ui/icons/Cancel";
+import React from "react";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import { IHeatingPlan, OverrideMode } from "../../app/model";
 import AppHeader from "../components/AppHeader";
-import BodyText from '../components/BodyText';
-import { MenuButton } from '../components/Menu';
-import OverrideSetting from '../components/OverrideSetting';
-import SubHeader from '../components/SubHeader';
-import translate from '../i18n/Translation';
-import Page from '../layouts/Page';
-import { useHistory, usePlan, useModifyPlan, useModifyExceptions } from '../state/planHooks';
+import BodyText from "../components/BodyText";
+import { MenuButton } from "../components/Menu";
+import OverrideSetting from "../components/OverrideSetting";
+import SubHeader from "../components/SubHeader";
+import translate from "../i18n/Translation";
+import Page from "../layouts/Page";
+import { useHistory, useModifyExceptions, useModifyPlan, usePlan } from "../state/planHooks";
 
 const styles: StyleRulesCallback = (theme) => ({
     resetPadding: {
@@ -40,7 +40,7 @@ const ScheduleExceptionsPage: React.FunctionComponent<Props> = (props: Props) =>
 
         history.replace({
             pathname: `/plans/${plan.id}`,
-            state: true
+            state: true,
         });
     }
 
@@ -49,23 +49,23 @@ const ScheduleExceptionsPage: React.FunctionComponent<Props> = (props: Props) =>
 
         history.replace({
             pathname: `/plans/${plan.id}`,
-            state: true
+            state: true,
         });
     }
 
     const getOverride = (mode: OverrideMode) => {
-        var override = plan.overrides != null
+        const override = plan.overrides != null
             // made an error in first implementation storing the number instead of the value
             ? (plan.overrides[OverrideMode[mode]] || plan.overrides[mode])
             : null;
 
         return {
-            mode: mode,
-            enabled: override != null && override.targetTemperature != 0,
-            targetTemperature: override != null ? override.targetTemperature : 0
-        }
+            mode,
+            enabled: override != null && override.targetTemperature !== 0,
+            targetTemperature: override != null ? override.targetTemperature : 0,
+        };
     };
-    
+
     return (
         <Page>
             {{
@@ -74,7 +74,7 @@ const ScheduleExceptionsPage: React.FunctionComponent<Props> = (props: Props) =>
                         {{
                             title: translate("overrides.title"),
                             button: (
-                                <MenuButton first onClick={onCancelDialog} icon={isDirty ? <CancelIcon /> : <BackIcon />} />
+                                <MenuButton first={true} onClick={onCancelDialog} icon={isDirty ? <CancelIcon /> : <BackIcon />} />
                             ),
                             actions: (
                                 <React.Fragment>
@@ -84,7 +84,7 @@ const ScheduleExceptionsPage: React.FunctionComponent<Props> = (props: Props) =>
                                         </Button>
                                     }
                                 </React.Fragment>
-                            )
+                            ),
                         }}
                     </AppHeader>
                 ),
@@ -100,10 +100,10 @@ const ScheduleExceptionsPage: React.FunctionComponent<Props> = (props: Props) =>
                         <OverrideSetting text={translate("overrides.holiday")} setOverride={updateOverride} {...getOverride(OverrideMode.Holiday)} />
                         <OverrideSetting text={translate("overrides.outofseason")} setOverride={updateOverride} {...getOverride(OverrideMode.OutOfSeason)} />
                     </div>
-                )
+                ),
             }}
         </Page>
     );
-}
+};
 
 export default withRouter(withStyles(styles)(ScheduleExceptionsPage));

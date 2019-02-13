@@ -1,30 +1,16 @@
 
 import { isEmpty } from "lodash";
+import { container } from "tsyringe";
+import { Settings, SettingsManagerService } from "../settings-manager";
 import { AppLogger } from "./AppLogger";
 import { ConsoleLogger } from "./ConsoleLogger";
 import { ConsoleReLogger } from "./ConsoleReLogger";
 import { ILogger } from "./types";
-import { Settings, SettingsManagerService } from "../settings-manager";
-import { container } from "tsyringe";
 
 export class LogService implements ILogger {
-    private evaluateLogger(app) {
-        let newLoggers = [];
 
-        const manager = container.resolve(SettingsManagerService);
-        const channel = manager.get<string>(Settings.LogCategory);
-        const logEnabled = manager.get<boolean>(Settings.LogEnabled, false);
-
-        // console.re also outputs to standard console
-        if (!isEmpty(channel) && logEnabled) {
-            newLoggers.push(new ConsoleReLogger(channel));
-        } else if (app != null) {
-            newLoggers.push(new AppLogger(app));
-        } else {
-            newLoggers.push(new ConsoleLogger());
-        }
-
-        this.loggers = newLoggers;
+    public static get defaultLog(): ILogger {
+        return LogService.instance;
     }
 
     public static setupForTest() {
@@ -34,7 +20,7 @@ export class LogService implements ILogger {
     public static init(app) {
         const manager = container.resolve(SettingsManagerService);
         manager.onChanged.subscribe((v, e) => {
-            if (e.setting == Settings.LogEnabled || e.setting == Settings.LogCategory) {
+            if (e.setting === Settings.LogEnabled || e.setting === Settings.LogCategory) {
                 LogService.instance.information("Reload due to settings change.");
                 LogService.instance.evaluateLogger(app);
             }
@@ -43,9 +29,10 @@ export class LogService implements ILogger {
         LogService.instance.evaluateLogger(app);
     }
 
-    public static get defaultLog(): ILogger {
-        return LogService.instance;
-    }
+    private static instance = new LogService();
+
+    private loggers: ILogger[] = [new ConsoleLogger()];
+    private constructor() { }
 
     public information(...args: any[]) {
         this.loggers.forEach((e) => {
@@ -64,9 +51,22 @@ export class LogService implements ILogger {
             e.error(...args);
         });
     }
+    private evaluateLogger(app) {
+        const newLoggers = [];
 
-    private loggers: ILogger[] = [new ConsoleLogger()];
+        const manager = container.resolve(SettingsManagerService);
+        const channel = manager.get<string>(Settings.LogCategory);
+        const logEnabled = manager.get<boolean>(Settings.LogEnabled, false);
 
-    private static instance = new LogService();
-    private constructor() { }
+        // console.re also outputs to standard console
+        if (!isEmpty(channel) && logEnabled) {
+            newLoggers.push(new ConsoleReLogger(channel));
+        } else if (app != null) {
+            newLoggers.push(new AppLogger(app));
+        } else {
+            newLoggers.push(new ConsoleLogger());
+        }
+
+        this.loggers = newLoggers;
+    }
 }

@@ -1,7 +1,7 @@
 import { IScheduleInformation } from "@app/model";
 import { HeatingManagerService, HeatingSchedulerService } from "@app/services";
-import { ApiBase } from "./types";
 import { injectable } from "tsyringe";
+import { ApiBase } from "./types";
 
 @injectable()
 class GetSchedule extends ApiBase {

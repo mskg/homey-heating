@@ -1,9 +1,9 @@
 import { AuditedDevice } from "../device-manager";
 
 type SetTemperatureResult = {
-    success: boolean,
-    error?: string
-}
+    success: boolean;
+    error?: string;
+};
 
 export interface ISetTemperaturePolicy {
     setTargetTemperature(d: AuditedDevice, targetTemperature: number): Promise<SetTemperatureResult>;
@@ -14,6 +14,5 @@ export enum PolicyType {
     CheckTemperature = "check_policy",
 
     Throtteled_Enforce = "throttled_enforce_policy",
-    Throtteled_CheckTemperature = "throttled_check_policy"
+    Throtteled_CheckTemperature = "throttled_check_policy",
 }
-

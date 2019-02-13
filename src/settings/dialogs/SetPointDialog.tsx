@@ -1,36 +1,33 @@
-// import DateFnsUtils from '@date-io/date-fns';
-import { Button, Dialog, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
-import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
-// import { MuiPickersUtilsProvider, TimePicker } from 'material-ui-pickers';
-import React from 'react';
-// import { ISetPoint } from '../../app/model';
-import { TARGET_TEMPERATURE_MAX, TARGET_TEMPERATURE_MIN } from '../../app/services/homey-api/declarations';
+import { Button, Dialog, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
+import { StyleRulesCallback, withStyles, WithStyles } from "@material-ui/core/styles";
+import CloseIcon from "@material-ui/icons/Close";
+import React from "react";
+import { TARGET_TEMPERATURE_MAX, TARGET_TEMPERATURE_MIN } from "../../app/services/homey-api/declarations";
 import AppHeader from "../components/AppHeader";
-import FormTextField from '../components/FormTextField';
-import InputContainer from '../components/InputContainer';
-import { MenuButton } from '../components/Menu';
+import FormTextField from "../components/FormTextField";
+import InputContainer from "../components/InputContainer";
+import { MenuButton } from "../components/Menu";
 import Transition from "../components/Transition";
-import translate from '../i18n/Translation';
-import { useModifySetPoints } from '../state/planHooks';
+import translate from "../i18n/Translation";
+import { useModifySetPoints } from "../state/planHooks";
 
 const styles: StyleRulesCallback = (theme) => ({
     resetPadding: {
         paddingLeft: 0,
         paddingRight: 0,
         paddingTop: 36,
-    }
+    },
 });
 
 type Props = WithStyles<typeof styles> & {
     open: boolean;
     onClose: (save: boolean) => void;
-}
+};
 
 const SetPointDialog: React.FunctionComponent<Props> = (props: Props) => {
     const { classes, onClose, ...otherProps } = props;
 
-    const {setPoint, setStart,saveSetPoint,setTargetTemperature } = useModifySetPoints();
+    const {setPoint, setStart, saveSetPoint, setTargetTemperature } = useModifySetPoints();
 
     function onCancelDialog() {
         onClose(false);
@@ -41,28 +38,20 @@ const SetPointDialog: React.FunctionComponent<Props> = (props: Props) => {
         onClose(true);
     }
 
-    // function getDate(p: ISetPoint) {
-    //     const d = new Date();
-    //     d.setHours(p.hour);
-    //     d.setMinutes(p.minute);
-
-    //     return d;
-    // }
-
     return (
-        <Dialog fullScreen TransitionComponent={Transition} {...otherProps}>
+        <Dialog fullScreen={true} TransitionComponent={Transition} {...otherProps}>
             <DialogTitle>
                 <AppHeader>
                     {{
                         title: translate("setpoint.title"),
                         button: (
-                            <MenuButton first onClick={onCancelDialog} icon={<CloseIcon />} />
+                            <MenuButton first={true} onClick={onCancelDialog} icon={<CloseIcon />} />
                         ),
                         actions: (
                             <Button color="inherit" onClick={onSaveDialog}>
                                 {translate("setpoint.save")}
                             </Button>
-                        )
+                        ),
                     }}
                 </AppHeader>
             </DialogTitle>
@@ -83,7 +72,7 @@ const SetPointDialog: React.FunctionComponent<Props> = (props: Props) => {
 
                     <FormTextField
                         type="time"
-                        InputProps={{ inputProps: { step: 60, pattern:"[0-9]{2}:[0-9]{2}" } }}
+                        InputProps={{ inputProps: { step: 60, pattern: "[0-9]{2}:[0-9]{2}" } }}
 
                         label={translate("setpoint.target.label")}
                         placeholder={translate("setpoint.target.label")}
@@ -93,11 +82,11 @@ const SetPointDialog: React.FunctionComponent<Props> = (props: Props) => {
                     />
 
                     <InputContainer>
-                        <FormControl className={classes.formControl} style={{ marginTop: 16 }} fullWidth>
+                        <FormControl className={classes.formControl} style={{ marginTop: 16 }} fullWidth={true}>
                             <InputLabel >{translate("setpoint.temperature.label")}</InputLabel>
 
                             <Select
-                                fullWidth
+                                fullWidth={true}
                                 onChange={setTargetTemperature}
                                 value={setPoint.targetTemperature}
                             >
@@ -123,6 +112,6 @@ const SetPointDialog: React.FunctionComponent<Props> = (props: Props) => {
             </DialogContent>
         </Dialog>
     );
-}
+};
 
 export default withStyles(styles)(SetPointDialog);

@@ -1,44 +1,48 @@
 import * as React from "react";
-import { HashRouter, Route, Switch, Redirect, RouteComponentProps } from "react-router-dom";
-
-import OverviewPage from "./pages/overview";
-import PlanDetailPage from "./pages/plan";
-import PlanExceptionsPage from "./pages/plan-exceptions";
-import PlanSchedulePage from "./pages/plan-schedule";
-import TemperaturesPage from "./pages/temperatures";
-import SettingsPage from "./pages/settings";
+import { HashRouter, Route, RouteComponentProps, Switch } from "react-router-dom";
+import { Loading } from "./components/Loading";
 import { PlanProvider } from "./state/PlanProvider";
 
-const PlanRoutes: React.FunctionComponent<RouteComponentProps> = ({match}) => {
+const PlanDetailPage = React.lazy(() => import("./pages/plan"));
+const PlanExceptionsPage = React.lazy(() => import("./pages/plan-exceptions"));
+const PlanSchedulePage = React.lazy(() => import("./pages/plan-schedule"));
+
+const PlanRoutes: React.FunctionComponent<RouteComponentProps> = ({ match }) => {
   return (
     <PlanProvider>
       {/* <Route path={`${match.url}/new`} exact component={PlanDetailPage} /> */}
-      <Route path={`${match.url}/:id/exceptions`} exact component={PlanExceptionsPage} />
-      <Route path={`${match.url}/:id/schedule`} exact component={PlanSchedulePage} />
-      <Route path={`${match.url}/:id`} exact component={PlanDetailPage} />
+      <Route path={`${match.url}/:id/exceptions`} exact={true} component={PlanExceptionsPage} />
+      <Route path={`${match.url}/:id/schedule`} exact={true} component={PlanSchedulePage} />
+      <Route path={`${match.url}/:id`} exact={true} component={PlanDetailPage} />
     </PlanProvider>
   );
 };
 
-export class AppRouter extends React.Component<any, any> {
+const OverviewPage = React.lazy(() => import("./pages/overview"));
+const SettingsPage = React.lazy(() => import("./pages/settings"));
+const TemperaturesPage = React.lazy(() => import("./pages/temperatures"));
 
+export class AppRouter extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
   }
 
   public render() {
-    return <HashRouter>
-      <React.Fragment>
-        <Switch>
-          <Route exact path="/settings" component={SettingsPage} />
+    return (
+      <React.Suspense fallback={<Loading />}>
+        <HashRouter>
+          <React.Fragment>
+            <Switch>
+              <Route exact={true} path="/" component={OverviewPage} />
 
-          <Route exact path="/" component={OverviewPage} />
-          <Route exact path="/temperatures" component={TemperaturesPage} />
-          <Route path="/plans" component={PlanRoutes} />
+              <Route exact={true} path="/settings" component={SettingsPage} />
+              <Route exact={true} path="/temperatures" component={TemperaturesPage} />
 
-          {/* <Redirect path="*" to="/" /> */}
-        </Switch>
-      </React.Fragment>
-    </HashRouter>;
+              <Route path="/plans" component={PlanRoutes} />
+            </Switch>
+          </React.Fragment>
+        </HashRouter>
+      </React.Suspense>
+    );
   }
 }

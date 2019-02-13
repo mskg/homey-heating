@@ -1,11 +1,13 @@
-import { Divider, List, ListItemText, StyleRulesCallback, Typography, WithStyles, withStyles, IconButton } from '@material-ui/core';
-import Drawer from '@material-ui/core/Drawer';
-import React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { Divider, IconButton, List, ListItemText, StyleRulesCallback, Typography, WithStyles, withStyles } from "@material-ui/core";
+import Drawer from "@material-ui/core/Drawer";
+import { IconButtonProps } from "@material-ui/core/IconButton";
+import MenuIcon from "@material-ui/icons/Menu";
+import React from "react";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import translate from "../i18n/Translation";
-import ListItemLink from './ListItemLink';
-import MenuIcon from '@material-ui/icons/Menu';
-import { IconButtonProps } from '@material-ui/core/IconButton';
+import ListItemLink from "./ListItemLink";
+
+declare var VERSION: string;
 
 const styles: StyleRulesCallback = (theme) => ({
     text: {
@@ -22,7 +24,7 @@ const styles: StyleRulesCallback = (theme) => ({
     },
 
     selected: {
-        color: theme.palette.primary.main
+        color: theme.palette.primary.main,
     },
 
     otherButton: {
@@ -64,25 +66,27 @@ const AppMenuBase: React.FunctionComponent<Props> = (props) => {
             to: "https://homey-heating.mskg.app",
             text: translate("menu.help"),
         },
-    ]
+    ];
 
     return (
         <Drawer open={props.open} onClose={props.onClose}>
-            <Typography className={classes.text} variant="h5" gutterBottom>
+            <Typography className={classes.text} variant="h5" gutterBottom={true}>
                 {translate("menu.title")}
             </Typography>
-            <Typography className={classes.version} variant="body2" color="textSecondary" gutterBottom>
+            <Typography className={classes.version} variant="body2" color="textSecondary" gutterBottom={true}>
                 Version {VERSION}
             </Typography>
 
             <Divider />
             <List>
             {
-                elements.map((e) => (e.type == "Divider"
-                    ? <Divider /> 
-                    : <ListItemLink key={e.to} to={e.to} disabled={props.match.url == e.to} button>
-                        <ListItemText primary={e.text} 
-                            classes={{primary: props.match.url != e.to ? classes.normal : classes.selected}} />
+                elements.map((e) => (e.type === "Divider"
+                    ? <Divider />
+                    : <ListItemLink key={e.to} to={e.to} disabled={props.match.url === e.to} button={true}>
+                        <ListItemText
+                            primary={e.text}
+                            classes={{primary: props.match.url !== e.to ? classes.normal : classes.selected}}
+                        />
                     </ListItemLink>
                 ))
             }
@@ -90,7 +94,6 @@ const AppMenuBase: React.FunctionComponent<Props> = (props) => {
         </Drawer>
     );
 };
-
 
 type MenuButtonProps = {
     icon: React.ReactElement<any>,
@@ -103,9 +106,9 @@ const MenuButtonBase: React.FunctionComponent<MenuButtonProps> = (props) => {
     return (
         <IconButton className={first ? classes.firstButton : classes.otherButton} color="inherit" {...otherProps}>
             {icon}
-        </IconButton>    
+        </IconButton>
     );
-}
+};
 
 export const AppMenuButton: React.FunctionComponent = (props) => {
     const [openMenu, setOpenMenu] = React.useState<boolean>(false);
@@ -113,10 +116,10 @@ export const AppMenuButton: React.FunctionComponent = (props) => {
     return (
         <React.Fragment>
             <AppMenu open={openMenu} onClose={() => { setOpenMenu(false); }} />
-            <MenuButton first onClick={() => { setOpenMenu(true); }} icon={<MenuIcon />} />
+            <MenuButton first={true} onClick={() => { setOpenMenu(true); }} icon={<MenuIcon />} />
         </React.Fragment>
     );
-}
+};
 
 const AppMenu = withRouter(withStyles(styles)(AppMenuBase));
 export const MenuButton = withStyles(styles)(MenuButtonBase);
