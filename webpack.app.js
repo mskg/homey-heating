@@ -9,7 +9,13 @@ const distPath = path.resolve(__dirname, '../homey-heating-dist');
 
 const package = require("./package.json");
 const appPackage = require("./src/app.json");
-appPackage.version = package.version;
+
+if (package.version.indexOf("-") > 0) {
+  appPackage.version = package.version.substring(0, package.version.indexOf("-"));
+}
+else {
+  appPackage.version = package.version;
+}
 
 const tempDir = __dirname + "/tmp";
 if (!fs.existsSync(tempDir)) {

@@ -1,6 +1,6 @@
 {
   "name": "homey-heating",
-  "version": "1.1.2",
+  "version": "0.0.0",
   "description": "",
   "main": "app.js",
   "dependencies": {
@@ -70,6 +70,7 @@
     "test": "tsc -p ./tsconfig.test.json && mocha --opts ./src/test/mocha.opts",
  
     "install": "node scripts/install.js",
+    "travis:setversion": "node scripts/setversion.js",
  
     "lint:app": "tslint --project tsconfig.json",
     "lint:web": "tslint --project tsconfig.react.json",
