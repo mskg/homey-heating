@@ -21,7 +21,7 @@ See [Issue Tracker](https://github.com/mskg/homey-heating/issues)
 
 * If you enable remote logging inside the app, you can watch the live trace of the application via [console.re/yourcategory](console.re)
 
-* Install a *released build onto your Homey* `npm run install <tag>`. If you omit the tag, all available version will be printed.
+* Install a *released build onto your Homey* `npm run release:install <tag>`. If you omit the tag, all available version will be printed.
 
 ## Change Log
 * **1.0** Initial release

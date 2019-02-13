@@ -69,7 +69,7 @@
     "dist": "npm run build:app:prod && npm run build:web:prod && athom -p ../homey-heating-dist app validate --level publish",
     "test": "tsc -p ./tsconfig.test.json && mocha --opts ./src/test/mocha.opts",
  
-    "install": "node scripts/install.js",
+    "release:install": "node scripts/install.js",
     "travis:setversion": "node scripts/update-version.js",
  
     "lint:app": "tslint --project tsconfig.json",
