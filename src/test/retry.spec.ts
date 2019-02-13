@@ -1,47 +1,46 @@
 import { fail } from "assert";
-import 'mocha';
 import { expect } from "chai";
+import "mocha";
 import { Retry } from "../app/helper/Retry";
 
 import "./suppress-console";
 
-describe('Retry', function () {
-    it('async function', async () => {
+// tslint:disable: no-unused-expression
+// tslint:disable: no-empty
+describe("Retry", () => {
+    it("async function", async () => {
         const retries = 5;
         let i = 0;
 
         try {
-            await Retry(async () => { ++i; throw ("abc") }, null, retries, 0, false);
+            await Retry(async () => { ++i; throw new Error(("abc")); }, null, retries, 0, false);
             fail("Should not be reached");
-        }
-        catch (e) {
+        } catch (e) {
             expect(retries).to.equal(i);
         }
     });
 
-    it('return Promise', async () => {
+    it("return Promise", async () => {
         const retries = 5;
         let i = 0;
 
         try {
-            await Retry(() => { ++i; return Promise.reject("abc") }, null, retries, 0, false);
+            await Retry(() => { ++i; return Promise.reject("abc"); }, null, retries, 0, false);
             fail("Should not be reached");
-        }
-        catch (e) {
+        } catch (e) {
             expect(retries).to.equal(i);
         }
     });
 
-    it('check success', async () => {
+    it("check success", async () => {
         try {
             await Retry(async () => { });
-        }
-        catch (e) {
+        } catch (e) {
             fail("Should not be reached");
         }
     });
 
-    it('nesting', async () => {
+    it("nesting", async () => {
         const retries = 5;
         let i = 0;
 
@@ -49,13 +48,12 @@ describe('Retry', function () {
             await (
                 async () => await (
                         async () => await Retry(
-                                async () => { ++i; throw ("abc") }, null, retries, 0, false)
+                                async () => { ++i; throw new Error(("abc")); }, null, retries, 0, false)
                 )()
             )();
 
             fail("Should not be reached");
-        }
-        catch (e) {
+        } catch (e) {
             expect(retries).to.equal(i);
         }
-    });});
+    }); });
