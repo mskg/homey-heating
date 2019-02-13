@@ -36,8 +36,8 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
         return val == null ? def : val;
     }
 
-    const updateField = (name: SettingsName) => (event) => {
-        const val = event.target.value || (event.target.checked != null ? event.target.checked : null);
+    const updateField = (name: SettingsName, field: "value" | "checked" = "value") => (event) => {
+        const val = event.target[field];
 
         setSettings((old) => {
             return { ...old, [name]: val };
@@ -96,7 +96,7 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
                             control={
                                 <Switch
                                     checked={getFieldValue("LogEnabled") === true}
-                                    onChange={updateField("LogEnabled")}
+                                    onChange={updateField("LogEnabled", "checked")}
                                 />
                             }
                             label={translate("settings.enabled.label")}
@@ -107,6 +107,7 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
                             label={translate("settings.category.label")}
                             placeholder={translate("settings.category.placeholder")}
 
+                            required={getFieldValue("LogEnabled") === true}
                             value={getFieldValue("LogCategory", "")}
                             onChange={updateField("LogCategory")}
                         />

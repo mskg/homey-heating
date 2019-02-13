@@ -395,7 +395,8 @@ const reducerImplementation = (state: State, action: Action) => {
 
                     // we search from right to left
                     while (nd >= 0) {
-                        const last = state.plan.schedule.filter((sp) => sp.day === action.day);
+                        const last = state.plan.schedule.filter((sp) => sp.day === nd);
+
                         if (last.length > 0) {
                             // already sorted
                             return last[last.length - 1];

@@ -105,7 +105,7 @@ const OverviewPage: React.FunctionComponent<Props> = (props) => {
                             >
                             {
                                 [0, 1, 2, 3, 4, 5].map((m) =>
-                                    (<MenuItem value={m}>{translate(`Modes.${m}`)}</MenuItem>),
+                                    (<MenuItem key={m} value={m}>{translate(`Modes.${m}`)}</MenuItem>),
                                 )
                             }
                             </Select>
@@ -115,7 +115,7 @@ const OverviewPage: React.FunctionComponent<Props> = (props) => {
                         { plans.length === 0
                             ? <BodyText style={{paddingTop: 16}} text={translate("plans.plans.empty")} />
                             : <List className={classes.list}>
-                                {plans.length > 0 && <Divider />}
+                                {plans.length > 0 && <Divider key="0" />}
                                 {plans.map((plan) => (
                                     <React.Fragment key={plan.id}>
                                         <ListItem {...{ to: `/plans/${plan.id}` }} component={Link} button={true}>

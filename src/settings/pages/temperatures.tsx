@@ -84,7 +84,7 @@ const TemperaturesPage: React.FunctionComponent<Props> = (props) => {
                                 >
                                 {
                                     [0, 1, 2, 3, 4, 5].map((m) =>
-                                        (<MenuItem value={m}>{translate(`Modes.${m}`)}</MenuItem>),
+                                        (<MenuItem key={m} value={m}>{translate(`Modes.${m}`)}</MenuItem>),
                                     )
                                 }
                                 </Select>
