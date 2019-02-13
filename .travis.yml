@@ -13,4 +13,16 @@ git:
 before_script:
   - npm install -g athom-cli
 
-script: npm run dist
+script: 
+  - npm run test
+  - npm run dist
+
+deploy:
+    provider: pages
+    github-token: $GITHUB_OAUTH_TOKEN
+    skip_cleanup: true
+    keep-history: false
+    target-branch: release/$TRAVIS_TAG
+    local-dir: ../homey-heating-dist
+    on:
+      tags: true
