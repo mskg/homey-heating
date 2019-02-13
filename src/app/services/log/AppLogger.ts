@@ -1,4 +1,4 @@
-import { ILogger } from "./declarations";
+import { ILogger } from "./types";
 
 export class AppLogger implements ILogger {
     private app: any;

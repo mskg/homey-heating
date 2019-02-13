@@ -8,4 +8,5 @@ The software is still work in progress, and all releases are currently beta. Ple
 ## History
 
 * Initial release v1.0
-* [Version 1.1](/releasenotes/v01-01)
+* [Version 1.1.1](/releasenotes/v01-01)
+* [Version 1.1.2](/releasenotes/v01-01-02)

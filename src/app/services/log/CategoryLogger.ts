@@ -1,5 +1,5 @@
-import { ILogger } from "./declarations";
 import { LogService } from "./LogService";
+import { ILogger } from "./types";
 
 export class CategoryLogger implements ILogger {
     private category: any;

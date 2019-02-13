@@ -82,42 +82,47 @@ const TemperaturesPage: React.FunctionComponent<Props> = (props) => {
                                     disabled={true}
                                     value={scheduleInformation.mode}
                                 >
-                                    <MenuItem value={0}>{translate("Modes.0")}</MenuItem>
-                                    <MenuItem value={1}>{translate("Modes.1")}</MenuItem>
-                                    <MenuItem value={2}>{translate("Modes.2")}</MenuItem>
-                                    <MenuItem value={3}>{translate("Modes.3")}</MenuItem>
-                                    <MenuItem value={4}>{translate("Modes.4")}</MenuItem>
+                                {
+                                    [0,1,2,3,4,5].map(m=>
+                                        (<MenuItem value={m}>{translate(`Modes.${m}`)}</MenuItem>)
+                                    )
+                                }
                                 </Select>
                             </FormControl>
                         </InputContainer>
-        
-                        <FormTextField
-                            label={translate("temperatures.next")}
-                            type="datetime-local"
-                            value={toDatetimeLocal(scheduleInformation.nextDate)}
-                            disabled={true}
-                        />
+
+                        {scheduleInformation.nextDate &&
+                            <FormTextField
+                                label={translate("temperatures.next")}
+                                type="datetime-local"
+                                value={toDatetimeLocal(scheduleInformation.nextDate)}
+                                disabled={true}
+                            />
+                        }
         
                         <SubHeader text={translate("temperatures.list.title")} />
                         <BodyText text={translate("temperatures.list.text")} />
                         
-                        <List className={classes.list}>
-                            {scheduleInformation.temperatures.length > 0 && <Divider />}
-                            {scheduleInformation.temperatures.map((schedule) => (
-                                <React.Fragment key={schedule.device.id + schedule.plan.id}>
-                                    <ListItem>
-                                        <ListItemAvatar>
-                                            <TemperatureAvatar value={schedule.targetTemperature} />
-                                        </ListItemAvatar>
-                                        <ListItemText primary={schedule.device.name} secondary={schedule.plan.name} />
-                                        <ListItemSecondaryAction style={{ paddingRight: 16 }} >
-                                            <FilledTemperatureAvatar value={schedule.temperature} fill={percent(schedule.temperature, schedule.targetTemperature)} />
-                                        </ListItemSecondaryAction>
-                                    </ListItem>
-                                    <Divider />
-                                </React.Fragment>
-                            ))}
-                        </List>
+                        {scheduleInformation.temperatures.length == 0
+                            ? <BodyText style={{paddingTop: 16}} text={translate("temperatures.list.empty")} />
+                            : <List className={classes.list}>
+                                {scheduleInformation.temperatures.length > 0 && <Divider />}
+                                {scheduleInformation.temperatures.map((schedule) => (
+                                    <React.Fragment key={schedule.device.id + schedule.plan.id}>
+                                        <ListItem>
+                                            <ListItemAvatar>
+                                                <TemperatureAvatar value={schedule.targetTemperature} />
+                                            </ListItemAvatar>
+                                            <ListItemText primary={schedule.device.name} secondary={schedule.plan.name} />
+                                            <ListItemSecondaryAction style={{ paddingRight: 16 }} >
+                                                <FilledTemperatureAvatar value={schedule.temperature} fill={percent(schedule.temperature, schedule.targetTemperature)} />
+                                            </ListItemSecondaryAction>
+                                        </ListItem>
+                                        <Divider />
+                                    </React.Fragment>
+                                ))}
+                            </List>
+                        }
                     </React.Fragment>
                 )
             }}

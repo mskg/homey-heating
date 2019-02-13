@@ -87,7 +87,7 @@ export const useModifySetPoints = () => {
         }        
     }, [dispatch]);
 
-    const setStart = useCallback((date: Date) => dispatch({type: 'setStart', start: date}), [dispatch]);
+    const setStart = useCallback((date: Date | string) => dispatch({type: 'setStart', start: date}), [dispatch]);
     const setTargetTemperature = useCallback((evt) => dispatch({type: 'setTargetTemperature', temperature: parseFloat(evt.target.value)}), [dispatch]);
 
     useEffect(() => {

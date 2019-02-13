@@ -1,64 +1,47 @@
-import { ManagerSettings, Notification, __ } from "homey";
-import { filter, forEach, isEmpty } from "lodash";
-import { HeatingPlanCalculator } from "../../helper/HeatingPlanCalculator";
-import { ICalculatedTemperature, IHeatingPlan, InternalSettings, ISetPoint, NormalOperationMode, OperationMode, OverrideMode } from "../../model";
+import { ICalculatedTemperature, IHeatingPlan, ISetPoint, NormalOperationMode, OperationMode, OverrideMode } from "@app/model";
+import { Notification, __ } from "homey";
+import { forEach, isEmpty } from "lodash";
+import { container, singleton } from "tsyringe";
+import { HeatingPlanCalculator } from "../calculator";
+import { AuditedDevice, DeviceManagerService } from "../device-manager";
 import { HeatingPlanRepositoryService } from "../heating-plan-repository";
-import { StringHashMap, HomeyAPIService, IDevice, IHomeyAPI, IZone, MEASURE_TEMPERATURE, TARGET_TEMPERATURE, ICapabilityInstance } from "../homey-api";
-import { ILogger, LogService } from "../log";
-import AsyncThrottle from "../../helper/AsyncThrottle";
-import Retry from "../../helper/Retry";
+import { ILogger, LoggerFactory, trycatchlog, asynctrycatchlog } from "../log";
+import { InternalSettings, SettingsManagerService } from "../settings-manager";
+import { ISetTemperaturePolicy, PolicyType } from "./types";
 
-type AuditedDevice = {
-    watchedCapabilities?: {
-        targetTemperature?: ICapabilityInstance<number>;
-        temperature?: ICapabilityInstance<number>;
-    }
-} & IDevice;
-
-export const CanSetTargetTemperature = (device: IDevice): boolean => 
-    device.capabilities != null ? device.capabilities.find(c => c === TARGET_TEMPERATURE) != null : null;
-
-export const  CanMeasureTemperature = (device: IDevice): boolean => 
-    device.capabilities != null ? device.capabilities.find(c => c === MEASURE_TEMPERATURE) != null : null;
-
+@singleton()
 export class HeatingManagerService {
     private isRunning: boolean;
-    private initialized: boolean = false;
-
-    private deviceList: StringHashMap<AuditedDevice>;
-    private zoneList: StringHashMap<IZone>;
-
     private logger: ILogger;
+    private mode: OperationMode;
+    private policy: ISetTemperaturePolicy;
 
-    private homeyApi: IHomeyAPI;
+    constructor(
+        private plans: HeatingPlanRepositoryService,
+        private calc: HeatingPlanCalculator,
+        private deviceManager: DeviceManagerService,
+        private settings: SettingsManagerService,
+        loggerFactory: LoggerFactory) {
+        this.logger = loggerFactory.createLogger("Manager");
 
-    private calc: HeatingPlanCalculator = new HeatingPlanCalculator();
-    private plans: HeatingPlanRepositoryService;
-
-    private mode: OperationMode; 
-
-    constructor(rep: HeatingPlanRepositoryService) {
-        this.logger = LogService.createLogger("Manager");
-        this.plans = rep;
-        
-        let mode: OperationMode = ManagerSettings.get(InternalSettings.OperationMode) as OperationMode;
-        if (mode == null) { mode = NormalOperationMode.Automatic; }
-
+        const mode: OperationMode = this.settings.get<OperationMode>(InternalSettings.OperationMode, NormalOperationMode.Automatic);
         this.mode = mode;
+
+        this.plans.onChanged.subscribe(async () => {
+            try {
+                await this.applyPlans();
+            }
+            catch (e) {
+                this.logger.error("Refresh of plans failed.", e);
+            }
+        });
+
+        this.policy = container.resolve<ISetTemperaturePolicy>(
+            this.settings.get(InternalSettings.SetTemperaturePolicy, PolicyType.Throtteled_CheckTemperature));
     }
 
-    public get calculator(): HeatingPlanCalculator {
-        return this.calc;
-    }
-
-    public get zones() {
-        return this.zoneList;
-    }
-
-    public get devices() {
-        return this.deviceList;
-    }
-
+    // is for get and set, we don't care if that fails
+    @trycatchlog(true, NormalOperationMode.Automatic)
     public get operationMode() {
         return this.mode;
     }
@@ -67,24 +50,19 @@ export class HeatingManagerService {
         this.logger.information(`Setting mode to`, mode);
 
         this.mode = mode;
-        ManagerSettings.set(InternalSettings.OperationMode, mode);
+        this.settings.set(InternalSettings.OperationMode, mode);
 
         this.sendNotification("set_operation_mode", {
             mode: __(`Modes.${mode}`)
         });
     }
 
-    public get repository(): HeatingPlanRepositoryService {
-        return this.plans;
-    }
-
+    // erors handled by all callers
     public async applyPlans() {
         // scheduler vs normal run
         if (this.isRunning) { return; }
 
         try {
-            await this.init();
-
             this.isRunning = true;
             this.logger.debug("Applying active plans");
 
@@ -95,126 +73,29 @@ export class HeatingManagerService {
         }
     }
 
+    // erors handled by all callers
     public async evaluateActivePlans(): Promise<ICalculatedTemperature[]> {
-        await this.init();
-
         const settings: ICalculatedTemperature[] = [];
 
         forEach(await this.plans.activePlans, (plan) => {
             settings.push(...this.evaluatePlan(plan));
         });
-       
+
         return settings;
     }
 
+    // erors handled by all callers
     public async applyPlan(plan: IHeatingPlan) {
-        await this.init();
         await this.applySettings(await this.evaluatePlan(plan));
     }
 
-    private async attachWatchers(device: AuditedDevice) {
-        if (device.watchedCapabilities == null) {
-            device.watchedCapabilities = {};
-        }
-
-        if (device.watchedCapabilities.targetTemperature == null) {
-            this.logger.information(`Listening on ${device.id} (${device.name}) ${TARGET_TEMPERATURE}`);
-
-            device.watchedCapabilities.targetTemperature =  await device.makeCapabilityInstance<number>(TARGET_TEMPERATURE, (evt) => {
-                this.logger.debug(`${device.name} (${device.id}) changed ${TARGET_TEMPERATURE} to ${evt}`);
-            });
-        }
-
-        if (device.watchedCapabilities.temperature == null && CanMeasureTemperature(device)) {
-            this.logger.information(`Listening on ${device.id} (${device.name}) ${MEASURE_TEMPERATURE}`);
-
-            device.watchedCapabilities.temperature = await device.makeCapabilityInstance<number>(MEASURE_TEMPERATURE, (evt) => {
-                this.logger.debug(`${device.name} (${device.id}) changed ${MEASURE_TEMPERATURE} to ${evt}`);
-            });
-        }
-    }
-
-    private async destroyWatchers(device: AuditedDevice) {
-        if (device != null && device.watchedCapabilities != null) {
-            if (device.watchedCapabilities.targetTemperature != null) {
-                device.watchedCapabilities.targetTemperature.destroy();
-            }
-
-            if (device.watchedCapabilities.temperature != null) {
-                device.watchedCapabilities.temperature.destroy();
-            }
-        }
-    }
-    
-    private async init(force: boolean = false) {
-        if (this.initialized && !force) { return; }
-
-        this.logger.information(`Init.`);
-        this.homeyApi = await HomeyAPIService.getInstance();
-
-        const filteredDevices = filter(await this.homeyApi.devices.getDevices(), d => CanSetTargetTemperature(d));
-
-        this.logger.information(`Found ${filteredDevices.length} devices`);
-        this.deviceList = {};
-
-        // register listeners
-        await Promise.all(filteredDevices.map(async (d) => {
-            await this.attachWatchers(d);
-            this.deviceList[d.id] = d;
-        }));
-      
-        this.zoneList = await this.homeyApi.zones.getZones();
-        this.logger.information(`Found ${Object.keys(this.zoneList).length} zones`);
-
-        this.homeyApi.devices.on("device.create", async (device: IDevice) => {
-            this.logger.debug(`Device ${device.id} was created.`);
-            this.deviceList[device.id] = device;
-            await this.attachWatchers(device);
-        });
-
-        this.homeyApi.devices.on("device.update", (device: IDevice) => {
-            this.logger.debug(`Device ${device.id} was updated.`);
-            this.deviceList[device.id] = device;
-        });
-
-        this.homeyApi.devices.on("device.delete", async (device: IDevice) => {
-            this.logger.debug(`Device ${device.id} was removed.`);
-            await this.destroyWatchers(this.deviceList[device.id]);
-            delete this.deviceList[device.id];
-        });
-
-        this.homeyApi.zones.on("zone.create", (zone: IZone) => {
-            this.logger.debug(`Zone ${zone.id} was created.`);
-            this.zoneList[zone.id] = zone;
-        });
-
-        this.homeyApi.zones.on("zone.update", (zone: IZone) => {
-            this.logger.debug(`Zone ${zone.id} was updated.`);
-            this.zoneList[zone.id] = zone;
-        });
-
-        this.homeyApi.zones.on("zone.delete", (zone: IZone) => {
-            this.logger.debug(`Zone ${zone.id} was removed.`);
-            delete this.zoneList[zone.id];
-        });
-
-        this.initialized = true;
-    }
-
     private async applySettings(settings: ICalculatedTemperature[]) {
-        // throttle execution to not flood zwave stack
-        var setTemperature = AsyncThrottle(async (d,n) => await this.setTemperature(d,n), 1000);
-
         await Promise.all(
-            settings.map(async newSetting => {
-                if (await setTemperature(this.findDevice(newSetting.device.id), newSetting.targetTemperature)) {
-                    this.sendNotification("set_target_temperature", {
-                        name: newSetting.device.name,
-                        value: newSetting.targetTemperature,
-                        plan: newSetting.plan.name
-                    })
-                }
-            })
+            settings.map(async newSetting => 
+                await this.setTemperature(newSetting.plan.name, 
+                    this.deviceManager.findDevice(newSetting.device.id), 
+                    newSetting.targetTemperature)
+            )
         );
     }
 
@@ -224,7 +105,7 @@ export class HeatingManagerService {
         let setPoint: ISetPoint = null;
 
         // error in first implementation used number instead of text
-        const override = plan.overrides ? (plan.overrides[this.mode] || plan.overrides[OverrideMode[this.mode]]) : null; 
+        const override = plan.overrides ? (plan.overrides[this.mode] || plan.overrides[OverrideMode[this.mode]]) : null;
         if (override != null) {
             this.logger.debug(`> Plan has override for ${OverrideMode[this.mode]}`);
 
@@ -238,23 +119,34 @@ export class HeatingManagerService {
             }
         } else {
             setPoint = this.calc.getSetPoint(plan);
-            if (setPoint == null) return [];    
+            if (setPoint == null) return [];
         }
 
         this.logger.debug(`> Target temperature is ${setPoint.targetTemperature}`);
         const targets: ICalculatedTemperature[] = [];
 
+        let targetTemperature = setPoint.targetTemperature as any;
+        if (typeof targetTemperature !== "number") {
+            this.logger.debug("Setpoint has wrong datatype for temperature, trying to correct", setPoint);
+            targetTemperature = parseFloat(targetTemperature);
+
+            if (targetTemperature === NaN) {
+                this.logger.error("Setpoint has wrong datatype for temperature", setPoint);
+                return [];
+            }
+        }
+
         if (plan.zones) {
             forEach(plan.zones, (zoneId) => {
                 this.logger.debug(`Evaluating zone ${zoneId}`);
 
-                const zone = this.findZone(zoneId);
+                const zone = this.deviceManager.findZone(zoneId);
                 if (zone == null) {
                     this.logger.debug("> not found");
                     return;
                 }
 
-                const devices = this.getDevicesForZone(zone.id);
+                const devices = this.deviceManager.getDevicesForZone(zone.id);
                 if (isEmpty(devices)) {
                     this.logger.debug("> No devices found");
                     return;
@@ -270,8 +162,8 @@ export class HeatingManagerService {
                             id: plan.id,
                             name: plan.name
                         },
-                        temperature: this.getMeasuredTemperature(d),
-                        targetTemperature: setPoint.targetTemperature,
+                        temperature: this.deviceManager.getMeasuredTemperature(d),
+                        targetTemperature: targetTemperature,
                     });
                 });
             });
@@ -281,7 +173,7 @@ export class HeatingManagerService {
             forEach(plan.devices, (deviceID) => {
                 this.logger.debug(`Evaluating device ${deviceID})`);
 
-                const device = this.findDevice(deviceID);
+                const device = this.deviceManager.findDevice(deviceID);
                 if (device == null) {
                     this.logger.debug("> not found");
                     return;
@@ -293,8 +185,8 @@ export class HeatingManagerService {
                         id: plan.id,
                         name: plan.name
                     },
-                    temperature: this.getMeasuredTemperature(device),
-                    targetTemperature: setPoint.targetTemperature
+                    temperature: this.deviceManager.getMeasuredTemperature(device),
+                    targetTemperature: targetTemperature
                 });
             });
         }
@@ -302,48 +194,22 @@ export class HeatingManagerService {
         return targets;
     }
 
-    private async setTemperature(d: AuditedDevice, targetTemperature: number): Promise<boolean> {
-        this.logger.debug(`Checking temperature for device ${d.name} (${d.id})`);
+    private async setTemperature(plan: string, d: AuditedDevice, targetTemperature: number): Promise<void> {
+        const result = await this.policy.setTargetTemperature(d, targetTemperature);
 
-        if (!d.ready) {
-            this.logger.error(`> Device ${d.name} is not ready (${d.unavailableMessage}).`);
-            return false;
-        }
-
-        try {
-            let value = this.getTargetTemperature(d);
-            if (value !== targetTemperature) {
-                if (PRODUCTION) {
-                    // incremental backoff, 5 retries, max 20s
-                    await Retry(async () => { 
-                        this.logger.information(`Adjusting temperature for ${d.name} to ${targetTemperature}`);
-                        
-                        await this.homeyApi.devices.setCapabilityValue({
-                            deviceId: d.id,
-                            capabilityId: TARGET_TEMPERATURE,
-                            value: targetTemperature
-                        });
-
-                        this.logger.debug(`> ${d.name} done.`);
-                    }, 5, 1000, true, 20000);
-                }
-
-                return true;
-            }
-            else {
-                this.logger.error(`> ${d.name} target temperature already set.`);
-            }
-        } catch (e) {
-            this.logger.error(`Failed to set temperature ${d.name} (${d.id}) due to ${e}`);
-
+        if (!result.success) {
             this.sendNotification("failed_set_target_temperature", {
                 name: d.name,
                 value: targetTemperature,
-                error: e.name
+                error: result.error
             });
+        } else {
+            this.sendNotification("set_target_temperature", {
+                name: d.name,
+                value: targetTemperature,
+                plan: plan
+            })
         }
-
-        return false;
     }
 
     private sendNotification(name: string, args?: {}) {
@@ -351,27 +217,5 @@ export class HeatingManagerService {
             excerpt: __(`Notification.${name}`, args)
         });
         notification.register();
-    }
-
-    private findZone(zoneId: string): IZone {
-        return this.zoneList[zoneId];
-    }
-
-    private getTargetTemperature(d: AuditedDevice): number {
-        var capability = d.watchedCapabilities.targetTemperature;
-        return capability != null ? capability.value : 0;
-    }
-
-    private getMeasuredTemperature(d: AuditedDevice): number {
-        var capability = d.watchedCapabilities.temperature || d.watchedCapabilities.targetTemperature;
-        return capability != null ? capability.value : 0;
-    }
-
-    private findDevice(deviceId: string): AuditedDevice {
-        return this.deviceList[deviceId];
-    }
-
-    private getDevicesForZone(zoneId: string): AuditedDevice[] {
-        return filter(this.deviceList, (d: IDevice) => d.zone === zoneId);
     }
 }

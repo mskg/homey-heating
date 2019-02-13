@@ -211,40 +211,47 @@ const PlanOverviewPage: React.FunctionComponent<Props> = (props) => {
                                 <Divider className={classes.divider} />
                                 <SubHeader text={translate("plan.zones.section")} />
                                 <BodyText text={translate("plan.zones.text")} />
-                                <List>
-                                    {map(zones, zone => (
-                                        <ListItem key={zone.id} button onClick={() => toggleZone(zone.id)}>
-                                            {zone.icon != null &&
-                                                <ListItemAvatar>
-                                                    <ZoneIcon name={zone.icon} />
-                                                </ListItemAvatar>
-                                            }
-                                            <ListItemText primary={zone.name} />
-                                            <ListItemSecondaryAction>
-                                                <Checkbox onChange={() => toggleZone(zone.id)} checked={plan.zones.find(c => c === zone.id) != null} />
-                                            </ListItemSecondaryAction>
-                                        </ListItem>
-                                    ))}
-                                </List>
+
+                                {zones.length == 0
+                                    ? <BodyText style={{paddingTop: 16}} text={translate("plan.zones.empty")} />
+                                    : <List>
+                                        {map(zones, zone => (
+                                            <ListItem key={zone.id} button onClick={() => toggleZone(zone.id)}>
+                                                {zone.icon != null &&
+                                                    <ListItemAvatar>
+                                                        <ZoneIcon name={zone.icon} />
+                                                    </ListItemAvatar>
+                                                }
+                                                <ListItemText primary={zone.name} />
+                                                <ListItemSecondaryAction>
+                                                    <Checkbox onChange={() => toggleZone(zone.id)} checked={plan.zones.find(c => c === zone.id) != null} />
+                                                </ListItemSecondaryAction>
+                                            </ListItem>
+                                        ))}
+                                    </List>
+                                }
 
                                 <Divider className={classes.divider} />
                                 <SubHeader text={translate("plan.devices.section")} />
                                 <BodyText text={translate("plan.devices.text")} />
-                                <List>
-                                    {map(devices, device => (
-                                        <ListItem key={device.id} button onClick={() => toggleDevice(device.id)}>
-                                            {device.icon != null &&
-                                                <ListItemAvatar>
-                                                    <Avatar className={classes.avatar} src={`${PRODUCTION ? "" : HOMEY_DEV_URL}${device.icon}`} />
-                                                </ListItemAvatar>
-                                            }
-                                            <ListItemText primary={device.name} />
-                                            <ListItemSecondaryAction>
-                                                <Checkbox onChange={() => toggleDevice(device.id)} checked={plan.devices.find(c => c === device.id) != null} />
-                                            </ListItemSecondaryAction>
-                                        </ListItem>
-                                    ))}
-                                </List>
+                                {devices.length == 0
+                                    ? <BodyText style={{paddingTop: 16}} text={translate("plan.devices.empty")} />
+                                    : <List>
+                                        {map(devices, device => (
+                                            <ListItem key={device.id} button onClick={() => toggleDevice(device.id)}>
+                                                {device.icon != null &&
+                                                    <ListItemAvatar>
+                                                        <Avatar className={classes.avatar} src={`${PRODUCTION ? "" : HOMEY_DEV_URL}${device.icon}`} />
+                                                    </ListItemAvatar>
+                                                }
+                                                <ListItemText primary={device.name} />
+                                                <ListItemSecondaryAction>
+                                                    <Checkbox onChange={() => toggleDevice(device.id)} checked={plan.devices.find(c => c === device.id) != null} />
+                                                </ListItemSecondaryAction>
+                                            </ListItem>
+                                        ))}
+                                    </List>
+                                }
 
                                 <Divider className={classes.divider} />
                             </Fragment>

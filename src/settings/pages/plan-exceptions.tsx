@@ -98,6 +98,7 @@ const ScheduleExceptionsPage: React.FunctionComponent<Props> = (props: Props) =>
                         <OverrideSetting text={translate("overrides.away")} setOverride={updateOverride} {...getOverride(OverrideMode.DayAway)} />
                         <OverrideSetting text={translate("overrides.sleeping")} setOverride={updateOverride} {...getOverride(OverrideMode.Sleep)} />
                         <OverrideSetting text={translate("overrides.holiday")} setOverride={updateOverride} {...getOverride(OverrideMode.Holiday)} />
+                        <OverrideSetting text={translate("overrides.outofseason")} setOverride={updateOverride} {...getOverride(OverrideMode.OutOfSeason)} />
                     </div>
                 )
             }}

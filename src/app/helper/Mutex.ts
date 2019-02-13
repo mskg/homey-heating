@@ -1,6 +1,8 @@
 type VoidFunction = () => void;
 
 /**
+ * Only one Thread can rule the world.
+ * 
  * const unlock = await new Mutex().lock();
  * {
  *      // code that should run locked

@@ -1,0 +1,4 @@
+--colors
+--require ./tmp/test/setup.js
+--recursive
+./tmp/**/*.spec.js

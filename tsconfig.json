@@ -4,21 +4,30 @@
       "module": "commonjs",
       "moduleResolution": "node",
       "sourceMap": false,
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,
+      "allowJs": true,
+      "outDir": "tmp",
+      "baseUrl": "./src",
       "plugins": [
         {
           "name": "typescript-tslint-plugin"
         }
       ],
+      "paths": {
+        "@app/*": ["app/*"],
+      },
       "types": [
         "node",
-        "lodash"
+        "lodash",
       ],
       "typeRoots": [
         "node_modules/@types"
       ]
     },
     "include": [
-      "src/typings.d.ts",
-      "src/app/app.ts"
+      "./src/typings.d.ts",
+      "./src/app/app.ts",
+      "./src/api/api.ts"
     ]
   }

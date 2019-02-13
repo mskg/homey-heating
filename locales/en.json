@@ -59,7 +59,8 @@
     "athome": "...you are a day at home?",
     "away": "...when you are a day away from home?",
     "sleeping": "...you are sleeping?",
-    "holiday": "...you are on holiday?"
+    "holiday": "...you are on holiday?",
+    "outofseason": "... it's summer?"
   },
 
   "plan": {
@@ -98,11 +99,13 @@
    
     "zones": {
       "section": "Associate zones",
-      "text": "Tick the zones, to which you want this plan to be applied to. All devices that support setting a target temperature inside such zones are included."
+      "text": "Tick the zones, to which you want this plan to be applied to. All devices that support setting a target temperature inside such zones are included.",
+      "empty": "- no zones found -"
     },
     "devices": {
       "section": "Associate devices",
-      "text": "Tick the devices, you want this plan to be applied to. You can mix zones and individual devices, no problem."
+      "text": "Tick the devices, you want this plan to be applied to. You can mix zones and individual devices, no problem.",
+      "empty": "- no devices found -"
     }
   },
 
@@ -144,6 +147,7 @@
   "temperatures": {
     "title": "Current temperatures",
     "list": {
+      "empty": "- no thermostats found -",
       "title": "Setpoints overview",
       "text": "The list shows, what the application is configuring. On the left is the current setpoints, versus read temperature on the right. If a device is not showing up, it's not configured by any active plan."
     },
@@ -163,7 +167,8 @@
       "label": "Heating mode"
     },
     "plans": {
-      "section": "Heating plans"
+      "section": "Heating plans",
+      "empty": "- no plans found -"
     }
   },
 
@@ -176,6 +181,7 @@
     "plans": "Overview",
     "schedule": "Current temperatures",
     "settings": "Settings",
+    "help": "Help",
     "about": "About"
   },
 
@@ -190,7 +196,8 @@
     "1": "One day at home",
     "2": "One day away from home",
     "3": "Sleeping",
-    "4": "On Holiday"
+    "4": "On Holiday",
+    "5": "Out of Season"
   },
 
   "Notification": {

@@ -1,5 +1,5 @@
 import * as ConsoleRe from "console-remote-client";
-import { ILogger } from "./declarations";
+import { ILogger } from "./types";
 
 export class ConsoleReLogger implements ILogger {
     private consolere: any = null;

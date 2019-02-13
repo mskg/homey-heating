@@ -1,10 +1,10 @@
-import DateFnsUtils from '@date-io/date-fns';
+// import DateFnsUtils from '@date-io/date-fns';
 import { Button, Dialog, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
 import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
-import { MuiPickersUtilsProvider, TimePicker } from 'material-ui-pickers';
+// import { MuiPickersUtilsProvider, TimePicker } from 'material-ui-pickers';
 import React from 'react';
-import { ISetPoint } from '../../app/model';
+// import { ISetPoint } from '../../app/model';
 import { TARGET_TEMPERATURE_MAX, TARGET_TEMPERATURE_MIN } from '../../app/services/homey-api/declarations';
 import AppHeader from "../components/AppHeader";
 import FormTextField from '../components/FormTextField';
@@ -41,13 +41,13 @@ const SetPointDialog: React.FunctionComponent<Props> = (props: Props) => {
         onClose(true);
     }
 
-    function getDate(p: ISetPoint) {
-        const d = new Date();
-        d.setHours(p.hour);
-        d.setMinutes(p.minute);
+    // function getDate(p: ISetPoint) {
+    //     const d = new Date();
+    //     d.setHours(p.hour);
+    //     d.setMinutes(p.minute);
 
-        return d;
-    }
+    //     return d;
+    // }
 
     return (
         <Dialog fullScreen TransitionComponent={Transition} {...otherProps}>
@@ -68,8 +68,8 @@ const SetPointDialog: React.FunctionComponent<Props> = (props: Props) => {
             </DialogTitle>
 
             <DialogContent className={classes.resetPadding}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <InputContainer>
+                {/* <MuiPickersUtilsProvider utils={DateFnsUtils}> */}
+                    {/* <InputContainer>
                         <TimePicker
                             ampm={false}
                             label={translate("setpoint.start.label")}
@@ -79,7 +79,18 @@ const SetPointDialog: React.FunctionComponent<Props> = (props: Props) => {
                             onChange={setStart}
                             className={classes.input}
                         />
-                    </InputContainer>
+                    </InputContainer> */}
+
+                    <FormTextField
+                        type="time"
+                        InputProps={{ inputProps: { step: 60, pattern:"[0-9]{2}:[0-9]{2}" } }}
+
+                        label={translate("setpoint.target.label")}
+                        placeholder={translate("setpoint.target.label")}
+
+                        value={`${("00" + setPoint.hour).slice(-2)}:${("00" + setPoint.minute).slice(-2)}`}
+                        onChange={(evt) => { setStart(evt.target.value); }}
+                    />
 
                     <InputContainer>
                         <FormControl className={classes.formControl} style={{ marginTop: 16 }} fullWidth>
@@ -108,7 +119,7 @@ const SetPointDialog: React.FunctionComponent<Props> = (props: Props) => {
                         value={setPoint.targetTemperature}
                         onChange={setTargetTemperature}
                     />
-                </MuiPickersUtilsProvider>
+                {/* </MuiPickersUtilsProvider> */}
             </DialogContent>
         </Dialog>
     );

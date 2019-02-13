@@ -1,18 +1,34 @@
 import * as AthomAPI from "athom-api";
-import { LogService } from "../log";
+import { singleton } from "tsyringe";
+import { asynctrycatchlog, LoggerFactory } from "../log";
 import { IHomeyAPI } from "./declarations";
 
+@singleton()
+// @injectable()
 export class HomeyAPIService {
-    public static async getInstance(): Promise<IHomeyAPI> {
-        if (HomeyAPIService.homeyAPI == null) {
-            LogService.defaultLog.debug("Connecting to API");
-            HomeyAPIService.homeyAPI = await AthomAPI.HomeyAPI.forCurrentHomey();
-        }
+    private logger;
+    private homeyAPI = null;
 
-        return HomeyAPIService.homeyAPI;
+    public constructor(loggerFactory: LoggerFactory) {
+        this.logger = loggerFactory.createLogger("APISvc");
     }
 
-    private static homeyAPI = null;
+    // if that fails we're dead anyhow
+    //  All pathes capture the failure 
+    public async getInstance(): Promise<IHomeyAPI> {
+        if (this.homeyAPI == null) {
+            try {
+                this.logger.debug("Connecting to API");
+                this.homeyAPI = await AthomAPI.HomeyAPI.forCurrentHomey();
+            }
+            catch (e) {
+                this.logger.console.error("CATASTROPHIC FAILURE **** CANNOT BE HANDELED *****", e);                
 
-    private constructor() {}
+                this.homeyAPI = null;
+                throw e;
+            }
+        }
+
+        return this.homeyAPI;
+    }
 }

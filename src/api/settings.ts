@@ -1,50 +1,59 @@
-import { ManagerSettings } from "homey";
+import { Settings, SettingsManagerService, InternalSettings, AllSettings } from "@app/services";
 import { forEach } from "lodash";
-import { Settings } from "../app/model";
-import { ApiBase } from "./types";
+import { ApiBase, SUCCESS, IAPIParams } from "./types";
+import { injectable } from "tsyringe";
 
+@injectable()
 class GetSettings extends ApiBase {
-    constructor() {
+    constructor(private manager: SettingsManagerService) {
         super("GET", "/settings");
     }
 
-    public fn(args, callback) {
-        this.logger.debug("GET settings");
-
+    protected async execute() {
         var result = {};
+        // const manager = this.myApp.getService(SettingsManagerService);
 
         forEach(Object.keys(Settings), s => {
-            result[s] = ManagerSettings.get(Settings[s]);
+            result[s] = this.manager.get(Settings[s]);
         });
 
-        callback(null, result);
+        return result;
     }
 }
 
+type Body = {[key: string]: string }
+
+@injectable()
 class PutSettings extends ApiBase {
-    constructor() {
+    constructor(private manager: SettingsManagerService) {
         super("PUT", "/settings");
     }
 
-    public fn(args, callback) {
-        this.logger.debug("PUT settings");
-
+    protected async execute(args: IAPIParams<Body>) {
         const settings = args.body;
 
         forEach(Object.keys(Settings), publicKey => {
             var privateKey = Settings[publicKey];
 
             if (settings.hasOwnProperty(publicKey)) {
-                ManagerSettings.set(privateKey, settings[publicKey]);
+                this.manager.set(privateKey, settings[publicKey]);
             }
         });
 
-        this.myApp.refreshConfig();
-        callback(null, null);
+        // also allow internal settings
+        forEach(Object.keys(InternalSettings), publicKey => {
+            var privateKey = InternalSettings[publicKey];
+
+            if (settings.hasOwnProperty(publicKey)) {
+                this.manager.set(privateKey, settings[publicKey]);
+            }
+        });
+
+        return SUCCESS;
     }
 }
 
 export default [
-    new GetSettings(),
-    new PutSettings()
+    GetSettings,
+    PutSettings
 ];

@@ -16,8 +16,23 @@ export const TARGET_TEMPERATURE_MIN = 4;
 export const TARGET_TEMPERATURE_MAX = 35;
 
 export interface ICapabilityInstance<T> {
-    value: T;
-    setValue(val: T);
+    readonly lastChanged: Date;
+    readonly capability: ICapability;
+    readonly value: T;
+    readonly id: string;
+    readonly getable: boolean;
+    readonly setable: boolean;
+    readonly values: string[];
+    readonly type: string;
+    readonly min: number;
+    readonly max: number;
+    readonly decimals: number;
+    readonly step: number;
+    readonly title: string;
+    readonly units: string;
+    readonly desc: Date;
+    
+    setValue(val: T): Promise<void>;
     destroy();
 }
 

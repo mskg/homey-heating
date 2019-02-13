@@ -1,29 +1,46 @@
 
-import { ManagerSettings } from "homey";
 import { isEmpty } from "lodash";
-import { Settings } from "../../model/constants";
 import { AppLogger } from "./AppLogger";
-import { CategoryLogger } from "./CategoryLogger";
 import { ConsoleLogger } from "./ConsoleLogger";
 import { ConsoleReLogger } from "./ConsoleReLogger";
-import { ILogger } from "./declarations";
+import { ILogger } from "./types";
+import { Settings, SettingsManagerService } from "../settings-manager";
+import { container } from "tsyringe";
 
 export class LogService implements ILogger {
-    public static init(app) {
-        LogService.instance.loggers = [];
+    private evaluateLogger(app) {
+        let newLoggers = [];
 
-        const channel = ManagerSettings.get(Settings.LogCategory);
-        if (!isEmpty(channel) && ManagerSettings.get(Settings.LogEnabled) === true) {
-            LogService.instance.loggers.push(new ConsoleReLogger(channel));
+        const manager = container.resolve(SettingsManagerService);
+        const channel = manager.get<string>(Settings.LogCategory);
+        const logEnabled = manager.get<boolean>(Settings.LogEnabled, false);
+
+        // console.re also outputs to standard console
+        if (!isEmpty(channel) && logEnabled) {
+            newLoggers.push(new ConsoleReLogger(channel));
         } else if (app != null) {
-            LogService.instance.loggers.push(new AppLogger(app));
+            newLoggers.push(new AppLogger(app));
         } else {
-            new ConsoleLogger();
+            newLoggers.push(new ConsoleLogger());
         }
+
+        this.loggers = newLoggers;
     }
 
-    public static createLogger(name: string): ILogger {
-        return new CategoryLogger(name);
+    public static setupForTest() {
+        LogService.instance.loggers = [];
+    }
+
+    public static init(app) {
+        const manager = container.resolve(SettingsManagerService);
+        manager.onChanged.subscribe((v, e) => {
+            if (e.setting == Settings.LogEnabled || e.setting == Settings.LogCategory) {
+                LogService.instance.information("Reload due to settings change.");
+                LogService.instance.evaluateLogger(app);
+            }
+        });
+
+        LogService.instance.evaluateLogger(app);
     }
 
     public static get defaultLog(): ILogger {

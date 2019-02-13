@@ -1,5 +1,5 @@
 import callAPI from "../callAPI";
-import { Settings } from "../../../app/model";
+import { Settings } from "../../../app/services/settings-manager";
 
 export type SettingsHashMap = {
   [key in keyof typeof Settings]?: string | boolean;

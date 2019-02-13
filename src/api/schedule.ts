@@ -1,27 +1,26 @@
-import { IScheduleInformation } from "../app/model";
+import { IScheduleInformation } from "@app/model";
+import { HeatingManagerService, HeatingSchedulerService } from "@app/services";
 import { ApiBase } from "./types";
+import { injectable } from "tsyringe";
 
+@injectable()
 class GetSchedule extends ApiBase {
-    constructor() {
+    constructor(
+        private manager: HeatingManagerService,
+        private scheduler: HeatingSchedulerService,
+    ) {
         super("GET", "/schedule");
     }
 
-    public async fn(args, callback) {
-        this.logger.debug("GET schedule");
-
-        const result: IScheduleInformation = {
-            mode: this.myApp.manager.operationMode,
-            nextDate: this.myApp.scheduler.nextSchedule,
-            temperatures: await this.myApp.manager.evaluateActivePlans(),
-        };
-
-        // callback follows ( err, result )
-        callback(null, result);
+    protected async execute() {
+        return {
+            mode: this.manager.operationMode,
+            nextDate: this.scheduler.nextSchedule,
+            temperatures: await this.manager.evaluateActivePlans(),
+        } as IScheduleInformation;
     }
 }
 
-
-
 export default [
-    new GetSchedule(),
+    GetSchedule,
 ];

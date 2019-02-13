@@ -1,4 +1,5 @@
 # Generated 
+tmp/
 dist/
 app.js
 app.js.map

@@ -74,7 +74,7 @@ export type Action =
 
     // setpoint
     | { type: 'loadSetPoint', setPoint: IndexedSetPoint }
-    | { type: 'setStart', start: Date }
+    | { type: 'setStart', start: string | Date }
     | { type: 'setTargetTemperature', temperature: number }
 
     | { type: 'updateSetPoint', setPoint: IndexedSetPoint }
@@ -188,12 +188,19 @@ const reducerImplementation = (state: State, action: Action) => {
          * Set start of current setPoint
          */
         case 'setStart': {
+            let date = null; 
+            if (typeof action.start === "string") {
+                date = new Date('1970-01-01T'+action.start+"Z");
+            } else {
+                date = action.start;
+            }
+
             return {
                 ...state,
                 setPoint: {
                     ...state.setPoint,
-                    hour: action.start.getHours(),
-                    minute: action.start.getMinutes(),
+                    hour: date.getUTCHours(),
+                    minute: date.getUTCMinutes(),
                 }
             }
         };
