@@ -2,6 +2,7 @@ import { AuditedDevice } from "../device-manager";
 
 type SetTemperatureResult = {
     success: boolean;
+    skipped: boolean;
     error?: string;
 };
 
@@ -13,6 +14,6 @@ export enum PolicyType {
     Enforce = "enforce_policy",
     CheckTemperature = "check_policy",
 
-    Throtteled_Enforce = "throttled_enforce_policy",
-    Throtteled_CheckTemperature = "throttled_check_policy",
+    Throttled_Enforce = "throttled_enforce_policy",
+    Throttled_CheckTemperature = "throttled_check_policy",
 }

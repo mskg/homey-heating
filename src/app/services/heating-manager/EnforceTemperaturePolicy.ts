@@ -24,6 +24,7 @@ export class EnforceTemperaturePolicy implements ISetTemperaturePolicy {
             this.logger.error(`> Device ${device.name} is not ready (${device.unavailableMessage}).`);
             return {
                 success: false,
+                skipped: false,
                 error: "not_ready",
             };
         }
@@ -40,12 +41,13 @@ export class EnforceTemperaturePolicy implements ISetTemperaturePolicy {
                 this.logger.debug(`***** Would set to ${targetTemperature}`);
             }
 
-            return { success: true };
+            return { success: true, skipped: false };
         } catch (e) {
             this.logger.error(`Failed to set temperature ${device.name} (${device.id})`, e);
 
             return {
                 success: false,
+                skipped: false,
                 error: e.name,
             };
         }

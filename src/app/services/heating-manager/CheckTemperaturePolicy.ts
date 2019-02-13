@@ -24,6 +24,7 @@ export class CheckTemperaturePolicy implements ISetTemperaturePolicy {
             this.logger.error(`> Device ${device.name} is not ready (${device.unavailableMessage}).`);
             return {
                 success: false,
+                skipped: true,
                 error: "not_ready",
             };
         }
@@ -40,16 +41,18 @@ export class CheckTemperaturePolicy implements ISetTemperaturePolicy {
                 } else {
                     this.logger.debug(`***** Would set to ${targetTemperature}`);
                 }
+
+                return { success: true, skipped: false };
             } else {
                 this.logger.information(`> ${device.name} target temperature already set.`);
+                return { success: true, skipped: true };
             }
-
-            return { success: true };
         } catch (e) {
             this.logger.error(`Failed to set temperature ${device.name} (${device.id})`, e);
 
             return {
                 success: false,
+                skipped: false,
                 error: e.name,
             };
         }

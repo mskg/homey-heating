@@ -36,7 +36,7 @@ export class HeatingManagerService {
         });
 
         this.policy = container.resolve<ISetTemperaturePolicy>(
-            this.settings.get(InternalSettings.SetTemperaturePolicy, PolicyType.Throtteled_CheckTemperature));
+            this.settings.get(InternalSettings.SetTemperaturePolicy, PolicyType.Throttled_CheckTemperature));
     }
 
     // is for get and set, we don't care if that fails
@@ -202,7 +202,7 @@ export class HeatingManagerService {
                 value: targetTemperature,
                 error: result.error,
             });
-        } else {
+        } else if (!result.skipped) {
             this.sendNotification("set_target_temperature", {
                 name: d.name,
                 value: targetTemperature,

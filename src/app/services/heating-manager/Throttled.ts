@@ -7,7 +7,7 @@ import { EnforceTemperaturePolicy } from "./EnforceTemperaturePolicy";
 import { ISetTemperaturePolicy, PolicyType } from "./types";
 
 @injectable()
-@registry([{ token: PolicyType.Throtteled_Enforce, useToken: ThrottledEnforce }])
+@registry([{ token: PolicyType.Throttled_Enforce, useToken: ThrottledEnforce }])
 class ThrottledEnforce implements ISetTemperaturePolicy {
     private logger;
     private setMethod;
@@ -23,7 +23,7 @@ class ThrottledEnforce implements ISetTemperaturePolicy {
 }
 
 @injectable()
-@registry([{ token: PolicyType.Throtteled_CheckTemperature, useToken: ThrottledCheck }])
+@registry([{ token: PolicyType.Throttled_CheckTemperature, useToken: ThrottledCheck }])
 class ThrottledCheck implements ISetTemperaturePolicy {
     private logger;
     private setMethod;
