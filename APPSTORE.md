@@ -18,7 +18,7 @@ You can find more details, a short manual, as well as release notes online [http
 * *Flow integration* Set mode, enable/disable plan, apply plan, etc.
 * *Optimal resouce management* Your Homey is only utilized when there is something to do: No permanent polling or reading of temperatures in the background. The app only wakes up on setpoints.
 
-Not what you expect? Than it's probabyl not what I do at home. Feel free to add a feature request on [GitHub](https://github.com/mskg/homey-heating/issues).
+Not what you expect? Than it's probably not what I do at home. Feel free to add a feature request on [GitHub](https://github.com/mskg/homey-heating/issues).
 
 ## Supported languages
 
