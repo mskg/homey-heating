@@ -4,9 +4,7 @@ const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const LicenseCheckerWebpackPlugin = require("license-checker-webpack-plugin");
 const path = require('path');
-
 const distPath = path.resolve(__dirname, '../homey-heating-dist');
-
 const version = require("./package.json").version;
 
 var scriptConfig = (env, argv) => {
@@ -15,7 +13,8 @@ var scriptConfig = (env, argv) => {
     new webpack.DefinePlugin({
       PRODUCTION: JSON.stringify(argv.mode === 'production'),
       HOMEY_DEV_URL: JSON.stringify(process.env.HOMEY_DEV_URL || "http://192.168.178.117"),
-      VERSION: JSON.stringify(version)
+      VERSION: JSON.stringify(version),
+      LANG: JSON.stringify(process.env.HOMEY_LANG || "en"),
     }),
 
     new MiniCssExtractPlugin({
@@ -28,7 +27,7 @@ var scriptConfig = (env, argv) => {
     plugins.push(
       new HtmlWebPackPlugin({
         template: "./index.dev.html",
-        filename: "./index.html"
+        filename: "./index.html",
       }));
   }
   else {

@@ -23,7 +23,7 @@ Not what you expect? Than it's probably not what I do at home. Feel free to add 
 ## Supported languages
 
 * English
-* Dutch - currently in progress
+* Dutch
 
 ## Feedback
 
