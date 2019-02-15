@@ -45,6 +45,7 @@ export type Overrides =  { [key in keyof typeof OverrideMode]?: ITemperatureOver
 // defined schedules
 // assignement of schedules to zones
 export interface IHeatingPlan extends IExternalReference {
+    description?: string;
     enabled: boolean;
     schedule: ISetPoint[];
 

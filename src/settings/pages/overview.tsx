@@ -63,10 +63,16 @@ const OverviewPage: React.FunctionComponent<Props> = (props) => {
     const setHeatingMode = (newMode) => {
         (async () => {
             setModeChange(true);
+            props.enqueueSnackbar(translate("plans.changemode", {
+                name: translate(`Modes.${newMode}`),
+            }));
+
             await modeAPI.setMode(parseInt(newMode, 10));
+
             props.enqueueSnackbar(translate("plans.modechanged", {
                 name: translate(`Modes.${newMode}`),
             }));
+
             await loadMode();
             setModeChange(false);
         })();
@@ -119,7 +125,16 @@ const OverviewPage: React.FunctionComponent<Props> = (props) => {
                                 {plans.map((plan) => (
                                     <React.Fragment key={plan.id}>
                                         <ListItem {...{ to: `/plans/${plan.id}` }} component={Link} button={true}>
-                                            <ListItemText primary={plan.name} secondary={formatAttachments(plan)} />
+                                            <ListItemText
+                                                primary={plan.name}
+                                                secondary={formatAttachments(plan)}
+                                                // secondary = {
+                                                //     <React.Fragment>
+                                                //         {formatAttachments(plan)}
+                                                //         <Chart height={30} legend={false} plan={plan} />
+                                                //     </React.Fragment>
+                                                // }
+                                            />
 
                                             <ListItemSecondaryAction>
                                                 <Switch

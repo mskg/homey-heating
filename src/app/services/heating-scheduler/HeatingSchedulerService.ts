@@ -127,6 +127,6 @@ export class HeatingSchedulerService {
         this.logger.information(`Next execution is at ${this.next.toLocaleString()}`);
 
         const task = await ManagerCron.registerTask("HeatingManagerService", this.next, resetMode);
-        task.once("run", (data) => {this.run(data); });
+        task.once("run", (data) => this.run(data));
     }
 }

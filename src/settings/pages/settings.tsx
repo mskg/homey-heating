@@ -8,7 +8,7 @@ import React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { Settings } from "../../app/services/settings-manager";
 import { useSettings } from "../api/hooks";
-import { settingsAPI } from "../api/settings";
+import { settingsAPI, SettingsHashMap } from "../api/settings";
 import AppHeader from "../components/AppHeader";
 import BodyText from "../components/BodyText";
 import FormTextField from "../components/FormTextField";
@@ -28,7 +28,7 @@ type SettingsName = keyof typeof Settings;
 type Props = WithStyles<typeof styles> & RouteComponentProps<Params> & InjectedNotistackProps;
 
 const SettingsPage: React.FunctionComponent<Props> = (props) => {
-    const { settings, setSettings, loadSettings } = useSettings();
+    const { settings, setSettings, loadSettings } = useSettings(true);
     const [isDirty, setDirty] = React.useState<boolean>(false);
 
     function getFieldValue(name: SettingsName, def: any = null) {
@@ -40,7 +40,7 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
         const val = event.target[field];
 
         setSettings((old) => {
-            return { ...old, [name]: val };
+            return { ...old, [name]: val } as SettingsHashMap;
         });
         setDirty(true);
     };
@@ -119,7 +119,7 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
                             placeholder={translate("settings.backup.placeholder")}
 
                             multiline={true}
-                            rowsMax="5"
+                            rowsMax="10"
 
                             value={getFieldValue("Plans", "")}
                             onChange={updateField("Plans")}

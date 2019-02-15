@@ -8,7 +8,7 @@ import React from "react";
 // tslint:disable-next-line: no-var-requires
 const Icon = require("../../../assets/icon_black.svg");
 
-const getColor = (temp: number) => {
+export const getColor = (temp: number) => {
     if (temp <= 16) { return blue; }
     if (temp <= 20) { return green; }
     return deepOrange;

@@ -40,8 +40,17 @@ describe("Throttle", () => {
     });
 
     it("Check success", async () => {
-        const throttle = AsyncThrottle(async () => await Retry(async () => {}), 0);
+        const throttle = AsyncThrottle(async () => await Retry(async () => { }), 0);
 
         await throttle();
     });
+
+
+    it("Check work", async () => {
+        const throttle = AsyncThrottle(async () => await Retry(async () => {
+            // console.log("Called");
+        }), 500);
+
+        await Promise.all([1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(async (m) => await throttle()));
+    }).timeout(5500);
 });

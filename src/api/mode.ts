@@ -4,13 +4,14 @@ import { injectable } from "tsyringe";
 import { ApiBase, IAPIParams, SUCCESS } from "./types";
 
 type Body = {
-    mode: OperationMode;
+    mode: OperationMode,
 };
 
 @injectable()
 class PutMode extends ApiBase<Body> {
-    constructor(private manager: HeatingManagerService,
-                private scheduler: HeatingSchedulerService) {
+    constructor(
+        private manager: HeatingManagerService,
+        private scheduler: HeatingSchedulerService) {
         super("PUT", "/mode");
     }
 
@@ -32,7 +33,7 @@ class GetMode extends ApiBase {
     }
 
     protected async execute() {
-        return this.manager.operationMode;
+        return {mode: this.manager.operationMode};
     }
 }
 

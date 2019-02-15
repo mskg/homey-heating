@@ -2,22 +2,23 @@ import { useEffect } from "react";
 import { deviceAPI } from "../api/devices";
 import { usePlanDispatch, usePlanGlobalState } from "./PlanProvider";
 
+let loadingDevices = false;
 export const useDevices = (keep?: boolean) => {
     const dispatch = usePlanDispatch();
     const devices = usePlanGlobalState("devices");
-    const loaded = usePlanGlobalState("loaded");
+
+    if (!keep && !loadingDevices) {
+        loadingDevices = true;
+        throw deviceAPI.fetchHeatingDevices().then((d) => {
+            dispatch({ type: "loadDevices", devices: d });
+        });
+    }
 
     useEffect(() => {
-        if (!keep || loaded) {
-            (async () => {
-                const result = await Promise.all([
-                    await deviceAPI.fetchHeatingDevices(),
-                ]);
-
-                dispatch({ type: "loadDevices", devices: result[0] });
-            })();
-        }
-    }, [keep, loaded && (devices == null || devices.length === 0)]);
+        return () => {
+            loadingDevices = false;
+        };
+    }, [keep]);
 
     return devices;
 };

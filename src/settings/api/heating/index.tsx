@@ -6,12 +6,12 @@ import callAPI from "../callAPI";
 const fetchPlans = async (): Promise<IHeatingPlan[]> => {
   const res = await callAPI<IHeatingPlan[]>("GET", "/plans");
 
-  return map(res, (plan) => {
+  return sortBy(map(res, (plan: IHeatingPlan) => {
     plan.zones = plan.zones || [];
     plan.devices = plan.devices || [];
 
     return plan;
-  });
+  }), (p) => p.name);
 };
 
 const togglePlanState = async (plan: IHeatingPlan): Promise<boolean> => {
@@ -52,8 +52,8 @@ const fetchSchedule = async (): Promise<IScheduleInformation> => {
 };
 
 const fetchMode = async (): Promise<OperationMode> => {
-  const res = await callAPI<OperationMode>("GET", "/mode");
-  return res;
+  const res = await callAPI<{mode: OperationMode}>("GET", "/mode");
+  return res.mode;
 };
 
 const setMode = async (mode: OperationMode): Promise<void> => {

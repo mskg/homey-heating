@@ -69,6 +69,13 @@
     "removed": "Plan __name__ has been removed.",
     "duplicated": "Plan __name__ has been duplicated.",
 
+    "tabs": {
+      "overview": "Overview",
+      "schedule": "Schedule",
+      "zones": "Zones (__n__)",
+      "devices": "Devices (__n__)"
+    },
+
     "target": {
       "label": "Target temperature",
       "placeholder": "Target temperature"
@@ -88,13 +95,23 @@
         "label": "Display name of your plan",
         "placeholder": "Display name"
       },
-      "text_enable": "If you disable the plan, it is not applied automatically. Yut can still apply it manually via Flow.",
+      "text_enable": "If you disable the plan, it is not applied automatically. You can still apply it manually via Flow.",
       "enabled": {
         "label": "Enabled?"
       },
-      "text_schedule": "Configure the schedules when your heating devices' temperature need to be adjusted. Additional exceptions can be configured: You leave home unplanned, or you return earlier.",
+      "text_description": "Anything important you need to remember?",
+      "description": {
+        "label": "Description",
+        "placeholder": "A short description"
+      }  
+    },
+
+    "schedules": {
+      "section": "Schedule",
+      "text": "Configure the schedules when your heating devices' temperature need to be adjusted. Additional exceptions can be configured: You leave home unplanned, or you return earlier.",
       "edit": "Normal Schedule",
-      "exceptions": "Exceptions"
+      "exceptions": "Exceptions",
+      "section_summary": "Summary"
     },
    
     "zones": {
@@ -160,6 +177,7 @@
     "title": "Overview",
 
     "toggled": "Plan __name__ has been updated.",
+    "changemode": "Chaning mode to __name__.",
     "modechanged": "Mode has been changed to __name__.",
 
     "heatingmode": {
