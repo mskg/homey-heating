@@ -1,7 +1,3 @@
-declare var Homey: any;
-declare var PRODUCTION: boolean;
-declare var HOMEY_DEV_URL: string;
-
 export default async function callAPI<T>(method: string, path: string, body: any = null): Promise<T> {
     if (PRODUCTION) {
         return await new Promise<T>((resolve, reject) => {

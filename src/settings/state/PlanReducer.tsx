@@ -434,7 +434,6 @@ const loggingReducer = (state: State, action: Action) => {
     }
 };
 
-declare var PRODUCTION: boolean;
 export const reducer = PRODUCTION
     ? reducerImplementation
     : loggingReducer;

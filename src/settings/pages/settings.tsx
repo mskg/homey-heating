@@ -6,7 +6,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import { InjectedNotistackProps, withSnackbar } from "notistack";
 import React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import { Settings } from "../../app/services/settings-manager";
+import { Settings } from "../../app/services/settings-manager/types";
 import { useSettings } from "../api/hooks";
 import { settingsAPI, SettingsHashMap } from "../api/settings";
 import AppHeader from "../components/AppHeader";

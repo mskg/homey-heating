@@ -3,8 +3,7 @@ import "reflect-metadata";
 // position must not be changed
 
 import { Actions } from "@app/flows";
-import { asynctrycatchlog, DeviceManagerService, HeatingManagerService, HeatingPlanRepositoryService,
-    HeatingSchedulerService, ILogger, LoggerFactory, LogService, SettingsManagerService } from "@app/services";
+import { asynctrycatchlog, BootStrapper, HeatingManagerService, HeatingPlanRepositoryService, HeatingSchedulerService, ILogger, LoggerFactory, LogService, SettingsManagerService } from "@app/services";
 import { App as HomeyApp } from "homey";
 import { container, injectable } from "tsyringe";
 
@@ -17,7 +16,6 @@ export class HeatingSchedulerApp {
         private settingsManager: SettingsManagerService,
         private repositoryService: HeatingPlanRepositoryService,
         private heatingScheduler: HeatingSchedulerService,
-        private deviceManager: DeviceManagerService,
         private heatingManager: HeatingManagerService) {
 
         this.logger = this.loggerFactory.createLogger("App");
@@ -35,12 +33,6 @@ export class HeatingSchedulerApp {
         process.on("unhandledRejection", (reason, p) => {
             this.logger.error("Unhandled Rejection at:", p, "reason:", reason);
         });
-
-        // prepare device caches
-        await this.deviceManager.init();
-
-        // load plans
-        this.repositoryService.load();
 
         // apply what we have
         await this.heatingManager.applyPlans();
@@ -73,6 +65,8 @@ export default class App extends HomeyApp {
         // tslint:disable-next-line: no-console
         console.log("Bootstrapping App");
         LogService.init(this);
+
+        await BootStrapper();
 
         // we let the container do our stuff
         const app = container.resolve(HeatingSchedulerApp);

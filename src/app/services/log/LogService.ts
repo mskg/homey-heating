@@ -55,8 +55,8 @@ export class LogService implements ILogger {
         const newLoggers = [];
 
         const manager = container.resolve(SettingsManagerService);
-        const channel = manager.get<string>(Settings.LogCategory);
-        const logEnabled = manager.get<boolean>(Settings.LogEnabled, false);
+        const channel = manager.get(Settings.LogCategory) as string;
+        const logEnabled = manager.get(Settings.LogEnabled, false) as boolean;
 
         // console.re also outputs to standard console
         if (!isEmpty(channel) && logEnabled) {

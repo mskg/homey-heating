@@ -16,18 +16,14 @@
       ],
       "paths": {
         "@app/*": ["app/*"],
-      },
-      "types": [
-        "node",
-        "lodash",
-      ],
-      "typeRoots": [
-        "node_modules/@types"
-      ]
+        "*": ["types/*"]
+      }
     },
     "include": [
-      "./src/typings.d.ts",
+      "./src/types/global.d.ts",
       "./src/app/app.ts",
-      "./src/api/api.ts"
+      "./src/api/api.ts",
+      "./src/drivers/virtual-thermostat/driver.ts",
+      "./src/drivers/virtual-thermostat/device.ts"
     ]
   }

@@ -1,0 +1,44 @@
+// must not be removed
+import "reflect-metadata";
+// position must not be changed
+
+import { IHeatingPlan } from "@app/model";
+import { BootStrapper, HeatingPlanRepositoryService, LoggerFactory } from "@app/services";
+import { Driver } from "homey";
+import { container } from "tsyringe";
+
+class VirtualThermostatsDriver extends Driver {
+    private logger;
+    private repository;
+
+    public async onInit() {
+        await BootStrapper();
+
+        // tslint:disable-next-line: no-console
+        console.log("Bootstrapping Driver");
+
+        const factory = container.resolve<LoggerFactory>(LoggerFactory);
+        this.logger = factory.createLogger("Driver");
+
+        this.repository = container.resolve<HeatingPlanRepositoryService>(HeatingPlanRepositoryService);
+    }
+
+    public async onPairListDevices(data, callback) {
+        this.logger.information("Preparing available devices");
+        const plans: IHeatingPlan[] = await this.repository.plans;
+
+        callback(null,
+            plans.map((p) => {
+                return {
+                    name: `Plan ${p.name}`,
+                    data: {
+                        id: p.id,
+                    },
+                };
+            }),
+        );
+    }
+
+}
+
+module.exports = VirtualThermostatsDriver;

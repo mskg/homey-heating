@@ -14,7 +14,7 @@ var scriptConfig = (env, argv) => {
       PRODUCTION: JSON.stringify(argv.mode === 'production'),
       HOMEY_DEV_URL: JSON.stringify(process.env.HOMEY_DEV_URL || "http://192.168.178.117"),
       VERSION: JSON.stringify(version),
-      LANG: JSON.stringify(process.env.HOMEY_LANG || "en"),
+      HOMEY_LANG: JSON.stringify(process.env.HOMEY_LANG || "en"),
     }),
 
     new MiniCssExtractPlugin({

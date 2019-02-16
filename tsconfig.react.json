@@ -13,8 +13,11 @@
         "emitDecoratorMetadata": true,
         "suppressImplicitAnyIndexErrors": true
     },
+    "paths": {
+        "*": ["src/types/*"]
+    },
     "include": [
-        "./src/typings.d.ts",
+        "./src/types/global.d.ts",
         "./src/settings/**/*.tsx"
     ]
 }

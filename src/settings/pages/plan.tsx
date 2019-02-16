@@ -61,9 +61,6 @@ type Props = WithStyles<typeof styles>
     & RouteComponentProps<Params, any, boolean>
     & InjectedNotistackProps;
 
-declare var PRODUCTION: boolean;
-declare var HOMEY_DEV_URL: string;
-
 type TabProps = {
     id: number,
     activeTab: number,

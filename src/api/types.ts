@@ -1,7 +1,6 @@
 import { ILogger, InternalSettings, LoggerFactory, SettingsManagerService } from "@app/services";
 import { container } from "tsyringe";
 
-declare var PRODUCTION: boolean;
 type UnkownParameters = { [k: string]: string; };
 
 /***

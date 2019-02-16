@@ -104,12 +104,15 @@ var appConfig = (env, argv) => {
       app: './src/app/app.ts',
       api: './src/api/api.ts',
 
-      model: './src/app/model/index.ts',
-      helper: './src/app/helper/index.ts',
-      services: './src/app/services/index.ts',
-      flows: './src/app/flows/index.ts',
+      'node_modules/@app/model/index': './src/app/model/index.ts',
+      'node_modules/@app/helper/index': './src/app/helper/index.ts',
+      'node_modules/@app/services/index': './src/app/services/index.ts',
+      'node_modules/@app/flows/index': './src/app/flows/index.ts',
 
-      tsyringe: './node_modules/tsyringe/dist/esm2015/index.js',
+      'node_modules/tsyringe/index': './node_modules/tsyringe/dist/esm2015/index.js',
+
+      'drivers/virtual-thermostat/device': './src/drivers/virtual-thermostat/device.ts',
+      'drivers/virtual-thermostat/driver': './src/drivers/virtual-thermostat/driver.ts',
     },
 
     devtool: argv.mode === 'production' ? 'cheap-module-source-map' : 'inline-source-map',
@@ -127,12 +130,12 @@ var appConfig = (env, argv) => {
       "athom-api": "athom-api",
       "homey": "homey",
       "reflect-metadata": "reflect-metadata",
-      "tsyringe": "./tsyringe",
+      "tsyringe": "tsyringe",
       "lodash": "lodash",
-      "@app/model": "./model",
-      "@app/helper": "./helper",
-      "@app/services": "./services",
-      "@app/flows": "./flows",
+      "@app/model": "@app/model",
+      "@app/helper": "@app/helper",
+      "@app/services": "@app/services",
+      "@app/flows": "@app/flows",
     },
     plugins: plugins,
     output: {

@@ -1,16 +1,27 @@
 import { ICalculatedTemperature, IHeatingPlan, ISetPoint, NormalOperationMode, OperationMode, OverrideMode } from "@app/model";
 import { __, Notification } from "homey";
 import { forEach, isEmpty } from "lodash";
+import { EventDispatcher } from "ste-events";
 import { container, singleton } from "tsyringe";
 import { HeatingPlanCalculator } from "../calculator";
 import { AuditedDevice, DeviceManagerService } from "../device-manager";
 import { HeatingPlanRepositoryService } from "../heating-plan-repository";
-import { asynctrycatchlog, ILogger, LoggerFactory, trycatchlog } from "../log";
+import { ILogger, LoggerFactory, trycatchlog } from "../log";
 import { InternalSettings, SettingsManagerService } from "../settings-manager";
 import { ISetTemperaturePolicy, PolicyType } from "./types";
 
 @singleton()
 export class HeatingManagerService {
+    public get onPlansApplied() {
+        return this.onPlansAppliedDispatcher.asEvent();
+    }
+
+    private onPlansAppliedDispatcher = new EventDispatcher<
+        HeatingManagerService, {
+            plans: IHeatingPlan[],
+            schedule: ICalculatedTemperature[],
+        }>();
+
     private isRunning: boolean;
     private logger: ILogger;
     private mode: OperationMode;
@@ -24,7 +35,9 @@ export class HeatingManagerService {
         loggerFactory: LoggerFactory) {
         this.logger = loggerFactory.createLogger("Manager");
 
-        const mode: OperationMode = this.settings.get<OperationMode>(InternalSettings.OperationMode, NormalOperationMode.Automatic);
+        const mode: OperationMode = this.settings.get<OperationMode>(
+            InternalSettings.OperationMode, NormalOperationMode.Automatic);
+
         this.mode = mode;
 
         this.plans.onChanged.subscribe(async () => {
@@ -49,7 +62,7 @@ export class HeatingManagerService {
         this.logger.information(`Setting mode to`, mode);
 
         this.mode = mode;
-        this.settings.set(InternalSettings.OperationMode, mode);
+        this.settings.set<number>(InternalSettings.OperationMode, mode);
 
         this.sendNotification("set_operation_mode", {
             mode: __(`Modes.${mode}`),
@@ -67,9 +80,25 @@ export class HeatingManagerService {
 
             const settings = await this.evaluateActivePlans();
             await this.applySettings(settings);
+
+            this.onPlansAppliedDispatcher.dispatch(this, {
+                plans: await this.plans.activePlans,
+                schedule: settings,
+            });
         } finally {
             this.isRunning = false;
         }
+    }
+
+    // erors handled by all callers
+    public async applyPlan(plan: IHeatingPlan) {
+        const schedule = await this.evaluatePlan(plan);
+        await this.applySettings(schedule);
+
+        this.onPlansAppliedDispatcher.dispatch(this, {
+            plans: [plan],
+            schedule,
+        });
     }
 
     // erors handled by all callers
@@ -83,22 +112,7 @@ export class HeatingManagerService {
         return settings;
     }
 
-    // erors handled by all callers
-    public async applyPlan(plan: IHeatingPlan) {
-        await this.applySettings(await this.evaluatePlan(plan));
-    }
-
-    private async applySettings(settings: ICalculatedTemperature[]) {
-        await Promise.all(
-            settings.map(async (newSetting) =>
-                await this.setTemperature(newSetting.plan.name,
-                    this.deviceManager.findDevice(newSetting.device.id),
-                    newSetting.targetTemperature),
-            ),
-        );
-    }
-
-    private evaluatePlan(plan: IHeatingPlan): ICalculatedTemperature[] {
+    public evaluatePlan(plan: IHeatingPlan): ICalculatedTemperature[] {
         this.logger.information(`Evaluating plan ${plan.id}`);
 
         let setPoint: ISetPoint = null;
@@ -193,7 +207,7 @@ export class HeatingManagerService {
         return targets;
     }
 
-    private async setTemperature(plan: string, d: AuditedDevice, targetTemperature: number): Promise<void> {
+    public async setTemperature(plan: string, d: AuditedDevice, targetTemperature: number): Promise<void> {
         const result = await this.policy.setTargetTemperature(d, targetTemperature);
 
         if (!result.success) {
@@ -209,6 +223,16 @@ export class HeatingManagerService {
                 plan,
             });
         }
+    }
+
+    private async applySettings(settings: ICalculatedTemperature[]) {
+        await Promise.all(
+            settings.map(async (newSetting) =>
+                await this.setTemperature(newSetting.plan.name,
+                    this.deviceManager.findDevice(newSetting.device.id),
+                    newSetting.targetTemperature),
+            ),
+        );
     }
 
     private sendNotification(name: string, args?: {}) {

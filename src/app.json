@@ -180,5 +180,32 @@
         "username": "klingmarkus"
       }
     }
-  }
+  },
+  "drivers": [
+    {
+      "id": "virtual-thermostat",
+      "name": {
+        "en": "Virtual Thermostat"
+      },
+      "class": "thermostat",
+      "capabilities": [
+        "target_temperature",
+        "measure_temperature",
+        "onoff"
+      ],
+      "pair": [
+        {
+            "id": "list_devices",
+            "template": "list_devices",
+            "navigation": {
+                "next": "add_devices"
+            }
+        },
+        {
+            "id": "add_devices",
+            "template": "add_devices"
+        }
+      ]
+    }
+  ]
 }

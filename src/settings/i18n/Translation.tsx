@@ -1,9 +1,5 @@
 import { forEach, reduce } from "lodash";
 
-declare var Homey: any;
-declare var PRODUCTION: boolean;
-declare var HOMEY_LANG: string;
-
 let translate: (id: string, param?: any) => string = null;
 
 if (PRODUCTION) {
