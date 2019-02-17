@@ -197,7 +197,7 @@ export class HeatingSchedulerService {
         let nextExecution = this.next;
         if (nextExecution == null || nextExecution > END_OF_DAY) { nextExecution = END_OF_DAY; }
 
-        this.logger.information(`Next execution is at ${nextExecution.toLocaleString()}`);
+        this.logger.information(`Next execution is at ${nextExecution.toLocaleString()}`, plansToExecute.map((p) => `${p.name} (${p.id})`));
         const task = await ManagerCron.registerTask("heating", nextExecution, plansToExecute);
 
         if (nextExecution === END_OF_DAY) {
