@@ -218,6 +218,11 @@
     "5": "Out of Season"
   },
 
+  "Device": {
+    "plan_removed": "Associated heating plan does no longer exist. Restore the plan from backup or remove the device.",
+    "pair": "Plan __name__"
+  },
+
   "Notification": {
     "set_operation_mode": "Heating mode changed to '__mode__'",
     "set_target_temperature": "Setting thermostat '__name__' to __value__° (__plan__)",

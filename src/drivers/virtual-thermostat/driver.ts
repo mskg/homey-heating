@@ -3,8 +3,8 @@ import "reflect-metadata";
 // position must not be changed
 
 import { IHeatingPlan } from "@app/model";
-import { BootStrapper, HeatingPlanRepositoryService, LoggerFactory } from "@app/services";
-import { Driver } from "homey";
+import { BootStrapper, CapabilityType, HeatingPlanRepositoryService, LoggerFactory } from "@app/services";
+import { __, Driver } from "homey";
 import { container } from "tsyringe";
 
 class VirtualThermostatsDriver extends Driver {
@@ -30,10 +30,15 @@ class VirtualThermostatsDriver extends Driver {
         callback(null,
             plans.map((p) => {
                 return {
-                    name: `Plan ${p.name}`,
+                    name: __("Device.pair", {name: p.name}),
                     data: {
                         id: p.id,
                     },
+                    capabilities: [
+                        CapabilityType.TargetTemperature,
+                        CapabilityType.MeasureTemperature,
+                        CapabilityType.ThermostatOverride,
+                    ],
                 };
             }),
         );

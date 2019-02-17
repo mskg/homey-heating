@@ -191,5 +191,9 @@
     "set_operation_mode": "Verwarmingsmodus gewijzigd in '__mode__'",
     "set_target_temperature": "De thermostaat '__name__' instellen op __value__ ° (__plan__)",
     "failed_set_target_temperature": "Kon thermostaat '__name__' niet instellen op __value__ ° (__error__)"
+  },
+  "Device": {
+    "pair": "Plan __name__",
+    "plan_removed": "Het bijbehorende verwarmingsplan bestaat niet meer. Herstel het plan vanaf een back-up of verwijder het apparaat."
   }
 }
