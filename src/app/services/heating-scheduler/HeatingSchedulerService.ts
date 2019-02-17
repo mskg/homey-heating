@@ -1,5 +1,5 @@
 
-import { Mutex, normalizeTime } from "@app/helper";
+import { Mutex, slotTime } from "@app/helper";
 import { IHeatingPlan, NormalOperationMode, OverrideMode, ThermostatMode } from "@app/model";
 import { ManagerCron } from "homey";
 import { first, groupBy, map, sortBy } from "lodash";
@@ -23,21 +23,18 @@ export class HeatingSchedulerService {
     private logger: ICategoryLogger;
     private next: Date = null;
     private isRunning = false;
-    private minuteBlocks;
 
     constructor(
         private manager: HeatingManagerService,
         private calculator: HeatingPlanCalculator,
         private repository: HeatingPlanRepositoryService,
+        private settings: SettingsManagerService,
 
-        settings: SettingsManagerService,
         loggerFactory: LoggerFactory) {
         this.logger = loggerFactory.createLogger("Scheduler");
 
         this.repository.onChanged.subscribe(this.handleOnChanged.bind(this));
         this.manager.onModeChanged.subscribe(this.handleOnChanged.bind(this));
-
-        this.minuteBlocks = settings.get<number>(InternalSettings.SchedulerTimeSlots, 20);
     }
 
     // we live on our own, ok to kill
@@ -158,6 +155,7 @@ export class HeatingSchedulerService {
         } else {
             type TempArray = { date: Date, plan: IHeatingPlan };
             const allSchedules: TempArray[] = [];
+            const slots = this.settings.get<number>(InternalSettings.SchedulerTimeSlots, 12);
 
             // we get the next schedule for all active plans
             const activePlans = await this.repository.activePlans;
@@ -170,7 +168,7 @@ export class HeatingSchedulerService {
                     // (difference vs. runtime), we would miss the execution
 
                     // we group all in 20 blocks à 5 minutes
-                    next.setMinutes(normalizeTime(next.getMinutes(), 0, this.minuteBlocks), 0, 0);
+                    next.setMinutes(slotTime(next.getMinutes(), slots), 0, 0);
                     allSchedules.push({ date: next, plan });
                 }
             });

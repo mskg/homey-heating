@@ -1,13 +1,13 @@
-import { normalizeTime } from "@app/helper";
+import { slotTime } from "@app/helper";
 import { expect } from "chai";
 import "mocha";
 import "./suppress-console";
 
 // tslint:disable: no-unused-expression
 // tslint:disable: no-empty
-describe("Date normalization", () => {
-    it("Round", async () => {
-        const test = (d) => normalizeTime(d.getMinutes());
+describe("Time slots", () => {
+    it("Round 15", async () => {
+        const test = (d) => slotTime(d.getMinutes());
 
         const d = new Date();
 
@@ -34,5 +34,23 @@ describe("Date normalization", () => {
 
         d.setMinutes(58);
         expect(45).to.equal(test(d));
+    });
+
+    it("Round 5", async () => {
+        const test = (d) => slotTime(d.getMinutes(), 60 / 5);
+
+        const d = new Date();
+
+        d.setMinutes(0);
+        expect(0).to.equal(test(d));
+
+        d.setMinutes(14);
+        expect(10).to.equal(test(d));
+
+        d.setMinutes(15);
+        expect(15).to.equal(test(d));
+
+        d.setMinutes(52);
+        expect(50).to.equal(test(d));
     });
 });
