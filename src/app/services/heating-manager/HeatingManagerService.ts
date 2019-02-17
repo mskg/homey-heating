@@ -7,7 +7,7 @@ import { HeatingPlanCalculator } from "../calculator";
 import { AuditedDevice, DeviceManagerService } from "../device-manager";
 import { HeatingPlanRepositoryService, PlanChangeEventType } from "../heating-plan-repository";
 import { ILogger, LoggerFactory, trycatchlog } from "../log";
-import { InternalSettings, SettingsManagerService } from "../settings-manager";
+import { InternalSettings, Settings, SettingsManagerService } from "../settings-manager";
 import { ISetTemperaturePolicy, PolicyType } from "./types";
 
 export type PlansAppliedEventArgs = {
@@ -83,9 +83,11 @@ export class HeatingManagerService {
         this.mode = mode;
         this.settings.set<number>(InternalSettings.OperationMode, mode);
 
-        this.sendNotification("set_operation_mode", {
-            mode: __(`Modes.${mode}`),
-        });
+        if (this.settings.get(Settings.NotifyModeChange, true)) {
+            this.sendNotification("set_operation_mode", {
+                mode: __(`Modes.${mode}`),
+            });
+        }
 
         this.onModeDispatcher.dispatch(this, mode);
     }
@@ -236,17 +238,21 @@ export class HeatingManagerService {
         const result = await this.policy.setTargetTemperature(d, targetTemperature);
 
         if (!result.success) {
-            this.sendNotification("failed_set_target_temperature", {
-                name: d.name,
-                value: targetTemperature,
-                error: result.error,
-            });
+            if (this.settings.get(Settings.NotifySetError, true)) {
+                this.sendNotification("failed_set_target_temperature", {
+                    name: d.name,
+                    value: targetTemperature,
+                    error: result.error,
+                });
+            }
         } else if (!result.skipped) {
-            this.sendNotification("set_target_temperature", {
-                name: d.name,
-                value: targetTemperature,
-                plan,
-            });
+            if (this.settings.get(Settings.NotifySetSuccess, true)) {
+                this.sendNotification("set_target_temperature", {
+                    name: d.name,
+                    value: targetTemperature,
+                    plan,
+                });
+            }
         }
     }
 

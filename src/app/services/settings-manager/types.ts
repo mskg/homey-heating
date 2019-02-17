@@ -3,6 +3,10 @@ export enum Settings {
     LogCategory = "consolere",
     LogEnabled = "logenabled",
     Plans = "plans",
+
+    NotifyModeChange = "notify_modechange",
+    NotifySetSuccess = "notify_settempsuccess",
+    NotifySetError = "notify_settemperror",
 }
 
 export enum InternalSettings {
@@ -11,6 +15,7 @@ export enum InternalSettings {
     SetTemperaturePolicy = "temperaturepolicy",
     SetTemperatureThrottle = "temperatureThrottle",
     SchedulerTimeSlots = "schedulerTimeslots",
+    DriverDebounce = "driverdebounce",
 }
 
 export type AllSettings = Settings | InternalSettings;

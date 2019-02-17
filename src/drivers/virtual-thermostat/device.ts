@@ -2,11 +2,12 @@
 import "reflect-metadata";
 // position must not be changed
 
+import { AsyncDebounce } from "@app/helper";
 import { ICalculatedTemperature, IHeatingPlan, NormalOperationMode, ThermostatMode } from "@app/model";
 import {
     asynctrycatchlog, BootStrapper, CapabilityChangedEventArgs, CapabilityType, DeviceManagerService,
-    HeatingManagerService, HeatingPlanRepositoryService, ILogger, LoggerFactory,
-    PlanChangeEventType, PlansAppliedEventArgs, PlansChangedEventArgs,
+    HeatingManagerService, HeatingPlanRepositoryService, ILogger, InternalSettings,
+    LoggerFactory, PlanChangeEventType, PlansAppliedEventArgs, PlansChangedEventArgs, SettingsManagerService,
 } from "@app/services";
 import { __, Device } from "homey";
 import { filter, find } from "lodash";
@@ -25,11 +26,11 @@ class VirtualThermostat extends Device {
     private plan: IHeatingPlan;
 
     private subscriptions =
-    {
-        repositoryChanged: null,
-        capabilitiesChanged: null,
-        plansApplied: null,
-    };
+        {
+            repositoryChanged: null,
+            capabilitiesChanged: null,
+            plansApplied: null,
+        };
 
     @asynctrycatchlog(true)
     public async onInit() {
@@ -45,10 +46,14 @@ class VirtualThermostat extends Device {
         this.repository = container.resolve<HeatingPlanRepositoryService>(HeatingPlanRepositoryService);
         this.manager = container.resolve<HeatingManagerService>(HeatingManagerService);
         this.devices = container.resolve<DeviceManagerService>(DeviceManagerService);
+        const settings = container.resolve<SettingsManagerService>(SettingsManagerService);
 
         // Capabilities
-        this.tryRegisterCapability(CapabilityType.TargetTemperature, this.onTargetTemperatureChanged.bind(this));
-        this.tryRegisterCapability(CapabilityType.ThermostatOverride, this.onThermostatModeChanged.bind(this));
+        this.tryRegisterCapability(CapabilityType.TargetTemperature,
+            AsyncDebounce(this.onTargetTemperatureChanged.bind(this), settings.get<number>(InternalSettings.DriverDebounce, 5 * 1000)));
+
+        this.tryRegisterCapability(CapabilityType.ThermostatOverride,
+            AsyncDebounce(this.onThermostatModeChanged.bind(this), settings.get<number>(InternalSettings.DriverDebounce, 5 * 1000)));
 
         this.subscriptions.repositoryChanged = this.plansChanged.bind(this);
         this.subscriptions.capabilitiesChanged = this.capabilititesChanged.bind(this);
