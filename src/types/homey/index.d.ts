@@ -30,6 +30,8 @@ declare module "homey" {
     export module ManagerCron {
         export function unregisterAllTasks(): Promise<void>;
         export function registerTask(name: string, next: Date, data?: any): Promise<CronTask>;
+        export function getTask(name: string): Promise<CronTask>;
+        // export function on(s: string, cb: EventHandler<any>);
     }
 
     export type AllowedSetting = boolean | string | number;

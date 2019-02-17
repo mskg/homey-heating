@@ -6,14 +6,14 @@ import { singleton } from "tsyringe";
 import { asynctrycatchlog, ILogger, LoggerFactory, trycatchlog } from "../log";
 import { Settings, SettingsManagerService } from "../settings-manager";
 
-export enum PlanChange {
-    Change,
-    Remove,
+export enum PlanChangeEventType {
+    Changed,
+    Removed,
 }
 
 export type PlansChangedEventArgs = Array<{
     plan: IHeatingPlan,
-    event: PlanChange,
+    event: PlanChangeEventType,
 }>;
 
 @singleton()
@@ -46,7 +46,7 @@ export class HeatingPlanRepositoryService {
 
                     this.onChangedDispatcher.dispatch(this, this.planList.map((p: IHeatingPlan) => { return {
                         plan: p,
-                        event: PlanChange.Change,
+                        event: PlanChangeEventType.Changed,
                     }; }));
                 } catch (e) {
                     this.logger.information("Reload of plans failed", e);
@@ -123,19 +123,25 @@ export class HeatingPlanRepositoryService {
     }
 
     // caller needs to know
-    public async update(plan: IHeatingPlan, notify = true) {
+    public async update(plansToUpdate: IHeatingPlan | IHeatingPlan[], notify = true) {
+        const plans = (Array.isArray(plansToUpdate) ? plansToUpdate : [plansToUpdate]);
+
         const unlock = await this.mutex.lock();
         {
-            this.logger.debug(`Updating plan ${plan.id}`);
-            remove(this.planList, (p) => p.id === plan.id);
-            this.planList.push(plan);
+            plans.forEach((plan) => {
+                this.logger.debug(`Updating plan ${plan.id}`);
+
+                remove(this.planList, (p) => p.id === plan.id);
+                this.planList.push(plan);
+            });
 
             this.save();
         }
         unlock();
 
         if (notify) {
-            this.onChangedDispatcher.dispatch(this, [{plan, event: PlanChange.Change}]);
+            this.onChangedDispatcher.dispatch(this,
+                plans.map((plan) => ({plan, event: PlanChangeEventType.Changed})));
         }
     }
 
@@ -150,7 +156,7 @@ export class HeatingPlanRepositoryService {
         }
         unlock();
 
-        this.onChangedDispatcher.dispatch(this, [{plan, event: PlanChange.Change}]);
+        this.onChangedDispatcher.dispatch(this, [{plan, event: PlanChangeEventType.Changed}]);
     }
 
     // caller needs to know
@@ -168,6 +174,6 @@ export class HeatingPlanRepositoryService {
         }
         unlock();
 
-        this.onChangedDispatcher.dispatch(this, [{plan, event: PlanChange.Remove}]);
+        this.onChangedDispatcher.dispatch(this, [{plan, event: PlanChangeEventType.Removed}]);
     }
 }

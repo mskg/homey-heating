@@ -5,7 +5,7 @@ import { EventDispatcher, IEvent } from "ste-events";
 import { container, isFactoryProvider, singleton } from "tsyringe";
 import { HeatingPlanCalculator } from "../calculator";
 import { AuditedDevice, DeviceManagerService } from "../device-manager";
-import { HeatingPlanRepositoryService, PlanChange } from "../heating-plan-repository";
+import { HeatingPlanRepositoryService, PlanChangeEventType } from "../heating-plan-repository";
 import { ILogger, LoggerFactory, trycatchlog } from "../log";
 import { InternalSettings, SettingsManagerService } from "../settings-manager";
 import { ISetTemperaturePolicy, PolicyType } from "./types";
@@ -52,7 +52,7 @@ export class HeatingManagerService {
         this.plans.onChanged.subscribe(async (rep, modifiedPlans) => {
             try {
                 await Promise.all(modifiedPlans.map(async (change) => {
-                    if (!change.plan.enabled || change.event === PlanChange.Remove) {
+                    if (!change.plan.enabled || change.event === PlanChangeEventType.Removed) {
                         this.logger.debug(`Plan ${change.plan.name} (${change.plan.id}) is enabled/was removed - skipp`);
                     } else {
                         await this.applyPlan(change.plan);
@@ -134,7 +134,7 @@ export class HeatingManagerService {
     }
 
     public evaluatePlan(plan: IHeatingPlan): ICalculatedTemperature[] {
-        this.logger.information(`Evaluating plan ${plan.id}`);
+        this.logger.debug(`Evaluating plan ${plan.id}`);
 
         let setPoint: ISetPoint = null;
 
@@ -251,6 +251,15 @@ export class HeatingManagerService {
     }
 
     private async applySettings(settings: ICalculatedTemperature[]) {
+        this.logger.information(`Applying ${settings.length} settings`, settings.map((s) => {
+            return {
+                plan: s.plan && `${s.plan.name} (${s.plan.id})`,
+                device: s.device && `${s.device.name} (${s.device.id})`,
+                temp: s.temperature,
+                target: s.targetTemperature,
+            };
+        }));
+
         await Promise.all(
             settings.map(async (newSetting) =>
                 await this.setTemperature(newSetting.plan.name,

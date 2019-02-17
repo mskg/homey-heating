@@ -36,7 +36,7 @@ export class LogService implements ILogger {
 
     public information(...args: any[]) {
         this.loggers.forEach((e) => {
-            e.debug(...args);
+            e.information(...args);
         });
     }
 
@@ -51,6 +51,7 @@ export class LogService implements ILogger {
             e.error(...args);
         });
     }
+
     private evaluateLogger(app) {
         const newLoggers = [];
 
@@ -61,7 +62,7 @@ export class LogService implements ILogger {
         // console.re also outputs to standard console
         if (!isEmpty(channel) && logEnabled) {
             newLoggers.push(new ConsoleReLogger(channel));
-        } else if (app != null) {
+        } else if (app != null && PRODUCTION) {
             newLoggers.push(new AppLogger(app));
         } else {
             newLoggers.push(new ConsoleLogger());
