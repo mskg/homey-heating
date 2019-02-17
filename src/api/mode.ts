@@ -10,18 +10,13 @@ type Body = {
 @injectable()
 class PutMode extends ApiBase<Body> {
     constructor(
-        private manager: HeatingManagerService,
-        private scheduler: HeatingSchedulerService) {
+        private manager: HeatingManagerService) {
         super("PUT", "/mode");
     }
 
     protected async execute(args: IAPIParams<Body>) {
         const mode: number = args.body.mode;
-
         this.manager.operationMode = mode;
-        await this.manager.applyPlans();
-        await this.scheduler.start();
-
         return SUCCESS;
     }
 }

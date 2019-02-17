@@ -1,5 +1,5 @@
 import { filter } from "lodash";
-import { EventDispatcher } from "ste-events";
+import { EventDispatcher, IEvent } from "ste-events";
 import { singleton } from "tsyringe";
 import { CapabilityType, HomeyAPI, HomeyAPIService, ICapabilityInstance, IDevice, IZone, StringHashMap } from "../homey-api";
 import { asynctrycatchlog, ILogger, LoggerFactory, trycatchlog } from "../log";
@@ -23,8 +23,8 @@ export const CanSetTargetTemperature = (device: IDevice): boolean =>
 export const CanMeasureTemperature = (device: IDevice): boolean =>
     device.capabilities != null ? device.capabilities.find((c) => c === CapabilityType.MeasureTemperature) != null : false;
 
-type CapabilityChangedEventArgs =
-    | { device: IDevice, capability: CapabilityType.OnOff, value: boolean }
+export type CapabilityChangedEventArgs =
+    // | { device: IDevice, capability: CapabilityType.OnOff, value: boolean }
     | { device: IDevice, capability: CapabilityType.TargetTemperature, value: number }
     | { device: IDevice, capability: CapabilityType.MeasureTemperature, value: number };
 
@@ -39,7 +39,7 @@ export class DeviceManagerService {
         return this.deviceList || {};
     }
 
-    public get onCapabilityChanged() {
+    public get onCapabilityChanged(): IEvent<DeviceManagerService, CapabilityChangedEventArgs> {
         return this.onCapabilityChangedDispatcher.asEvent();
     }
 

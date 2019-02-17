@@ -9,9 +9,6 @@ type ChangeModeArgs = {
 export const SetModeAction = ({ logger, manager, scheduler }: IFlowContext) => {
     return flowCardFactory<ChangeModeArgs>("set_mode", logger, async (args, state) => {
         manager.operationMode = parseInt(args.state, 10) as OperationMode;
-        await manager.applyPlans();
-        await scheduler.start();
-
         return true;
     });
 };

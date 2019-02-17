@@ -1,7 +1,9 @@
 export enum CapabilityType {
-    OnOff = "onoff",
     TargetTemperature = "target_temperature",
     MeasureTemperature = "measure_temperature",
+
+    // Can not be called mode as this is a standard capability
+    ThermostatOverride = "thermostat_override",
 }
 
 export const CLASS_THERMOSTAT: string = "thermostat";

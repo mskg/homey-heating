@@ -63,9 +63,9 @@ const OverviewPage: React.FunctionComponent<Props> = (props) => {
     const setHeatingMode = (newMode) => {
         (async () => {
             setModeChange(true);
-            props.enqueueSnackbar(translate("plans.changemode", {
-                name: translate(`Modes.${newMode}`),
-            }));
+            // props.enqueueSnackbar(translate("plans.changemode", {
+            //     name: translate(`Modes.${newMode}`),
+            // }));
 
             await modeAPI.setMode(parseInt(newMode, 10));
 

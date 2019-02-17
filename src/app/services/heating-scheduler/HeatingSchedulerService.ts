@@ -1,6 +1,6 @@
 
 import { Mutex } from "@app/helper";
-import { NormalOperationMode, OverrideMode } from "@app/model";
+import { NormalOperationMode, OverrideMode, ThermostatMode } from "@app/model";
 import { ManagerCron } from "homey";
 import { first, sortBy } from "lodash";
 import { singleton } from "tsyringe";
@@ -24,6 +24,10 @@ export class HeatingSchedulerService {
         this.logger = loggerFactory.createLogger("Scheduler");
 
         this.repository.onChanged.subscribe(async () => {
+            await this.start();
+        });
+
+        this.manager.onModeChanged.subscribe(async () => {
             await this.start();
         });
     }
@@ -62,13 +66,8 @@ export class HeatingSchedulerService {
 
     // we live on our own, ok to kill
     @asynctrycatchlog(true)
-    private async run(resetMode: boolean) {
+    private async run() {
         try {
-            if (resetMode) {
-                this.logger.information("Reverting to normal mode");
-                this.manager.operationMode = NormalOperationMode.Automatic;
-            }
-
             this.logger.information("Execute");
             this.manager.applyPlans();
         } finally {
@@ -76,12 +75,55 @@ export class HeatingSchedulerService {
         }
     }
 
+    // we live on our own, ok to kill
+    @asynctrycatchlog(true)
+    private async clearOverrides() {
+        let skipRegister = false;
+        try {
+            this.logger.information("Cleaning up overrides");
+
+            const plans = await this.repository.plans;
+            await Promise.all(plans.map(async (plan) => {
+                if (plan.thermostatMode === ThermostatMode.OverrideDay) {
+                    this.logger.information(`Reset thermostat mode of ${plan.id}`);
+
+                    plan.thermostatMode = NormalOperationMode.Automatic;
+                    await this.repository.update(plan, false);
+                }
+            }));
+
+            if (this.manager.operationMode === OverrideMode.DayAtHome
+                || this.manager.operationMode === OverrideMode.DayAway
+                || this.manager.operationMode === OverrideMode.Sleep) {
+
+                this.logger.information("Reverting to normal mode");
+                this.manager.operationMode = NormalOperationMode.Automatic;
+
+                // mode change triggers start()
+                skipRegister = true;
+            }
+
+            this.manager.applyPlans();
+        } finally {
+            if (!skipRegister) {
+                this.registerTasks();
+            }
+        }
+    }
+
     // TODO: We are dump now => we check everything.
     //  Should only apply the plan with a schedule now?
     private async registerTasks() {
         this.logger.debug("Updating Cron");
-
         await ManagerCron.unregisterAllTasks();
+
+        // check again tomorrow
+        const eod = new Date();
+        eod.setHours(0, 0, 0, 0);
+        eod.setDate(eod.getDate() + 1);
+
+        const resetPlans = await ManagerCron.registerTask("HeatingManagerService - Overrides", eod);
+        resetPlans.once("run", async (data) => await this.clearOverrides());
 
         if (this.manager.operationMode === OverrideMode.Holiday
             || this.manager.operationMode === OverrideMode.OutOfSeason) {
@@ -89,44 +131,29 @@ export class HeatingSchedulerService {
             return;
         }
 
-        // tells the scheduler that we have to reset the mode to automatic next time
-        let resetMode = false;
-
         const allDates: Date[] = [];
-        if (this.manager.operationMode === OverrideMode.DayAtHome
-            || this.manager.operationMode === OverrideMode.Sleep
-            || this.manager.operationMode === OverrideMode.DayAway) {
-            // check again tomorrow
-            const eod = new Date();
-            eod.setHours(0, 0, 0, 0);
-            eod.setDate(eod.getDate() + 1);
+        const plans = await this.repository.activePlans;
+        plans.forEach((plan) => {
+            this.logger.debug(`Checking plan ${plan.id}`);
 
-            resetMode = true;
-            allDates.push(eod);
-        } else {
-            const plans = await this.repository.activePlans;
-            plans.forEach((plan) => {
-                this.logger.debug(`Checking plan ${plan.id}`);
-
-                const next = this.calculator.getNextSchedule(plan);
-                if (next != null) {
-                    allDates.push(next);
-                }
-            });
-        }
+            const next = this.calculator.getNextSchedule(plan);
+            if (next != null) {
+                allDates.push(next);
+            }
+        });
 
         // do we need to convert to ms?
         this.next = first(sortBy(allDates, ((d: Date) => d)));
 
         // nothing to do, we wait for a plan/mode change then
         if (this.next == null) {
-            this.logger.information(`No execution planned.`);
+            this.logger.information(`No setpoint execution planned.`);
             return;
         }
 
         this.logger.information(`Next execution is at ${this.next.toLocaleString()}`);
 
-        const task = await ManagerCron.registerTask("HeatingManagerService", this.next, resetMode);
-        task.once("run", (data) => this.run(data));
+        const task = await ManagerCron.registerTask("HeatingManagerService - SetPoint", this.next);
+        task.once("run", async (data) => await this.run());
     }
 }
