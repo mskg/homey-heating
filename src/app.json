@@ -181,6 +181,41 @@
       }
     }
   },
+  "capabilities": {
+    "thermostat_override": {
+      "type": "enum",
+      "title": {
+        "en": "Thermostat mode",
+        "nl": "Thermostaatmodus"
+      },
+      "getable": true,
+      "setable": true,
+      "icon": "/assets/icon.svg",
+      "values": [
+        {
+          "id": "0",
+          "title": {
+            "en": "Heating plan (automatic)",
+            "nl": "Verwarmingsplan (automatisch)"
+          }
+        },
+        {
+          "id": "6",
+          "title": {
+            "en": "Manual until midnight",
+            "nl": "Handleiding tot middernacht"
+          }
+        },
+        {
+          "id": "7",
+          "title": {
+            "en": "Fully manual",
+            "nl": "Volledig handmatig"
+          }
+        }
+      ]
+    }
+  },
   "drivers": [
     {
       "id": "virtual-thermostat",
@@ -191,8 +226,8 @@
       "class": "thermostat",
       "capabilities": [
         "target_temperature",
-        "measure_temperature",
-        "onoff"
+        "thermostat_override",
+        "measure_temperature"
       ],
       "pair": [
         {

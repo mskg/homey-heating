@@ -52,6 +52,11 @@ var appConfig = (env, argv) => {
         to: distPath
       },
       {
+        from: '**/assets/**/*',
+        context: "src/drivers",
+        to: distPath + "/drivers"
+      },
+      {
         from: 'src/settings/index.remote.html',
         to: distPath + "/settings/index.html"
       },
@@ -115,7 +120,7 @@ var appConfig = (env, argv) => {
       'drivers/virtual-thermostat/driver': './src/drivers/virtual-thermostat/driver.ts',
     },
 
-    devtool: argv.mode === 'production' ? 'cheap-module-source-map' : 'inline-source-map',
+    devtool: 'cheap-module-source-map',
     module: {
       rules: [{
         test: /\.tsx?$/,

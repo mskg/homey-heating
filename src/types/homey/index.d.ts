@@ -29,7 +29,7 @@ declare module "homey" {
 
     export module ManagerCron {
         export function unregisterAllTasks(): Promise<void>;
-        export function registerTask(name: string, next: Date, data: any): Promise<CronTask>;
+        export function registerTask(name: string, next: Date, data?: any): Promise<CronTask>;
     }
 
     export type AllowedSetting = boolean | string | number;
@@ -45,13 +45,23 @@ declare module "homey" {
 
     export class Device {
         public onInit(): void | Promise<void>;
+        public onDeleted(): void | Promise<void>;
+
+        protected getCapabilities(): string[];
+
+        protected getStoreValue<T extends number | string | boolean>(key: string): T;
+        protected setStoreValue<T extends number | string | boolean>(key: string, val: T): Promise<void>;
 
         protected getClass(): string;
         protected getName(): string;
         protected getAvailable(): boolean;
         protected setAvailable(): Promise<void>;
-        protected setUnavailable(): Promise<void>;
+        protected setUnavailable(message?: string): Promise<void>;
+        protected setWarning(message: string): Promise<void>;
+        protected unsetWarning(): Promise<void>;
         protected getData<T>(): T;
+
+        protected getCapabilityValue<T>(id: string): T;
         protected setCapabilityValue<T>(id: string, val: T): Promise<void>;
         protected registerCapabilityListener<V, O = {}>(capability: string, callback: (value: V, opts: O) => Promise<void>);
     }

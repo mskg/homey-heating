@@ -72,6 +72,12 @@ class PutPlan extends ApiBase<any, Params> {
             );
         }
 
+        // if the plan is disabled -> no override
+        // this way we can recover from fully manual
+        if (!plan.enabled) {
+            delete plan.thermostatMode;
+        }
+
         await this.manager.update(plan);
         return plan;
     }
