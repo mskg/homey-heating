@@ -89,10 +89,17 @@
                 }
               },
               {
-                "id": "3",
+                "id": "4",
                 "label": {
                   "en": "Holiday",
                   "nl": "Holiday"
+                }
+              },
+              {
+                "id": "5",
+                "label": {
+                  "en": "Out of season",
+                  "nl": "Buiten het seizoen"
                 }
               }
             ]
@@ -162,6 +169,50 @@
                 }
               }
             ]
+          }
+        ]
+      }
+    ],
+    "triggers": [
+      {
+        "id": "thermostat_override_changed",
+        "title": {
+          "en": "Thermostat mode changed",
+          "nl": "De thermostaatmodus is gewijzigd"
+        },
+        "tokens": [
+          {
+            "name": "mode",
+            "type": "string",
+            "title": {
+              "en": "Mode",
+              "nl": "mode"
+            },
+            "example": "Automatic"
+          }
+        ],
+        "args": [
+          {
+            "name": "my_device",
+            "type": "device",
+            "filter": "driver_id=virtual-thermostat"
+          }
+        ]
+      },
+      {
+        "id": "mode_changed",
+        "title": {
+          "en": "Heating mode changed"
+        },
+        "tokens": [
+          {
+            "name": "mode",
+            "type": "string",
+            "title": {
+              "en": "Mode",
+              "nl": "mode"
+            },
+            "example": "Automatic"
           }
         ]
       }

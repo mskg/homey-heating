@@ -2,8 +2,10 @@
 import "reflect-metadata";
 // position must not be changed
 
-import { Actions } from "@app/flows";
-import { asynctrycatchlog, BootStrapper, HeatingManagerService, HeatingPlanRepositoryService, HeatingSchedulerService, ILogger, LoggerFactory, LogService, SettingsManagerService } from "@app/services";
+import {
+    asynctrycatchlog, BootStrapper, FlowService, HeatingManagerService,
+    HeatingSchedulerService, ILogger, LoggerFactory, LogService,
+} from "@app/services";
 import { App as HomeyApp } from "homey";
 import { container, injectable } from "tsyringe";
 
@@ -13,10 +15,9 @@ export class HeatingSchedulerApp {
 
     constructor(
         private loggerFactory: LoggerFactory,
-        private settingsManager: SettingsManagerService,
-        private repositoryService: HeatingPlanRepositoryService,
         private heatingScheduler: HeatingSchedulerService,
-        private heatingManager: HeatingManagerService) {
+        private heatingManager: HeatingManagerService,
+        private flowService: FlowService) {
 
         this.logger = this.loggerFactory.createLogger("App");
     }
@@ -41,19 +42,7 @@ export class HeatingSchedulerApp {
         await this.heatingScheduler.start();
 
         // Flow hooks
-        this.runFlowHooks();
-    }
-
-    private runFlowHooks() {
-        const ctx = {
-            logger: this.loggerFactory.createLogger("Flow"),
-            manager: this.heatingManager,
-            repository: this.repositoryService,
-            scheduler: this.heatingScheduler,
-            settings: this.settingsManager,
-        };
-
-        Actions.forEach((action) => action(ctx));
+        await this.flowService.init();
     }
 }
 
@@ -63,7 +52,7 @@ export class HeatingSchedulerApp {
 export default class App extends HomeyApp {
     public async onInit() {
         // tslint:disable-next-line: no-console
-        console.info(`Bootstrapping App v${__VERSION}`);
+        console.info(`Bootstrapping App v${__VERSION} (${__BUILD})`);
         LogService.init(this);
 
         await BootStrapper();

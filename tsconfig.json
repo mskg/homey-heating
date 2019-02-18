@@ -28,6 +28,7 @@
 		},
 	},
 	"include": [
+		"./src/types/global.d.ts",
 		"./src/app/app.ts",
 		"./src/api/api.ts",
 		"./src/drivers/virtual-thermostat/device.ts",

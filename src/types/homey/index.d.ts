@@ -13,10 +13,32 @@ declare module "homey" {
         public register();
     }
 
-    export class FlowCardAction {
-        constructor(name: string);
-        register(): FlowCardAction;
-        registerRunListener(func: (args, state) => Promise<boolean>);
+    export class FlowArgument {
+        registerAutocompleteListener(func: (query, args) => Promise<Array<{id: string, name: string}>>): FlowArgument;
+    }
+
+    export class FlowCard {
+        constructor(id: string);
+
+        getArgument(name: string): FlowArgument;
+        getArgumentValues<T>(): Promise<T>;
+        register<T extends FlowCard>(): T;
+        registerRunListener<T extends FlowCard>(func: (args, state) => Promise<boolean>): T;
+        unregister();
+
+        on(s: "update", cb: EventHandler<void>)
+    }
+
+    export class FlowCardTrigger<T, S> extends FlowCard {
+        trigger(tokens: T, state: S): Promise<void>;
+    }
+
+    export class FlowCardTriggerDevice<T = void, S = void> extends FlowCard /* FlowCardTrigger */ {
+        trigger(device: Device, tokens: T, state: S): Promise<void>;
+    }
+
+
+    export class FlowCardAction extends FlowCard {
     }
 
     export class Driver {
@@ -24,7 +46,7 @@ declare module "homey" {
     }
 
     export class CronTask extends EventEmitter {
-        // on(s: "run", cb: EventHandler<any>); 
+        // on(s: "run", cb: EventHandler<any>);
     }
 
     export module ManagerCron {

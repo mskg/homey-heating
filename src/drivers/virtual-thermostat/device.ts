@@ -6,8 +6,8 @@ import { AsyncDebounce } from "@app/helper";
 import { ICalculatedTemperature, IHeatingPlan, NormalOperationMode, ThermostatMode } from "@app/model";
 import {
     asynctrycatchlog, BootStrapper, CapabilityChangedEventArgs, CapabilityType, DeviceManagerService,
-    HeatingManagerService, HeatingPlanRepositoryService, ILogger, InternalSettings,
-    LoggerFactory, PlanChangeEventType, PlansAppliedEventArgs, PlansChangedEventArgs, SettingsManagerService,
+    FlowService, HeatingManagerService, HeatingPlanRepositoryService, ILogger,
+    InternalSettings, LoggerFactory, PlanChangeEventType, PlansAppliedEventArgs, PlansChangedEventArgs, SettingsManagerService,
 } from "@app/services";
 import { __, Device } from "homey";
 import { filter, find } from "lodash";
@@ -21,16 +21,16 @@ class VirtualThermostat extends Device {
     private devices: DeviceManagerService;
     private repository: HeatingPlanRepositoryService;
     private manager: HeatingManagerService;
+    private flow: FlowService;
     private logger: ILogger;
     private id: string;
     private plan: IHeatingPlan;
 
-    private subscriptions =
-        {
-            repositoryChanged: null,
-            capabilitiesChanged: null,
-            plansApplied: null,
-        };
+    private subscriptions = {
+        repositoryChanged: null,
+        capabilitiesChanged: null,
+        plansApplied: null,
+    };
 
     @asynctrycatchlog(true)
     public async onInit() {
@@ -46,6 +46,8 @@ class VirtualThermostat extends Device {
         this.repository = container.resolve<HeatingPlanRepositoryService>(HeatingPlanRepositoryService);
         this.manager = container.resolve<HeatingManagerService>(HeatingManagerService);
         this.devices = container.resolve<DeviceManagerService>(DeviceManagerService);
+        this.flow = container.resolve<FlowService>(FlowService);
+
         const settings = container.resolve<SettingsManagerService>(SettingsManagerService);
 
         // Capabilities
@@ -171,11 +173,15 @@ class VirtualThermostat extends Device {
      * @param type The one
      * @param val The value to set/check
      */
-    private async doSetCapbilityValue<T extends string | number | boolean>(type: CapabilityType, val: T) {
+    private async doSetCapbilityValue<T extends string | number | boolean>(type: CapabilityType, val: T): Promise<boolean> {
         if (await this.getCapabilityValue(type) !== val) {
             this.logger.information(`Set ${type} = ${val}`);
             await this.setCapabilityValue(type, val);
+
+            return true;
         }
+
+        return false;
     }
 
     /**
@@ -241,7 +247,9 @@ class VirtualThermostat extends Device {
                 thermostatMode = this.plan.thermostatMode;
             }
 
-            await this.doSetCapbilityValue(CapabilityType.ThermostatOverride, thermostatMode.toString());
+            if (await this.doSetCapbilityValue(CapabilityType.ThermostatOverride, thermostatMode.toString())) {
+                await this.flow.thermostatModeChanged.trigger(this, {mode: __(`ThermostatMode.${thermostatMode}`)});
+            }
 
             const dev = this.manager.evaluatePlan(this.plan);
             if (dev.length > 0) {
@@ -265,6 +273,7 @@ class VirtualThermostat extends Device {
         this.plan.thermostatMode = mode;
 
         await this.repository.update(this.plan);
+        await this.flow.thermostatModeChanged.trigger(this, {mode: __(`ThermostatMode.${value}`)});
     }
 
     /**
@@ -288,8 +297,9 @@ class VirtualThermostat extends Device {
             }
 
             // ok, will only change if not like that
-            await this.doSetCapbilityValue(
-                CapabilityType.ThermostatOverride, ThermostatMode.OverrideDay.toString());
+            if (await this.doSetCapbilityValue(CapabilityType.ThermostatOverride, ThermostatMode.OverrideDay.toString())) {
+                await this.flow.thermostatModeChanged.trigger(this, {mode: __(`ThermostatMode.${ThermostatMode.OverrideDay}`)});
+            }
         }
 
         const devices = [];

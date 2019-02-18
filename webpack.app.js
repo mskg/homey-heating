@@ -28,6 +28,8 @@ var appConfig = (env, argv) => {
   const plugins = [
     new webpack.DefinePlugin({
       __PRODUCTION__: JSON.stringify(PRODUCTION),
+      __VERSION: JSON.stringify(package.version),
+      __BUILD: JSON.stringify(process.env.TRAVIS_JOB_ID)
     }),
     new CleanWebpackPlugin(distPath),
     new CopyWebpackPlugin([
@@ -112,7 +114,6 @@ var appConfig = (env, argv) => {
       'node_modules/@app/model/index': './src/app/model/index.ts',
       'node_modules/@app/helper/index': './src/app/helper/index.ts',
       'node_modules/@app/services/index': './src/app/services/index.ts',
-      'node_modules/@app/flows/index': './src/app/flows/index.ts',
 
       'node_modules/tsyringe/index': './node_modules/tsyringe/dist/esm2015/index.js',
 

@@ -7,5 +7,6 @@ export * from "./heating-scheduler";
 export * from "./device-manager";
 export * from "./heating-plan-repository";
 export * from "./heating-manager";
+export * from "./flow-service";
 
 export * from "./bootstrapper";

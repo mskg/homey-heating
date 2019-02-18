@@ -195,5 +195,10 @@
   "Device": {
     "pair": "Plan __name__",
     "plan_removed": "Het bijbehorende verwarmingsplan bestaat niet meer. Herstel het plan vanaf een back-up of verwijder het apparaat."
+  },
+  "ThermostatMode": {
+    "0": "Verwarmingsplan (automatisch)",
+    "6": "Handleiding tot middernacht",
+    "7": "Volledig handmatig"
   }
 }

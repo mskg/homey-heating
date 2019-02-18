@@ -35,7 +35,7 @@
     "cancel": "Cancel",
     "ok": "OK"
   },
-  
+
   "copy": {
     "title": "Copy schedule",
     "text": "Select the days, you want the current schedule also be applied to.",
@@ -50,7 +50,7 @@
     "Saturday": "Saturday",
     "Sunday": "Sunday"
   },
-  
+
   "overrides": {
     "title": "Edit schedule exceptions",
     "section": "Pause schedule when",
@@ -103,7 +103,7 @@
       "description": {
         "label": "Description",
         "placeholder": "A short description"
-      }  
+      }
     },
 
     "schedules": {
@@ -113,7 +113,7 @@
       "exceptions": "Exceptions",
       "section_summary": "Summary"
     },
-   
+
     "zones": {
       "section": "Associate zones",
       "text": "Tick the zones, to which you want this plan to be applied to. All devices that support setting a target temperature inside such zones are included.",
@@ -138,7 +138,7 @@
     "Saturday": "SA",
     "Sunday": "SU"
   },
-  
+
   "setpoint": {
     "title": "Edit set point",
     "save": "save",
@@ -216,6 +216,12 @@
     "3": "Sleeping",
     "4": "On Holiday",
     "5": "Out of Season"
+  },
+
+  "ThermostatMode": {
+    "0": "Heating plan (automatic)",
+    "6": "Manual until midnight",
+    "7": "Fully manual"
   },
 
   "Device": {

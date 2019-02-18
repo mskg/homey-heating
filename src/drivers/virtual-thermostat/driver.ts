@@ -15,7 +15,7 @@ class VirtualThermostatsDriver extends Driver {
         await BootStrapper();
 
         // tslint:disable-next-line: no-console
-        console.info(`Bootstrapping Driver v${__VERSION}`);
+        console.info(`Bootstrapping Driver v${__VERSION} (${__BUILD})`);
 
         const factory = container.resolve<LoggerFactory>(LoggerFactory);
         this.logger = factory.createLogger("Driver");

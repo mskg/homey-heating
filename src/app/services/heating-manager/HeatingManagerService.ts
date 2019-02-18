@@ -2,9 +2,10 @@ import { ICalculatedTemperature, IHeatingPlan, ISetPoint, NormalOperationMode, O
 import { __, Notification } from "homey";
 import { forEach, isEmpty } from "lodash";
 import { EventDispatcher, IEvent } from "ste-events";
-import { container, isFactoryProvider, singleton } from "tsyringe";
+import { container, singleton } from "tsyringe";
 import { HeatingPlanCalculator } from "../calculator";
 import { AuditedDevice, DeviceManagerService } from "../device-manager";
+import { FlowService } from "../flow-service";
 import { HeatingPlanRepositoryService, PlanChangeEventType } from "../heating-plan-repository";
 import { ILogger, LoggerFactory, trycatchlog } from "../log";
 import { InternalSettings, Settings, SettingsManagerService } from "../settings-manager";
@@ -41,6 +42,7 @@ export class HeatingManagerService {
         private calc: HeatingPlanCalculator,
         private deviceManager: DeviceManagerService,
         private settings: SettingsManagerService,
+        private flow: FlowService,
         loggerFactory: LoggerFactory) {
         this.logger = loggerFactory.createLogger("Manager");
 
@@ -68,6 +70,7 @@ export class HeatingManagerService {
 
         this.onModeChanged.subscribe(async () => {
             await this.applyPlans();
+            await this.flow.modeChanged.trigger({mode: __(`Modes.${this.mode}`)});
         });
     }
 

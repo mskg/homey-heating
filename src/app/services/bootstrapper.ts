@@ -16,7 +16,7 @@ export async function BootStrapper(silent = false) {
             return;
         }
 
-        if (!silent) { console.info(`********* APPLICATION STARTUP (v${__VERSION}) *********`); }
+        if (!silent) { console.info(`********* APPLICATION STARTUP v${__VERSION} (${__BUILD}) *********`); }
         const deviceManager = container.resolve(DeviceManagerService);
         const repositoryService = container.resolve(HeatingPlanRepositoryService);
 
