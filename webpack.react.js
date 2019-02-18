@@ -11,10 +11,10 @@ var scriptConfig = (env, argv) => {
   const PRODUCTION = argv.mode === 'production';
   const plugins = [
     new webpack.DefinePlugin({
-      PRODUCTION: JSON.stringify(argv.mode === 'production'),
-      HOMEY_DEV_URL: JSON.stringify(process.env.HOMEY_DEV_URL || "http://192.168.178.117"),
-      VERSION: JSON.stringify(version),
-      HOMEY_LANG: JSON.stringify(process.env.HOMEY_LANG || "en"),
+      __PRODUCTION__: JSON.stringify(argv.mode === 'production'),
+      __HOMEY_DEV_URL: JSON.stringify(process.env.HOMEY_DEV_URL || "http://192.168.178.117"),
+      __VERSION: JSON.stringify(version),
+      __HOMEY_LANG: JSON.stringify(process.env.HOMEY_LANG || "en"),
     }),
 
     new MiniCssExtractPlugin({

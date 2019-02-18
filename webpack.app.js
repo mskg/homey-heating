@@ -27,7 +27,7 @@ var appConfig = (env, argv) => {
   const PRODUCTION = argv.mode === 'production';
   const plugins = [
     new webpack.DefinePlugin({
-      PRODUCTION: JSON.stringify(PRODUCTION),
+      __PRODUCTION__: JSON.stringify(PRODUCTION),
     }),
     new CleanWebpackPlugin(distPath),
     new CopyWebpackPlugin([

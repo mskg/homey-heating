@@ -1,23 +1,13 @@
 {
-    "compilerOptions": {
-        "target": "es6",
-        "module": "esnext",
-        "moduleResolution": "node",
-        "declaration": false,
-        "noImplicitAny": false,
-        "sourceMap": true,
-        "jsx": "react",
-        "noLib": false,
-        "esModuleInterop": true,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "suppressImplicitAnyIndexErrors": true
-    },
-    "paths": {
-        "*": ["src/types/*"]
-    },
-    "include": [
-        "./src/types/global.d.ts",
-        "./src/settings/**/*.tsx"
-    ]
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"target": "es6",
+		"module": "esnext",
+		"suppressImplicitAnyIndexErrors": true,
+		"allowSyntheticDefaultImports": true
+	},
+	"include": [
+		"./src/types/global.d.ts",
+		"./src/settings/**/*.tsx"
+	]
 }

@@ -1,5 +1,5 @@
 export default async function callAPI<T>(method: string, path: string, body: any = null): Promise<T> {
-    if (PRODUCTION) {
+    if (__PRODUCTION__) {
         return await new Promise<T>((resolve, reject) => {
             Homey.api(method, path, body, (err, result) =>  {
                 if (err) { reject(err); } else { resolve(result); }
@@ -20,6 +20,6 @@ export default async function callAPI<T>(method: string, path: string, body: any
     }
 
     // local development
-    const res = await fetch(`${HOMEY_DEV_URL}/api/app/app.mskg.homey-heating${path}`, options);
+    const res = await fetch(`${__HOMEY_DEV_URL}/api/app/app.mskg.homey-heating${path}`, options);
     return await res.json() as T;
 }

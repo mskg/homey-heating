@@ -293,7 +293,7 @@ const PlanOverviewPage: React.FunctionComponent<Props> = (props) => {
                                                 <ListItem key={device.id} button={true} onClick={() => toggleDevice(device.id)}>
                                                     {device.icon != null &&
                                                         <ListItemAvatar>
-                                                            <Avatar className={classes.avatar} src={`${PRODUCTION ? "" : HOMEY_DEV_URL}${device.icon}`} />
+                                                            <Avatar className={classes.avatar} src={`${__PRODUCTION__ ? "" : __HOMEY_DEV_URL}${device.icon}`} />
                                                         </ListItemAvatar>
                                                     }
                                                     <ListItemText primary={device.name} />

@@ -86,7 +86,7 @@ export class HeatingSchedulerService {
                     await this.manager.applyPlan(p)));
         } finally {
             this.isRunning = false;
-            this.registerTasks();
+            await this.registerTasks();
         }
     }
 
@@ -123,10 +123,10 @@ export class HeatingSchedulerService {
             }
 
             // this applies all plans at least once a day, even on holidays and out of season
-            this.manager.applyPlans();
+            await this.manager.applyPlans();
         } finally {
             this.isRunning = false;
-            this.registerTasks();
+            await this.registerTasks();
         }
     }
 
@@ -193,14 +193,18 @@ export class HeatingSchedulerService {
             }
         }
 
+        let taskName = "schedule";
+
         // this next is for schedules only!
-        let nextExecution = this.next;
-        if (nextExecution == null || nextExecution > END_OF_DAY) { nextExecution = END_OF_DAY; }
+        if (this.next == null || this.next > END_OF_DAY) {
+            this.next = END_OF_DAY;
+            taskName = "cleanup";
+        }
 
-        this.logger.information(`Next execution is at ${nextExecution.toLocaleString()}`, plansToExecute.map((p) => `${p.name} (${p.id})`));
-        const task = await ManagerCron.registerTask("heating", nextExecution, plansToExecute);
+        this.logger.information(`Next execution is at ${this.next.toLocaleString()}`, plansToExecute.map((p) => `${p.name} (${p.id})`));
+        const task = await ManagerCron.registerTask(taskName, this.next, plansToExecute);
 
-        if (nextExecution === END_OF_DAY) {
+        if (this.next === END_OF_DAY) {
             task.once("run", this.clearOverrides.bind(this));
         } else {
             task.once("run", this.applyPlans.bind(this));

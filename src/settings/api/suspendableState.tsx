@@ -76,7 +76,7 @@ export function useSuspendableState<T extends MapType>(name: string, method: Asy
 
         // we tell the DEV that this is not the way to go
         function failOnNoState() {
-            if (!PRODUCTION) {
+            if (!__PRODUCTION__) {
                 throw new Error(`You must use hooks to save the value ${name}`);
             }
         }

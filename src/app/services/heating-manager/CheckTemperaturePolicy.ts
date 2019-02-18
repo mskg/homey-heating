@@ -18,7 +18,7 @@ export class CheckTemperaturePolicy implements ISetTemperaturePolicy {
     // we mask, because everything is masked anyway
     @asynctrycatchlog(true, { success: false, error: "unhandeled" })
     public async setTargetTemperature(device: AuditedDevice, targetTemperature: number) {
-        const logger = this.logger.createSubLogger(PRODUCTION ? device.id : device.name);
+        const logger = this.logger.createSubLogger(__PRODUCTION__ ? device.id : device.name);
 
         logger.debug(`Checking temperature ${targetTemperature}°`);
         if (!device.ready) {
@@ -33,7 +33,7 @@ export class CheckTemperaturePolicy implements ISetTemperaturePolicy {
         try {
             const value = this.deviceManager.getTargetTemperature(device);
             if (value !== targetTemperature) {
-                if (PRODUCTION) {
+                if (__PRODUCTION__) {
                     await Retry(async () => {
                         logger.information(`Set temperature to ${targetTemperature}`);
                         await this.deviceManager.setTargetTemperature(device, targetTemperature);

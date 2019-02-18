@@ -1,29 +1,36 @@
 {
-    "compilerOptions": {
-      "target": "es6",
-      "module": "commonjs",
-      "moduleResolution": "node",
-      "sourceMap": false,
-      "experimentalDecorators": true,
-      "emitDecoratorMetadata": true,
-      "allowJs": true,
-      "outDir": "tmp",
-      "baseUrl": "./src",
-      "plugins": [
-        {
-          "name": "typescript-tslint-plugin"
-        }
-      ],
-      "paths": {
-        "@app/*": ["app/*"],
-        "*": ["types/*"]
-      }
-    },
-    "include": [
-      "./src/types/global.d.ts",
-      "./src/app/app.ts",
-      "./src/api/api.ts",
-      "./src/drivers/virtual-thermostat/driver.ts",
-      "./src/drivers/virtual-thermostat/device.ts"
-    ]
-  }
+	"compilerOptions": {
+		"target": "es6",
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"sourceMap": true,
+		"esModuleInterop": true,
+		"declaration": false,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"allowJs": true,
+		"jsx": "react",
+		"outDir": "tmp",
+		"baseUrl": "./src",
+		"plugins": [
+			{
+				"name": "typescript-tslint-plugin",
+				"alwaysShowRuleFailuresAsWarnings": false
+			}
+		],
+		"paths": {
+			"@app/*": [
+				"app/*"
+			],
+			"*": [
+				"types/*"
+			]
+		},
+	},
+	"include": [
+		"./src/app/app.ts",
+		"./src/api/api.ts",
+		"./src/drivers/virtual-thermostat/device.ts",
+		"./src/drivers/virtual-thermostat/driver.ts"
+	]
+}

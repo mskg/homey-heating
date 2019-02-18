@@ -25,7 +25,7 @@ export class SettingsManagerService {
     // Catastrophic failure, cannot be handeled here.
     @trycatchlog()
     public get<T extends AllowedSetting>(setting: AllSettings, def: T = null): T {
-        let val = PRODUCTION
+        let val = __PRODUCTION__
             ? ManagerSettings.get<T>(setting)
             : this.devSettings[setting] as unknown as T;
 
@@ -41,7 +41,7 @@ export class SettingsManagerService {
         this.logger.debug(`Put '${setting}' <= '${val}'`);
 
         try {
-            if (PRODUCTION) {
+            if (__PRODUCTION__) {
                 if (val == null) { ManagerSettings.unset(setting); } else { ManagerSettings.set(setting, val); }
             } else {
                 if (val == null) { delete this.devSettings[setting]; } else { this.devSettings[setting] = "" + val; }

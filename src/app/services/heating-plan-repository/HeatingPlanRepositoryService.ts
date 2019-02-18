@@ -3,7 +3,7 @@ import { IHeatingPlan } from "@app/model";
 import { filter, find, remove } from "lodash";
 import { EventDispatcher } from "strongly-typed-events";
 import { singleton } from "tsyringe";
-import { asynctrycatchlog, ILogger, LoggerFactory, trycatchlog } from "../log";
+import { asynctrycatchlog, ILogger, LoggerFactory } from "../log";
 import { Settings, SettingsManagerService } from "../settings-manager";
 
 export enum PlanChangeEventType {
@@ -66,7 +66,7 @@ export class HeatingPlanRepositoryService {
     public load() {
         const plansString = this.settings.get<string>(Settings.Plans);
         if (plansString == null) {
-            if (!PRODUCTION) {
+            if (!__PRODUCTION__) {
                 this.planList = DEFAULT_HEATING_PLAN;
             } else {
                 this.planList = [];

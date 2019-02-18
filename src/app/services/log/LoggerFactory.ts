@@ -1,14 +1,11 @@
 import { singleton } from "tsyringe";
 import { CategoryLogger } from "./CategoryLogger";
-import { ILogger } from "./types";
-
-export interface ICategoryLogger extends ILogger {
-    createSubLogger(category: string): ICategoryLogger;
-}
+import { LogService } from "./LogService";
+import { ICategoryLogger } from "./types";
 
 @singleton()
 export class LoggerFactory {
     public createLogger(category: string): ICategoryLogger {
-        return new CategoryLogger(category);
+        return new CategoryLogger(LogService.defaultLog, category);
     }
 }

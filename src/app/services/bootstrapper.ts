@@ -8,7 +8,7 @@ import { HeatingPlanRepositoryService } from "./heating-plan-repository";
 const mutex: Mutex = new Mutex();
 let ran: boolean = false;
 
-export async function BootStrapper() {
+export async function BootStrapper(silent = false) {
     const unlock = await mutex.lock();
     {
         if (ran) {
@@ -16,7 +16,7 @@ export async function BootStrapper() {
             return;
         }
 
-        console.info("********* APPLICATION STARTUP *********");
+        if (!silent) { console.info(`********* APPLICATION STARTUP (v${__VERSION}) *********`); }
         const deviceManager = container.resolve(DeviceManagerService);
         const repositoryService = container.resolve(HeatingPlanRepositoryService);
 

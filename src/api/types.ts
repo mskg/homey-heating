@@ -57,7 +57,7 @@ export abstract class ApiBase<B = any, P = UnkownParameters, Q = UnkownParameter
 
     public readonly method;
     public readonly path;
-    public readonly public = !PRODUCTION;
+    public readonly public = !__PRODUCTION__;
 
     constructor(method: string, path: string) {
         ApiBase.initialize();

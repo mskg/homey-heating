@@ -434,6 +434,6 @@ const loggingReducer = (state: State, action: Action) => {
     }
 };
 
-export const reducer = PRODUCTION
+export const reducer = __PRODUCTION__
     ? reducerImplementation
     : loggingReducer;

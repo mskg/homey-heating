@@ -24,7 +24,7 @@ export class HeatingSchedulerApp {
     // whatever goes wrong - we log, hide and dump it
     @asynctrycatchlog(true)
     public async run() {
-        this.logger.information("Bootstrapping");
+        this.logger.information(`Bootstrapping`);
 
         process.on("uncaughtException", (err) => {
             this.logger.error(err);
@@ -63,7 +63,7 @@ export class HeatingSchedulerApp {
 export default class App extends HomeyApp {
     public async onInit() {
         // tslint:disable-next-line: no-console
-        console.log("Bootstrapping App");
+        console.info(`Bootstrapping App v${__VERSION}`);
         LogService.init(this);
 
         await BootStrapper();

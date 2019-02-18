@@ -1,5 +1,11 @@
 import { LogService } from "./LogService";
 
+let __ALLOW__CATCHALL__ = true;
+
+export function setAllowCatchAll(state: boolean) {
+    __ALLOW__CATCHALL__ = state;
+}
+
 type AnyFunc = (...args) => any;
 type AnyAsyncFunc = (...args) => Promise<any>;
 
@@ -19,7 +25,7 @@ function WrapSync(property: string, func: AnyFunc, catchAll: boolean, defaultVal
         try {
             // wrap outer this context
             const result = func.apply(this, args);
-            if (!PRODUCTION && result != null) { checkResult(false, result); }
+            if (!__PRODUCTION__ && result != null) { checkResult(false, result); }
             return result;
         } catch (e) {
             if (this.logger != null) {
@@ -42,7 +48,7 @@ function WrapAsync(property: string, func: AnyAsyncFunc, catchAll: boolean, defa
         try {
             // wrap outer this context
             const result = func.apply(this, args);
-            if (!PRODUCTION) { checkResult(true, result); }
+            if (!__PRODUCTION__) { checkResult(true, result); }
             return await result;
         } catch (e) {
             if (this.logger != null) {
@@ -69,14 +75,14 @@ export function asynctrycatchlog(catchAll = false, defaultValue = null) {
         if (descriptor.value != null || descriptor.value !== undefined) {
             return {
                 ...descriptor,
-                value: WrapAsync.apply(this, [property, descriptor.value, catchAll, defaultValue]),
+                value: WrapAsync.apply(this, [property, descriptor.value, catchAll && !__ALLOW__CATCHALL__, defaultValue]),
             };
         }
 
         return {
             ...descriptor,
-            set: WrapAsync.apply(this, [property, descriptor.set, catchAll, defaultValue]),
-            get: WrapAsync.apply(this, [property, descriptor.get, catchAll, defaultValue]),
+            set: WrapAsync.apply(this, [property, descriptor.set, catchAll && !__ALLOW__CATCHALL__, defaultValue]),
+            get: WrapAsync.apply(this, [property, descriptor.get, catchAll && !__ALLOW__CATCHALL__, defaultValue]),
         };
     };
 }
@@ -92,14 +98,14 @@ export function trycatchlog(catchAll = false, defaultValue = null) {
         if (descriptor.value != null || descriptor.value !== undefined) {
             return {
                 ...descriptor,
-                value: WrapSync.apply(this, [property, descriptor.value, catchAll, defaultValue]),
+                value: WrapSync.apply(this, [property, descriptor.value, catchAll && !__ALLOW__CATCHALL__, defaultValue]),
             };
         }
 
         return {
             ...descriptor,
-            set: WrapSync.apply(this, [property, descriptor.set, catchAll, defaultValue]),
-            get: WrapSync.apply(this, [property, descriptor.get, catchAll, defaultValue]),
+            set: WrapSync.apply(this, [property, descriptor.set, catchAll && !__ALLOW__CATCHALL__, defaultValue]),
+            get: WrapSync.apply(this, [property, descriptor.get, catchAll && !__ALLOW__CATCHALL__, defaultValue]),
         };
     };
 }

@@ -10,7 +10,7 @@ import settingsApi from "./settings";
 import utiltiyApi from "./utility";
 
 // tslint:disable-next-line: no-console
-console.log("Bootstrapping API");
+console.info(`Bootstrapping API v${__VERSION}`);
 
 module.exports = [
     ...settingsApi,

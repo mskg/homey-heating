@@ -13,10 +13,6 @@ export class LogService implements ILogger {
         return LogService.instance;
     }
 
-    public static setupForTest() {
-        LogService.instance.loggers = [];
-    }
-
     public static init(app) {
         const manager = container.resolve(SettingsManagerService);
         manager.onChanged.subscribe((v, e) => {
@@ -62,7 +58,7 @@ export class LogService implements ILogger {
         // console.re also outputs to standard console
         if (!isEmpty(channel) && logEnabled) {
             newLoggers.push(new ConsoleReLogger(channel));
-        } else if (app != null && PRODUCTION) {
+        } else if (app != null && __PRODUCTION__) {
             newLoggers.push(new AppLogger(app));
         } else {
             newLoggers.push(new ConsoleLogger());

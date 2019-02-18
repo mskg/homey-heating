@@ -10,7 +10,7 @@ describe("Throttle", () => {
     it("Check execute", async () => {
         let i = 0;
 
-        let t = AsyncThrottle(async () => { ++i; }, 0);
+        const t = AsyncThrottle(async () => { ++i; }, 0);
         await Promise.all([1, 2, 3].map(async (m) => await t()));
 
         expect(3).to.equal(i);
@@ -44,7 +44,6 @@ describe("Throttle", () => {
 
         await throttle();
     });
-
 
     it("Check work", async () => {
         const throttle = AsyncThrottle(async () => await Retry(async () => {
