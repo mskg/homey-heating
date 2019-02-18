@@ -20,7 +20,7 @@ export class HomeyAPIService {
                 this.logger.debug("Connecting to API");
                 this.homeyAPI = await HomeyAPI.forCurrentHomey();
             } catch (e) {
-                this.logger.console.error("CATASTROPHIC FAILURE **** CANNOT BE HANDELED *****", e);
+                this.logger.error("CATASTROPHIC FAILURE **** CANNOT BE HANDELED *****", e);
 
                 this.homeyAPI = null;
                 throw e;
