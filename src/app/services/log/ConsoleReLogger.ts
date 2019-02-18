@@ -9,7 +9,7 @@ export class ConsoleReLogger implements ILogger {
     }
 
     public information(...args: any[]) {
-        (console as any).re.information(...args);
+        (console as any).re.info(...args);
     }
 
     public debug(...args: any[]) {
