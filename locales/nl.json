@@ -18,7 +18,14 @@
       "text": "Kopieer de hele tekst uit het tekstveld en sla deze op in een normaal tekstbestand. Wees voorzichtig: het wijzigen van de inhoud heeft voorrang boven alle bestaande plannen."
     },
     "title": "instellingen",
-    "saved": "Instellingen zijn bijgewerkt"
+    "saved": "Instellingen zijn bijgewerkt",
+    "notifications": {
+      "category": "meldingen",
+      "NotifySetSuccess": "Temperatuursucces instellen?",
+      "NotifySetError": "Temperatuurfouten instellen?",
+      "NotifyModeChange": "Verwarmingsmodus verandert?",
+      "text": "Zijn we bezig met het spammen van je tijdlijn? Geen probleem, zet de meldingen gewoon uit."
+    }
   },
   "clone": {
     "name": {

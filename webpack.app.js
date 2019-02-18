@@ -38,8 +38,8 @@ var appConfig = (env, argv) => {
         to: distPath
       },
       {
-        from: './README.md',
-        to: distPath
+        from: './scripts/CI.md',
+        to: distPath + "/README.md"
       },
       {
         from: './APPSTORE.md',

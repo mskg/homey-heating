@@ -12,6 +12,7 @@ export enum Settings {
 export enum InternalSettings {
     OperationMode = "mode",
     LogApi = "logapi",
+
     SetTemperaturePolicy = "temperaturepolicy",
     SetTemperatureThrottle = "temperatureThrottle",
     SchedulerTimeSlots = "schedulerTimeslots",

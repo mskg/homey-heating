@@ -6,6 +6,6 @@ import { ICategoryLogger } from "./types";
 @singleton()
 export class LoggerFactory {
     public createLogger(category: string): ICategoryLogger {
-        return new CategoryLogger(LogService.defaultLog, category);
+        return new CategoryLogger(true, LogService.defaultLog, category);
     }
 }

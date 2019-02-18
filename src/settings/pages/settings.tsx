@@ -12,6 +12,7 @@ import { settingsAPI, SettingsHashMap } from "../api/settings";
 import AppHeader from "../components/AppHeader";
 import BodyText from "../components/BodyText";
 import FormTextField from "../components/FormTextField";
+import InputContainer from "../components/InputContainer";
 import { AppMenuButton, MenuButton } from "../components/Menu";
 import SubHeader from "../components/SubHeader";
 import translate from "../i18n/Translation";
@@ -68,7 +69,7 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
                                             onClick={async () => {
                                                 await loadSettings();
                                                 setDirty(false);
-                                                }}
+                                            }}
                                             icon={<CancelIcon />}
                                         />
                                     }
@@ -87,21 +88,63 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
                     </AppHeader>
                 ),
                 paddingTop: 50,
+                paddingBottom: 50,
                 body: (
                     <React.Fragment>
+                        <SubHeader text={translate("settings.notifications.category")} />
+                        <BodyText text={translate("settings.notifications.text")} />
+                        <InputContainer>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={getFieldValue("NotifyModeChange", true) === true}
+                                        onChange={updateField("NotifyModeChange", "checked")}
+                                    />
+                                }
+                                label={translate("settings.notifications.NotifyModeChange")}
+                                labelPlacement="end"
+                            />
+                        </InputContainer>
+                        <InputContainer>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={getFieldValue("NotifySetError", true) === true}
+                                        onChange={updateField("NotifySetError", "checked")}
+                                    />
+                                }
+                                label={translate("settings.notifications.NotifySetError")}
+                                labelPlacement="end"
+                            />
+                        </InputContainer>
+                        <InputContainer>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={getFieldValue("NotifySetSuccess", true) === true}
+                                        onChange={updateField("NotifySetSuccess", "checked")}
+                                    />
+                                }
+                                label={translate("settings.notifications.NotifySetSuccess")}
+                                labelPlacement="end"
+                            />
+                        </InputContainer>
+
                         <SubHeader text={translate("settings.log.category")} />
                         <BodyText text={translate("settings.log.text")} />
 
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={getFieldValue("LogEnabled") === true}
-                                    onChange={updateField("LogEnabled", "checked")}
-                                />
-                            }
-                            label={translate("settings.enabled.label")}
-                            labelPlacement="start"
-                        />
+                        <InputContainer>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={getFieldValue("LogEnabled") === true}
+                                        onChange={updateField("LogEnabled", "checked")}
+                                    />
+                                }
+                                label={translate("settings.enabled.label")}
+                                labelPlacement="end"
+                            />
+                        </InputContainer>
 
                         <FormTextField
                             label={translate("settings.category.label")}

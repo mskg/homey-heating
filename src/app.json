@@ -202,7 +202,8 @@
       {
         "id": "mode_changed",
         "title": {
-          "en": "Heating mode changed"
+          "en": "Heating mode changed",
+          "nl": "Verwarmingsmodus gewijzigd"
         },
         "tokens": [
           {

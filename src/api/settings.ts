@@ -1,4 +1,4 @@
-import { AllSettings, InternalSettings, Settings, SettingsManagerService } from "@app/services";
+import { InternalSettings, Settings, SettingsManagerService } from "@app/services";
 import { forEach } from "lodash";
 import { injectable } from "tsyringe";
 import { ApiBase, IAPIParams, SUCCESS } from "./types";

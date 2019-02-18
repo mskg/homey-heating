@@ -22,6 +22,14 @@
       "text": "Just copy the whole text from the textfield and store it in a regular text file. Be careful: Changing the contents overrides all existing plans.",
       "label": "Heating plan configuration",
       "placeholder": "Heating plan configuration"
+    },
+
+    "notifications": {
+      "category": "Notifications",
+      "text": "Are we spamming your timeline? No problem, just turn the notifications off.",
+      "NotifyModeChange": "Heating mode changes?",
+      "NotifySetError": "Set temperature errors?",
+      "NotifySetSuccess": "Set temperature success?"
     }
   },
 
