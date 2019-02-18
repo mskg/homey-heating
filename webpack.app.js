@@ -29,7 +29,7 @@ var appConfig = (env, argv) => {
     new webpack.DefinePlugin({
       __PRODUCTION__: JSON.stringify(PRODUCTION),
       __VERSION: JSON.stringify(package.version),
-      __BUILD: JSON.stringify(process.env.TRAVIS_JOB_ID)
+      __BUILD: JSON.stringify(process.env.TRAVIS_BUILD_NUMBER)
     }),
     new CleanWebpackPlugin(distPath),
     new CopyWebpackPlugin([

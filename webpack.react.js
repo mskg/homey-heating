@@ -15,7 +15,7 @@ var scriptConfig = (env, argv) => {
       __HOMEY_DEV_URL: JSON.stringify(process.env.HOMEY_DEV_URL || "http://192.168.178.117"),
       __VERSION: JSON.stringify(version),
       __HOMEY_LANG: JSON.stringify(process.env.HOMEY_LANG || "en"),
-      __BUILD: JSON.stringify(process.env.TRAVIS_JOB_ID),
+      __BUILD: JSON.stringify(process.env.TRAVIS_BUILD_NUMBER),
     }),
 
     new MiniCssExtractPlugin({
