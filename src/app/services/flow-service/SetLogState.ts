@@ -1,5 +1,5 @@
 
-import { Settings } from "@app/services";
+import { Settings } from "../settings-manager";
 import { flowCardActionFactory, IFlowContext } from "./args";
 
 type ChangeLogArgs = {

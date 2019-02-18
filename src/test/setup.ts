@@ -62,5 +62,4 @@ mock("@app/helper", require("../app/helper"));
 mock("@app/services", require("../app/services"));
 
 import { setAllowCatchAll } from "@app/services";
-import { MockCronTask } from "homey";
 setAllowCatchAll(false);
