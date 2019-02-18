@@ -25,7 +25,7 @@ export class HeatingSchedulerApp {
     // whatever goes wrong - we log, hide and dump it
     @asynctrycatchlog(true)
     public async run() {
-        this.logger.information(`Bootstrapping`);
+        this.logger.information(`Bootstrapping App v${__VERSION} (${__BUILD})`);
 
         process.on("uncaughtException", (err) => {
             this.logger.error(err);
