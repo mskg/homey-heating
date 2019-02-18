@@ -128,10 +128,14 @@ a {
   img {
     height: 50px;
     flex-grow: 0;
+
+    @include small {
+      margin-top: 1rem;
+    }
   }
 
   div  {
-    display: flex;    
+    display: flex;
   }
 }
 
@@ -146,17 +150,11 @@ a {
   overflow: hidden;
   white-space: nowrap;
 
-  // @include large {
-  //   font-size: 3.25rem;
-  // }
-
-  // @include medium {
-  //   font-size: 2.25rem;
-  // }
-
-  // @include small {
-  //   font-size: 1.75rem;
-  // }
+  @include small {
+    padding-top: 0.5rem;
+    font-size: 1.75rem;
+    white-space: normal;
+  }
 }
 
 .project-tagline {
@@ -200,7 +198,7 @@ a {
     padding: 2rem 2rem;
     font-size: 1rem;
   }
-  
+
   kbd {
     background-color: #fafbfc;
     border: 1px solid #c6cbd1;
