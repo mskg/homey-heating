@@ -35,11 +35,10 @@ class VirtualThermostat extends Device {
     @asynctrycatchlog(true)
     public async onInit() {
         await BootStrapper();
+        this.id = this.getData<Data>().id; // handback from initialization
 
         const factory = container.resolve<LoggerFactory>(LoggerFactory);
         this.logger = factory.createLogger("Device").createSubLogger(!__PRODUCTION__ ? this.getName() : this.id);
-
-        this.id = this.getData<Data>().id; // handback from initialization
         this.logger.information(`Init for device ${this.getName()}`);
 
         // services
