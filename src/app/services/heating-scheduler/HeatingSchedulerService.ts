@@ -2,7 +2,7 @@
 import { Mutex, slotTime } from "@app/helper";
 import { IHeatingPlan, NormalOperationMode, OverrideMode, ThermostatMode } from "@app/model";
 import { ManagerCron } from "homey";
-import { first, groupBy, map, sortBy } from "lodash";
+import { first, groupBy, map, sortBy, union } from "lodash";
 import { singleton } from "tsyringe";
 import { HeatingPlanCalculator } from "../calculator";
 import { HeatingManagerService } from "../heating-manager";
@@ -92,16 +92,16 @@ export class HeatingSchedulerService {
 
     // we live on our own, ok to kill
     @asynctrycatchlog(true)
-    private async clearOverrides() {
+    private async clearOverrides(plans: IHeatingPlan[]) {
         try {
             this.isRunning = true;
             const logger = this.logger.createSubLogger("Overrides");
             logger.information("Running");
 
-            const plans = await this.repository.plans;
+            const allPlans = await this.repository.plans;
             const modifiedPlans = [];
 
-            plans.forEach((plan) => {
+            allPlans.forEach((plan) => {
                 if (plan.thermostatMode === ThermostatMode.OverrideDay) {
                     logger.information(`Reset thermostat mode of ${plan.id}`);
 
@@ -120,18 +120,22 @@ export class HeatingSchedulerService {
 
                 logger.information("Reverting to normal mode");
                 this.manager.operationMode = NormalOperationMode.Automatic;
+
+                // this applies all plans
+                await this.manager.applyPlans();
+            } else {
+                // we only apply those that should have been applied or were modified
+                await Promise.all(union(plans || [], modifiedPlans, (p) => p.id).map(async (p) => {
+                    await this.manager.applyPlan(p);
+                }));
             }
 
-            // this applies all plans at least once a day, even on holidays and out of season
-            await this.manager.applyPlans();
         } finally {
             this.isRunning = false;
             await this.registerTasks();
         }
     }
 
-    // TODO: We are dump now => we check everything.
-    //  Should only apply the plan with a schedule now?
     private async registerTasks() {
         /**
          * There is a bug in the SDK 2.0 that prevents registring more than one task a time.
@@ -146,7 +150,6 @@ export class HeatingSchedulerService {
 
         let plansToExecute: IHeatingPlan[] = [];
 
-        // is this true?
         if (this.manager.operationMode === OverrideMode.Holiday
             || this.manager.operationMode === OverrideMode.OutOfSeason) {
             this.logger.information(`Mode is ${OverrideMode[this.manager.operationMode]}, no check required.`);
@@ -155,6 +158,8 @@ export class HeatingSchedulerService {
         } else {
             type TempArray = { date: Date, plan: IHeatingPlan };
             const allSchedules: TempArray[] = [];
+
+            // 60 / 12 = 5 minutes
             const slots = this.settings.get<number>(InternalSettings.SchedulerTimeSlots, 12);
 
             // we get the next schedule for all active plans
@@ -164,16 +169,15 @@ export class HeatingSchedulerService {
 
                 const next = this.calculator.getNextSchedule(plan);
                 if (next != null) {
-                    // There could be a flaw here: If the execution of the next slot is too close
-                    // (difference vs. runtime), we would miss the execution
-
-                    // we group all in 20 blocks à 5 minutes
+                    // There is a flaw here: If the execution of the next slot is too close
+                    // (difference vs. runtime), we would miss the execution. Such we slot the time
+                    // to a runtime of 5 minutes.
                     next.setMinutes(slotTime(next.getMinutes(), slots), 0, 0);
                     allSchedules.push({ date: next, plan });
                 }
             });
 
-            // we group by date
+            // group by slotted date, join all plans together
             const grouped = map(
                 groupBy(allSchedules, (d: TempArray) => d.date),
                 (gPlans, date) => ({
@@ -181,7 +185,7 @@ export class HeatingSchedulerService {
                     plans: gPlans.map((gp) => gp.plan),
                 }));
 
-            // we sort by date, and return the lowest
+            // we sort and lowest
             const lowestDate = first(sortBy(grouped, (g) => g.date));
 
             // if there is one -> this is all plans to look at
@@ -195,8 +199,8 @@ export class HeatingSchedulerService {
 
         let taskName = "schedule";
 
-        // this next is for schedules only!
-        if (this.next == null || this.next > END_OF_DAY) {
+        // If we have a setpoint neat EOD, we still have to cleanup
+        if (this.next == null || this.next >= END_OF_DAY) {
             this.next = END_OF_DAY;
             taskName = "cleanup";
         }
