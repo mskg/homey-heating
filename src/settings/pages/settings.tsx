@@ -6,12 +6,13 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import { InjectedNotistackProps, withSnackbar } from "notistack";
 import React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import { Settings } from "../../app/services/settings-manager";
+import { Settings } from "../../app/services/settings-manager/types";
 import { useSettings } from "../api/hooks";
-import { settingsAPI } from "../api/settings";
+import { settingsAPI, SettingsHashMap } from "../api/settings";
 import AppHeader from "../components/AppHeader";
 import BodyText from "../components/BodyText";
 import FormTextField from "../components/FormTextField";
+import InputContainer from "../components/InputContainer";
 import { AppMenuButton, MenuButton } from "../components/Menu";
 import SubHeader from "../components/SubHeader";
 import translate from "../i18n/Translation";
@@ -28,7 +29,7 @@ type SettingsName = keyof typeof Settings;
 type Props = WithStyles<typeof styles> & RouteComponentProps<Params> & InjectedNotistackProps;
 
 const SettingsPage: React.FunctionComponent<Props> = (props) => {
-    const { settings, setSettings, loadSettings } = useSettings();
+    const { settings, setSettings, loadSettings } = useSettings(true);
     const [isDirty, setDirty] = React.useState<boolean>(false);
 
     function getFieldValue(name: SettingsName, def: any = null) {
@@ -40,7 +41,7 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
         const val = event.target[field];
 
         setSettings((old) => {
-            return { ...old, [name]: val };
+            return { ...old, [name]: val } as SettingsHashMap;
         });
         setDirty(true);
     };
@@ -68,7 +69,7 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
                                             onClick={async () => {
                                                 await loadSettings();
                                                 setDirty(false);
-                                                }}
+                                            }}
                                             icon={<CancelIcon />}
                                         />
                                     }
@@ -87,29 +88,87 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
                     </AppHeader>
                 ),
                 paddingTop: 50,
+                paddingBottom: 50,
                 body: (
                     <React.Fragment>
+                        <SubHeader text={translate("settings.notifications.category")} />
+                        <BodyText text={translate("settings.notifications.text")} />
+                        <InputContainer>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={getFieldValue("NotifyModeChange", true) === true}
+                                        onChange={updateField("NotifyModeChange", "checked")}
+                                    />
+                                }
+                                label={translate("settings.notifications.NotifyModeChange")}
+                                labelPlacement="end"
+                            />
+                        </InputContainer>
+                        <InputContainer>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={getFieldValue("NotifySetError", true) === true}
+                                        onChange={updateField("NotifySetError", "checked")}
+                                    />
+                                }
+                                label={translate("settings.notifications.NotifySetError")}
+                                labelPlacement="end"
+                            />
+                        </InputContainer>
+                        <InputContainer>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={getFieldValue("NotifySetSuccess", true) === true}
+                                        onChange={updateField("NotifySetSuccess", "checked")}
+                                    />
+                                }
+                                label={translate("settings.notifications.NotifySetSuccess")}
+                                labelPlacement="end"
+                            />
+                        </InputContainer>
+
+                        <SubHeader text={translate("settings.sentry.category")} />
+                        <BodyText text={translate("settings.sentry.text")} />
+
+                        <InputContainer>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={getFieldValue("SentryEnabled", true) === true}
+                                        onChange={updateField("SentryEnabled", "checked")}
+                                    />
+                                }
+                                label={translate("settings.enabled.label")}
+                                labelPlacement="end"
+                            />
+                        </InputContainer>
+
                         <SubHeader text={translate("settings.log.category")} />
                         <BodyText text={translate("settings.log.text")} />
 
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={getFieldValue("LogEnabled") === true}
-                                    onChange={updateField("LogEnabled", "checked")}
-                                />
-                            }
-                            label={translate("settings.enabled.label")}
-                            labelPlacement="start"
-                        />
+                        <InputContainer>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={getFieldValue("ConsoleReLogEnabled") === true}
+                                        onChange={updateField("ConsoleReLogEnabled", "checked")}
+                                    />
+                                }
+                                label={translate("settings.enabled.label")}
+                                labelPlacement="end"
+                            />
+                        </InputContainer>
 
                         <FormTextField
                             label={translate("settings.category.label")}
                             placeholder={translate("settings.category.placeholder")}
 
-                            required={getFieldValue("LogEnabled") === true}
-                            value={getFieldValue("LogCategory", "")}
-                            onChange={updateField("LogCategory")}
+                            required={getFieldValue("ConsoleReLogEnabled") === true}
+                            value={getFieldValue("ConsoleReLogCategory", "")}
+                            onChange={updateField("ConsoleReLogCategory")}
                         />
 
                         <SubHeader text={translate("settings.backup.title")} />
@@ -119,7 +178,7 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
                             placeholder={translate("settings.backup.placeholder")}
 
                             multiline={true}
-                            rowsMax="5"
+                            rowsMax="10"
 
                             value={getFieldValue("Plans", "")}
                             onChange={updateField("Plans")}

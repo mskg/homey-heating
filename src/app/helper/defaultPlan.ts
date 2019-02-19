@@ -126,62 +126,62 @@ function utilitySchedule(): ISetPoint[] {
     return setPoints;
 }
 
-const bedSchedule = [{ day: Day.Monday, hour: 0, minute: 0, targetTemperature: 16 }];
+const bedSchedule = [1, 2, 3, 4, 5, 6, 0].map((e) => ({ day: e, hour: 0, minute: 0, targetTemperature: 16 }));
 
 export const DEFAULT_HEATING_PLAN: IHeatingPlan[] = [
-{
-    id: "1",
-    name: "Living Room",
-    enabled: true,
-    schedule: mainSchedule(),
+    {
+        id: "1",
+        name: "Living Room",
+        enabled: true,
+        schedule: mainSchedule(),
 
-    zones: ["Living Room"],
-    overrides: {
-        DayAtHome: {
-            targetTemperature: 17,
+        zones: ["Living Room"],
+        overrides: {
+            DayAtHome: {
+                targetTemperature: 17,
+            },
         },
     },
-},
-{
-    id: "2",
-    name: "Bathroom",
-    enabled: true,
-    schedule: bathroomSchedule(),
+    {
+        id: "2",
+        name: "Bathroom",
+        enabled: true,
+        schedule: bathroomSchedule(),
 
-    zones: ["Bathroom"],
-    overrides: {
-        DayAway: {
-            targetTemperature: 17,
+        zones: ["Bathroom"],
+        overrides: {
+            DayAway: {
+                targetTemperature: 17,
+            },
         },
     },
-},
-{
-    id: "3",
-    name: "Utility",
-    enabled: true,
-    schedule: utilitySchedule(),
+    {
+        id: "3",
+        name: "Utility",
+        enabled: true,
+        schedule: utilitySchedule(),
 
-    zones: ["Kitchen", "Study"],
-    overrides: {
-        Holiday: {
-            targetTemperature: 17,
+        zones: ["Kitchen", "Study"],
+        overrides: {
+            Holiday: {
+                targetTemperature: 17,
+            },
         },
+
     },
+    {
+        id: "4",
+        name: "Bedroom",
+        enabled: true,
+        schedule: bedSchedule,
 
-},
-{
-    id: "4",
-    name: "Bedroom",
-    enabled: true,
-    schedule: bedSchedule,
-
-    zones: ["Bedroom"],
-    overrides: {
-        Sleep: {
-            targetTemperature: 17,
+        zones: ["Bedroom"],
+        overrides: {
+            Sleep: {
+                targetTemperature: 17,
+            },
         },
-    },
-}];
+    }];
 
 export const DEFAULT_HEATING_ZONES: IHeatingZone[] = [
     {

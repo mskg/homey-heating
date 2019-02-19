@@ -20,7 +20,13 @@ export enum OverrideMode {
     OutOfSeason = 5,
 }
 
+export enum ThermostatMode {
+    OverrideDay = 6,
+    FullManual = 7,
+}
+
 export type OperationMode = NormalOperationMode | OverrideMode;
+export type AllowedOverrides = OverrideMode | ThermostatMode;
 
 export interface ITemperatureOverride {
     targetTemperature: number;
@@ -40,18 +46,21 @@ export interface ISetPoint {
     targetTemperature: number;
 }
 
+// & ThermostatMode]
 export type Overrides =  { [key in keyof typeof OverrideMode]?: ITemperatureOverride };
 
 // defined schedules
 // assignement of schedules to zones
 export interface IHeatingPlan extends IExternalReference {
+    description?: string;
     enabled: boolean;
-    schedule: ISetPoint[];
 
+    schedule: ISetPoint[];
     devices?: string[];
     zones?: string[];
 
     overrides?: Overrides;
+    thermostatMode?: ThermostatMode | NormalOperationMode;
 }
 
 export interface IHeatingDevice extends IExternalReference {

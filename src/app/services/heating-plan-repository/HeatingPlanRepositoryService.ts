@@ -3,8 +3,18 @@ import { IHeatingPlan } from "@app/model";
 import { filter, find, remove } from "lodash";
 import { EventDispatcher } from "strongly-typed-events";
 import { singleton } from "tsyringe";
-import { asynctrycatchlog, ILogger, LoggerFactory, trycatchlog } from "../log";
+import { asynctrycatchlog, ILogger, LoggerFactory } from "../log";
 import { Settings, SettingsManagerService } from "../settings-manager";
+
+export enum PlanChangeEventType {
+    Changed,
+    Removed,
+}
+
+export type PlansChangedEventArgs = Array<{
+    plan: IHeatingPlan,
+    event: PlanChangeEventType,
+}>;
 
 @singleton()
 export class HeatingPlanRepositoryService {
@@ -13,7 +23,7 @@ export class HeatingPlanRepositoryService {
     private mutex: Mutex = new Mutex();
     private changed = false;
 
-    private onChangedDispatcher = new EventDispatcher<HeatingPlanRepositoryService, IHeatingPlan[]>();
+    private onChangedDispatcher = new EventDispatcher<HeatingPlanRepositoryService, PlansChangedEventArgs>();
 
     constructor(
         private settings: SettingsManagerService,
@@ -30,8 +40,14 @@ export class HeatingPlanRepositoryService {
                 this.logger.information("Reload due to settings change.");
 
                 try {
+                    // this is deadly wrong here -> not relevant now?
+                    // need to make a diff in plans.
                     this.load();
-                    this.onChangedDispatcher.dispatch(this, this.planList);
+
+                    this.onChangedDispatcher.dispatch(this, this.planList.map((p: IHeatingPlan) => { return {
+                        plan: p,
+                        event: PlanChangeEventType.Changed,
+                    }; }));
                 } catch (e) {
                     this.logger.information("Reload of plans failed", e);
                     // TOOD: is this ok to kill?
@@ -50,7 +66,7 @@ export class HeatingPlanRepositoryService {
     public load() {
         const plansString = this.settings.get<string>(Settings.Plans);
         if (plansString == null) {
-            if (!PRODUCTION) {
+            if (!__PRODUCTION__) {
                 this.planList = DEFAULT_HEATING_PLAN;
             } else {
                 this.planList = [];
@@ -107,18 +123,26 @@ export class HeatingPlanRepositoryService {
     }
 
     // caller needs to know
-    public async update(plan: IHeatingPlan) {
+    public async update(plansToUpdate: IHeatingPlan | IHeatingPlan[], notify = true) {
+        const plans = (Array.isArray(plansToUpdate) ? plansToUpdate : [plansToUpdate]);
+
         const unlock = await this.mutex.lock();
         {
-            this.logger.debug(`Updating plan ${plan.id}`);
-            remove(this.planList, (p) => p.id === plan.id);
-            this.planList.push(plan);
+            plans.forEach((plan) => {
+                this.logger.debug(`Updating plan ${plan.id}`);
+
+                remove(this.planList, (p) => p.id === plan.id);
+                this.planList.push(plan);
+            });
 
             this.save();
         }
         unlock();
 
-        this.onChangedDispatcher.dispatch(this, [plan]);
+        if (notify) {
+            this.onChangedDispatcher.dispatch(this,
+                plans.map((plan) => ({plan, event: PlanChangeEventType.Changed})));
+        }
     }
 
     // caller needs to know
@@ -132,7 +156,7 @@ export class HeatingPlanRepositoryService {
         }
         unlock();
 
-        this.onChangedDispatcher.dispatch(this, [plan]);
+        this.onChangedDispatcher.dispatch(this, [{plan, event: PlanChangeEventType.Changed}]);
     }
 
     // caller needs to know
@@ -150,6 +174,6 @@ export class HeatingPlanRepositoryService {
         }
         unlock();
 
-        this.onChangedDispatcher.dispatch(this, [plan]);
+        this.onChangedDispatcher.dispatch(this, [{plan, event: PlanChangeEventType.Removed}]);
     }
 }

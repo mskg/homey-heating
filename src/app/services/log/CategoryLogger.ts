@@ -1,38 +1,22 @@
-import { LogService } from "./LogService";
-import { ILogger } from "./types";
+import { ICategoryLogger, ILogger } from "./types";
 
-export class CategoryLogger implements ILogger {
-    private category: any;
+export class CategoryLogger implements ILogger, ICategoryLogger {
+    constructor(private logger: ILogger, private category: string) {
+    }
 
-    public constructor(category: string) {
-        this.category = category;
-
-        if (this.category.length > 10) {
-            LogService.defaultLog.debug(`Category ${category} is too big.`);
-        }
+    public createSubLogger(category: string): ICategoryLogger {
+        return new CategoryLogger(this, category);
     }
 
     public information(...args: any[]) {
-        if (args != null && args.length === 1 && typeof args[0] === "string") {
-            LogService.defaultLog.information(`[INFO ] [${this.category.padEnd(10)}] ${args[0]}`);
-        } else {
-            LogService.defaultLog.information(`[INFO ] [${this.category.padEnd(10)}]`, ...args);
-        }
+        this.logger.information(`[${this.category.padEnd(10)}]`, ...args);
     }
 
     public debug(...args: any[]) {
-        if (args != null && args.length === 1 && typeof args[0] === "string") {
-            LogService.defaultLog.information(`[DEBUG] [${this.category.padEnd(10)}] ${args[0]}`);
-        } else {
-            LogService.defaultLog.information(`[DEBUG] [${this.category.padEnd(10)}]`, ...args);
-        }
+        this.logger.debug(`[${this.category.padEnd(10)}]`, ...args);
     }
 
-    public error(...args: any[]) {
-        if (args != null && args.length === 1 && typeof args[0] === "string") {
-            LogService.defaultLog.information(`[ERROR] [${this.category.padEnd(10)}] ${args[0]}`);
-        } else {
-            LogService.defaultLog.information(`[ERROR] [${this.category.padEnd(10)}]`, ...args);
-        }
+    public error(exception, ...args: any[]) {
+        this.logger.error(exception, `[${this.category.padEnd(10)}]`, ...args);
     }
 }

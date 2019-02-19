@@ -7,8 +7,6 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import translate from "../i18n/Translation";
 import ListItemLink from "./ListItemLink";
 
-declare var VERSION: string;
-
 const styles: StyleRulesCallback = (theme) => ({
     text: {
         padding: theme.spacing.unit * 2,
@@ -74,7 +72,7 @@ const AppMenuBase: React.FunctionComponent<Props> = (props) => {
                 {translate("menu.title")}
             </Typography>
             <Typography className={classes.version} variant="body2" color="textSecondary" gutterBottom={true}>
-                Version {VERSION}
+                Version {__VERSION} ({__BUILD})
             </Typography>
 
             <Divider />

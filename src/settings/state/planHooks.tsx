@@ -25,11 +25,13 @@ export const useModifyPlan = () => {
     const dispatch = usePlanDispatch();
 
     const setName = useCallback((evt) => dispatch({ type: "setName", name: evt.target.value }), [dispatch]);
+    const setDescription = useCallback((evt) => dispatch({ type: "setDescription", description: evt.target.value }), [dispatch]);
+
     const toggleState = useCallback(() => dispatch({ type: "toggleEnabled" }), [dispatch]);
     const toggleZone = useCallback((id) => dispatch({ type: "toggleZone", zone: id }), [dispatch]);
     const toggleDevice = useCallback((id) => dispatch({ type: "toggleDevice", device: id }), [dispatch]);
 
-    return { setName, toggleState, toggleZone, toggleDevice };
+    return { setName, setDescription, toggleState, toggleZone, toggleDevice };
 };
 
 export const useModifyExceptions = () => {
@@ -73,21 +75,21 @@ export const useModifySetPoints = () => {
         }
     }, [dispatch]);
 
-    const removeSetPoint = useCallback((idx) => { setDirty(true);  dispatch({ type: "removeSetPoint", index: idx }); }, [dispatch]);
+    const removeSetPoint = useCallback((idx) => { setDirty(true); dispatch({ type: "removeSetPoint", index: idx }); }, [dispatch]);
 
     const loadSetPoint = useCallback((point) => { dispatch({ type: "loadSetPoint", setPoint: point }); }, [dispatch]);
     const newSetPoint = useCallback((day) => { dispatch({ type: "newSetPoint", day }); }, [dispatch]);
 
     const saveSetPoint = useCallback((s) => {
         if (s.index === -1) {
-            dispatch({type: "addSetPoint", setPoint: s});
+            dispatch({ type: "addSetPoint", setPoint: s });
         } else {
-            dispatch({type: "updateSetPoint", setPoint: s});
+            dispatch({ type: "updateSetPoint", setPoint: s });
         }
     }, [dispatch]);
 
-    const setStart = useCallback((date: Date | string) => dispatch({type: "setStart", start: date}), [dispatch]);
-    const setTargetTemperature = useCallback((evt) => dispatch({type: "setTargetTemperature", temperature: parseFloat(evt.target.value)}), [dispatch]);
+    const setStart = useCallback((date: Date | string) => dispatch({ type: "setStart", start: date }), [dispatch]);
+    const setTargetTemperature = useCallback((evt) => dispatch({ type: "setTargetTemperature", temperature: parseFloat(evt.target.value) }), [dispatch]);
 
     useEffect(() => {
         setDirty(false);
@@ -96,6 +98,7 @@ export const useModifySetPoints = () => {
     return { setDirty, isDirty, selectedDay, setPoint, copyDays, removeSetPoint, loadSetPoint, newSetPoint, selectDay, saveSetPoint, setStart, setTargetTemperature };
 };
 
+let cachedPlan = false;
 export const usePlan = (id: string, keep: boolean = true) => {
     const dispatch = usePlanDispatch();
 
@@ -103,10 +106,11 @@ export const usePlan = (id: string, keep: boolean = true) => {
     const loaded = usePlanGlobalState("loaded");
     const isDirty = usePlanGlobalState("dirty");
 
-    useEffect(() => {
-        if (!keep || !loaded) {
-            if (id == null || id === "new") {
-                dispatch({ type: "loadPlan", plan: {
+    if (!loaded || !keep) {
+        if (id == null || id === "new") {
+            cachedPlan = true;
+            dispatch({
+                type: "loadPlan", plan: {
                     id: uuidv1(),
                     enabled: false,
                     name: "",
@@ -114,17 +118,22 @@ export const usePlan = (id: string, keep: boolean = true) => {
                     devices: [],
                     schedule: [],
                     overrides: null,
-                }});
-            } else {
-                (async () => {
-                    const result = await Promise.all([
-                        await planAPI.fetchPlanById(id),
-                    ]);
-
-                    dispatch({ type: "loadPlan", plan: result[0] });
-                })();
+                },
+            });
+        } else {
+            if (!cachedPlan) {
+                throw planAPI.fetchPlanById(id).then((p) => {
+                    cachedPlan = true;
+                    dispatch({ type: "loadPlan", plan: p });
+                });
             }
         }
+    }
+
+    useEffect(() => {
+        return () => {
+            cachedPlan = false;
+        };
     }, [id, keep]);
 
     return { plan, isDirty, loaded };

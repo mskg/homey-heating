@@ -19,12 +19,13 @@ import AddFab from "../components/AddFab";
 import AppHeader from "../components/AppHeader";
 import { MenuButton } from "../components/Menu";
 import { TemperatureAvatar } from "../components/TemperatureAvatar";
-import CopyDayDialog from "../dialogs/CopyDayDialog";
-import SetPointDialog from "../dialogs/SetPointDialog";
 import translate from "../i18n/Translation";
 import Page from "../layouts/Page";
 import { useHistory, useModifySetPoints, usePlan } from "../state/planHooks";
 import { usePlanDispatch } from "../state/PlanProvider";
+
+const CopyDayDialog = React.lazy(() => import("../dialogs/CopyDayDialog"));
+const SetPointDialog = React.lazy(() => import("../dialogs/SetPointDialog"));
 
 const styles: StyleRulesCallback = (theme) => ({
     list: {

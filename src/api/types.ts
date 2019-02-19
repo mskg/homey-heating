@@ -1,7 +1,6 @@
 import { ILogger, InternalSettings, LoggerFactory, SettingsManagerService } from "@app/services";
 import { container } from "tsyringe";
 
-declare var PRODUCTION: boolean;
 type UnkownParameters = { [k: string]: string; };
 
 /***
@@ -58,7 +57,7 @@ export abstract class ApiBase<B = any, P = UnkownParameters, Q = UnkownParameter
 
     public readonly method;
     public readonly path;
-    public readonly public = !PRODUCTION;
+    public readonly public = !__PRODUCTION__;
 
     constructor(method: string, path: string) {
         ApiBase.initialize();
@@ -86,7 +85,7 @@ export abstract class ApiBase<B = any, P = UnkownParameters, Q = UnkownParameter
 
             callback(null, result);
         } catch (e) {
-            this.logger.error(`${this.method} ${this.path} failed`, e, args);
+            this.logger.error(e, `${this.method} ${this.path} failed`, args);
             callback (e, null);
         }
     }

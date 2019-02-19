@@ -23,7 +23,7 @@ export function Retry<T>(func: () => Promise<T>,
             .then(resolve)
             // if it fails
             .catch((error) => {
-                if (logger != null) { logger.error(`Retry action ${maxRetries} times, waiting for ${retryInterval}`, error); }
+                if (logger != null) { logger.debug(`Retry action ${maxRetries} times, waiting for ${retryInterval}`, error); }
 
                 // we're done
                 if (maxRetries - 1 <= 0) {
