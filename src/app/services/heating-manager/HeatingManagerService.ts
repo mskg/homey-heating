@@ -61,7 +61,7 @@ export class HeatingManagerService {
                     }
                 }));
             } catch (e) {
-                this.logger.error("Refresh of plans failed.", e);
+                this.logger.error(e, "Refresh of plans failed.");
             }
         });
 
@@ -175,7 +175,7 @@ export class HeatingManagerService {
 
             // tslint:disable-next-line: use-isnan
             if (targetTemperature === NaN) {
-                this.logger.error("Setpoint has wrong datatype for temperature", setPoint);
+                this.logger.error(null, "Setpoint has wrong datatype for temperature", setPoint);
                 return [];
             }
         }

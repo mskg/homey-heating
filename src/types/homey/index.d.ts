@@ -1,9 +1,15 @@
 import { EventEmitter } from "events";
+import { string } from "prop-types";
 
 declare module "homey" {
     type EventHandler<T> = (param: T) => void;
 
     export function __(name: string, args?: { [key: string]: string });
+
+    // https://apps.developer.athom.com/tutorial-App%20Store.html
+    export const env: {
+        [key: string]: string
+    };
 
     export class Notification {
         constructor({

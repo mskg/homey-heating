@@ -22,7 +22,7 @@ export class CheckTemperaturePolicy implements ISetTemperaturePolicy {
 
         logger.debug(`Checking temperature ${targetTemperature}°`);
         if (!device.ready) {
-            logger.error(`Device not ready: ${device.unavailableMessage}`);
+            logger.information(`Device not ready: ${device.unavailableMessage}`);
             return {
                 success: false,
                 skipped: true,
@@ -49,7 +49,7 @@ export class CheckTemperaturePolicy implements ISetTemperaturePolicy {
                 return { success: true, skipped: true };
             }
         } catch (e) {
-            logger.error(`Failed to set temperature`, e);
+            logger.error(e, `Failed to set temperature`);
 
             return {
                 success: false,

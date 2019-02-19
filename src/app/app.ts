@@ -28,11 +28,11 @@ export class HeatingSchedulerApp {
         this.logger.information(`Bootstrapping App v${__VERSION} (${__BUILD})`);
 
         process.on("uncaughtException", (err) => {
-            this.logger.error(err);
+            this.logger.error(err, "uncought Exception");
         });
 
         process.on("unhandledRejection", (reason, p) => {
-            this.logger.error("Unhandled Rejection at:", p, "reason:", reason);
+            this.logger.error(reason, "Unhandled Rejection at:", p, "reason:", reason);
         });
 
         // apply what we have

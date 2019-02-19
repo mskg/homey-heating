@@ -29,9 +29,9 @@ function WrapSync(property: string, func: AnyFunc, catchAll: boolean, defaultVal
             return result;
         } catch (e) {
             if (this.logger != null) {
-                this.logger.error(`Calling ${property} failed due to ${e}`, e);
+                this.logger.error(e, `Calling ${property} failed due to ${e}`);
             } else {
-                LogService.defaultLog.error(`Calling ${property} failed due to ${e}`, e);
+                LogService.defaultLog.error(e, `Calling ${property} failed due to ${e}`);
             }
 
             if (!catchAll) { throw e; } else { return defaultValue; }
@@ -52,9 +52,9 @@ function WrapAsync(property: string, func: AnyAsyncFunc, catchAll: boolean, defa
             return await result;
         } catch (e) {
             if (this.logger != null) {
-                this.logger.error(`Calling ${property} failed due to ${e}`, e);
+                this.logger.error(e, `Calling ${property} failed due to ${e}`);
             } else {
-                LogService.defaultLog.error(`Calling ${property} failed due to ${e}`, e);
+                LogService.defaultLog.error(e, `Calling ${property} failed due to ${e}`);
             }
 
             if (!catchAll) { throw e; } else { return defaultValue; }
@@ -75,14 +75,14 @@ export function asynctrycatchlog(catchAll = false, defaultValue = null) {
         if (descriptor.value != null || descriptor.value !== undefined) {
             return {
                 ...descriptor,
-                value: WrapAsync.apply(this, [property, descriptor.value, catchAll && !__ALLOW__CATCHALL__, defaultValue]),
+                value: WrapAsync.apply(this, [property, descriptor.value, catchAll && __ALLOW__CATCHALL__, defaultValue]),
             };
         }
 
         return {
             ...descriptor,
-            set: WrapAsync.apply(this, [property, descriptor.set, catchAll && !__ALLOW__CATCHALL__, defaultValue]),
-            get: WrapAsync.apply(this, [property, descriptor.get, catchAll && !__ALLOW__CATCHALL__, defaultValue]),
+            set: WrapAsync.apply(this, [property, descriptor.set, catchAll && __ALLOW__CATCHALL__, defaultValue]),
+            get: WrapAsync.apply(this, [property, descriptor.get, catchAll && __ALLOW__CATCHALL__, defaultValue]),
         };
     };
 }
@@ -98,14 +98,14 @@ export function trycatchlog(catchAll = false, defaultValue = null) {
         if (descriptor.value != null || descriptor.value !== undefined) {
             return {
                 ...descriptor,
-                value: WrapSync.apply(this, [property, descriptor.value, catchAll && !__ALLOW__CATCHALL__, defaultValue]),
+                value: WrapSync.apply(this, [property, descriptor.value, catchAll && __ALLOW__CATCHALL__, defaultValue]),
             };
         }
 
         return {
             ...descriptor,
-            set: WrapSync.apply(this, [property, descriptor.set, catchAll && !__ALLOW__CATCHALL__, defaultValue]),
-            get: WrapSync.apply(this, [property, descriptor.get, catchAll && !__ALLOW__CATCHALL__, defaultValue]),
+            set: WrapSync.apply(this, [property, descriptor.set, catchAll && __ALLOW__CATCHALL__, defaultValue]),
+            get: WrapSync.apply(this, [property, descriptor.get, catchAll && __ALLOW__CATCHALL__, defaultValue]),
         };
     };
 }

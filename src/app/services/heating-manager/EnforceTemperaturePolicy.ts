@@ -21,7 +21,7 @@ export class EnforceTemperaturePolicy implements ISetTemperaturePolicy {
         const logger = this.logger.createSubLogger(__PRODUCTION__ ? device.id : device.name);
 
         if (!device.ready) {
-            logger.error(`> Device is not ready: ${device.unavailableMessage}`);
+            logger.information(`> Device is not ready: ${device.unavailableMessage}`);
             return {
                 success: false,
                 skipped: false,
@@ -43,7 +43,7 @@ export class EnforceTemperaturePolicy implements ISetTemperaturePolicy {
 
             return { success: true, skipped: false };
         } catch (e) {
-            logger.error(`Failed to set temperature`, e);
+            logger.error(e, `Failed to set temperature`);
 
             return {
                 success: false,

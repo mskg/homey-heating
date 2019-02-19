@@ -25,6 +25,10 @@
       "NotifySetError": "Temperatuurfouten instellen?",
       "NotifyModeChange": "Verwarmingsmodus verandert?",
       "text": "Zijn we bezig met het spammen van je tijdlijn? Geen probleem, zet de meldingen gewoon uit."
+    },
+    "sentry": {
+      "category": "Sentry error tracking",
+      "text": "Sentry.io is een externe service die inzicht geeft in fouten die zich hebben voorgedaan met deze app op uw Homey. Om deze reden worden foutdetails automatisch naar deze externe service verzonden. Als u deze gegevens niet wilt delen, schakelt u deze instelling uit."
     }
   },
   "clone": {

@@ -157,7 +157,7 @@ class VirtualThermostat extends Device {
     @asynctrycatchlog(true)
     private async tryRegisterCapability(capability: CapabilityType, callback: (val, opts) => Promise<void>) {
         if (!find(this.getCapabilities(), (c) => c === capability)) {
-            this.logger.error(`does not have ${capability} - cannot register listener`);
+            this.logger.information(`does not have ${capability} - cannot register listener`);
         } else {
             this.logger.information(`attached listener for ${capability}`);
 

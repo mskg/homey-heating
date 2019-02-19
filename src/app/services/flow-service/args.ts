@@ -26,7 +26,7 @@ export function flowCardActionFactory<A = void, S = void>(name: string, logger: 
                 logger.debug(`Executing ${name}`, args, state);
                 return await func(args, state);
             } catch (e) {
-                logger.error(`Action ${name} failed`, "Args", args, "State", state, "Error", e);
+                logger.error(e, `Action ${name} failed`, "Args", args, "State", state);
                 return false;
             }
         });
@@ -43,7 +43,7 @@ export function flowCardTriggerFactory<T = void, S = void>(name: string, logger:
             logger.debug(`Trigger ${name}`, tokens, state);
             return await orig(tokens, state);
         } catch (e) {
-            logger.error(`Trigger ${name} failed`, "Tokens", tokens, "State", state, "Error", e);
+            logger.error(e, `Trigger ${name} failed`, "Tokens", tokens, "State", state);
         }
     };
 
@@ -61,7 +61,7 @@ export function flowCardTriggerDeviceFactory<T = void, S = void>(name: string, l
             logger.debug(`Trigger ${name}`, tokens, state);
             return await orig(device, tokens, state);
         } catch (e) {
-            logger.error(`Trigger ${name} failed`, "Device", device, "Tokens", tokens, "State", state, "Error", e);
+            logger.error(e, `Trigger ${name} failed`, "Device", device, "Tokens", tokens, "State", state);
         }
     };
 

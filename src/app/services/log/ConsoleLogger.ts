@@ -11,17 +11,15 @@ const YELLOW = ansiForeGroundColor("33");
 // tslint:disable: no-console
 export class ConsoleLogger implements ILogger {
 
-    public information(...args: any[]) {
-        console.log(YELLOW, ...args, RESET_FG);
+    public information(msg, ...args: any[]) {
+        console.log(`${YELLOW}${msg}`, ...[...args, RESET_FG]);
     }
 
-    public debug(...args: any[]) {
-        // tslint:disable-next-line: no-console
-        console.log(GRAY, ...args, RESET_FG);
+    public debug(msg, ...args: any[]) {
+        console.log(`${GRAY}${msg}`, ...[...args, RESET_FG]);
     }
 
-    public error(...args: any[]) {
-        // tslint:disable-next-line: no-console
-        console.error(RED, ...args, RESET_FG);
+    public error(exception, msg, ...args: any[]) {
+        console.error(`${RED}${msg}`, ...[...args, exception, RESET_FG]);
     }
 }

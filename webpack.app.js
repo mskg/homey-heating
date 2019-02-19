@@ -34,6 +34,10 @@ var appConfig = (env, argv) => {
     new CleanWebpackPlugin(distPath),
     new CopyWebpackPlugin([
       {
+        from: PRODUCTION ? "does-not-exist" : './src/env.json',
+        to: distPath + "/env.json"
+      },
+      {
         from: "./tmp/app.json",
         to: distPath
       },

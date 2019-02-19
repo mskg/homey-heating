@@ -2,7 +2,11 @@
 export interface ILogger {
     debug(...args: any[]);
     information(...args: any[]);
-    error(...args: any[]);
+    error(exception, ...args: any[]);
+}
+
+export interface INeedsCleanup {
+    teardown(): Promise<boolean>;
 }
 
 export interface ICategoryLogger extends ILogger {

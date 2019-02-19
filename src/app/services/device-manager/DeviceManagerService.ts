@@ -167,7 +167,9 @@ export class DeviceManagerService {
                 target = cap.min;
             } else {
                 // adjust fraction
-                if (cap.step === 0) { target = Math.round(target); } else { target = Math.round(target / cap.step) * cap.step; }
+                // tslint:disable: one-line
+                if (cap.step === 0) { target = Math.round(target); }
+                else { target = Math.round(target / cap.step) * cap.step; }
             }
 
             if (targetTemperature !== target) {

@@ -130,6 +130,22 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
                             />
                         </InputContainer>
 
+                        <SubHeader text={translate("settings.sentry.category")} />
+                        <BodyText text={translate("settings.sentry.text")} />
+
+                        <InputContainer>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={getFieldValue("SentryEnabled", true) === true}
+                                        onChange={updateField("SentryEnabled", "checked")}
+                                    />
+                                }
+                                label={translate("settings.enabled.label")}
+                                labelPlacement="end"
+                            />
+                        </InputContainer>
+
                         <SubHeader text={translate("settings.log.category")} />
                         <BodyText text={translate("settings.log.text")} />
 
@@ -137,8 +153,8 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
                             <FormControlLabel
                                 control={
                                     <Switch
-                                        checked={getFieldValue("LogEnabled") === true}
-                                        onChange={updateField("LogEnabled", "checked")}
+                                        checked={getFieldValue("ConsoleReLogEnabled") === true}
+                                        onChange={updateField("ConsoleReLogEnabled", "checked")}
                                     />
                                 }
                                 label={translate("settings.enabled.label")}
@@ -150,9 +166,9 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
                             label={translate("settings.category.label")}
                             placeholder={translate("settings.category.placeholder")}
 
-                            required={getFieldValue("LogEnabled") === true}
-                            value={getFieldValue("LogCategory", "")}
-                            onChange={updateField("LogCategory")}
+                            required={getFieldValue("ConsoleReLogEnabled") === true}
+                            value={getFieldValue("ConsoleReLogCategory", "")}
+                            onChange={updateField("ConsoleReLogCategory")}
                         />
 
                         <SubHeader text={translate("settings.backup.title")} />

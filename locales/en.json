@@ -17,6 +17,11 @@
       "placeholder": "Log category"
     },
 
+    "sentry": {
+      "category": "Sentry error tracking",
+      "text": "Sentry.io is an external service, that gives insights in errors that occured with this App on your Homey. For this reason, error details are sent automatically to this external service. If you don't want to share those details, please disable this setting."
+    },
+
     "backup": {
       "title": "Backup and restore your heating plans",
       "text": "Just copy the whole text from the textfield and store it in a regular text file. Be careful: Changing the contents overrides all existing plans.",

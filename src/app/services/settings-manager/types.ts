@@ -1,7 +1,10 @@
 
 export enum Settings {
-    LogCategory = "consolere",
-    LogEnabled = "logenabled",
+    SentryEnabled = "sentry",
+
+    ConsoleReLogCategory = "consolere",
+    ConsoleReLogEnabled = "logenabled",
+
     Plans = "plans",
 
     NotifyModeChange = "notify_modechange",

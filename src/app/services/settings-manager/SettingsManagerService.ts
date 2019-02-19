@@ -12,7 +12,7 @@ export class SettingsManagerService {
         value: any,
     }>();
 
-    private devSettings: { [key: string]: string } = {};
+    private devSettings: { [key: string]: any } = {};
 
     constructor(factory: LoggerFactory) {
         this.logger = factory.createLogger("Settings");
@@ -40,11 +40,14 @@ export class SettingsManagerService {
     public set<T extends AllowedSetting>(setting: AllSettings, val: T) {
         this.logger.debug(`Put '${setting}' <= '${val}'`);
 
+        // tslint:disable: one-line
         try {
             if (__PRODUCTION__) {
-                if (val == null) { ManagerSettings.unset(setting); } else { ManagerSettings.set(setting, val); }
+                if (val == null) { ManagerSettings.unset(setting); }
+                else { ManagerSettings.set(setting, val); }
             } else {
-                if (val == null) { delete this.devSettings[setting]; } else { this.devSettings[setting] = "" + val; }
+                if (val == null) { delete this.devSettings[setting]; }
+                else { this.devSettings[setting] = val; }
             }
         } finally {
             this.onChangedDispatcher.dispatch(this, {
