@@ -1,5 +1,0 @@
---colors
---require ./tmp/test/setup.js
---recursive
---require source-map-support/register
-./tmp/**/*.spec.js
