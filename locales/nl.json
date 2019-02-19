@@ -14,8 +14,8 @@
     "backup": {
       "placeholder": "Configuratie van het verwarmingsschema",
       "label": "Configuratie van het verwarmingsschema",
-      "title": "Back-up en herstel je verwarmingsschemas",
-      "text": "Kopieer de hele tekst uit het tekstveld en sla deze op in een normaal tekstbestand. Let op: het wijzigen van de inhoud heeft overschrijft alle bestaande schemas."
+      "title": "Back-up en herstel je verwarmingsschema's",
+      "text": "Kopieer de hele tekst uit het tekstveld en sla deze op in een normaal tekstbestand. Let op: het wijzigen van de inhoud heeft overschrijft alle bestaande schema's."
     },
     "title": "Instellingen",
     "saved": "Instellingen zijn bijgewerkt",
@@ -66,7 +66,7 @@
   
   "plan": {
     "tabs": {
-      "schedule": "Schemas",
+      "schedule": "Schema's",
       "overview": "Overzicht",
       "zones": "Zones (__n__)",
       "devices": "Apparaten (__n__)"
@@ -124,7 +124,7 @@
     "duplicated": "Schema __name__ is gedupliceerd."
   },
   "schedule": {
-    "title": "Bewerk schemas",
+    "title": "Bewerk schema's",
     "save": "Opslaan",
     "Monday": "MA",
     "Tuesday": "DI",
@@ -170,8 +170,8 @@
       "section": "Verwarmingsmodus wijzigen"
     },
     "plans": {
-      "empty": "- geen schemas gevonden -",
-      "section": "Verwarmingsschemas"
+      "empty": "- geen schema's gevonden -",
+      "section": "Verwarmingsschema's"
     },
     "title": "Overzicht",
     "toggled": "Schema __name__ is bijgewerkt.",
