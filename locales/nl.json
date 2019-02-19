@@ -2,28 +2,28 @@
   "settings": {
     "log": {
       "category": "console.re Logging",
-      "text": "Als u live logboeken van de toepassing wilt weergeven, schakelt u de schakelaar in en voert u een unieke logcategorie in. U kunt de logboeken bekijken door console.re/ <yourcategory> te bezoeken. Vergeet niet om het uit te schakelen, als je klaar bent."
+      "text": "Als je live logboeken van de toepassing wilt weergeven, schakel je onderstaande schakelaar in en voer je een unieke logcategorie in. Je kan de logboeken bekijken door console.re/<je-categorie> te bezoeken. Vergeet niet, wanneer je klaar bent, om het uit te schakelen!"
     },
     "enabled": {
       "label": "Ingeschakeld?"
     },
     "category": {
-      "label": "Log categorie",
-      "placeholder": "Log categorie"
+      "label": "Logcategorie",
+      "placeholder": "Logcategorie"
     },
     "backup": {
-      "placeholder": "Configuratie van het verwarmingsplan",
-      "label": "Configuratie van het verwarmingsplan",
-      "title": "Back-up en herstel uw verwarmingsplannen",
-      "text": "Kopieer de hele tekst uit het tekstveld en sla deze op in een normaal tekstbestand. Wees voorzichtig: het wijzigen van de inhoud heeft voorrang boven alle bestaande plannen."
+      "placeholder": "Configuratie van het verwarmingsschema",
+      "label": "Configuratie van het verwarmingsschema",
+      "title": "Back-up en herstel je verwarmingsschema's",
+      "text": "Kopieer de hele tekst uit het tekstveld en sla deze op in een normaal tekstbestand. Let op: het wijzigen van de inhoud heeft overschrijft alle bestaande schema's."
     },
-    "title": "instellingen",
+    "title": "Instellingen",
     "saved": "Instellingen zijn bijgewerkt",
     "notifications": {
-      "category": "meldingen",
-      "NotifySetSuccess": "Temperatuursucces instellen?",
-      "NotifySetError": "Temperatuurfouten instellen?",
-      "NotifyModeChange": "Verwarmingsmodus verandert?",
+      "category": "Meldingen",
+      "NotifySetSuccess": "Succesvolle temperatuursinstellingen?",
+      "NotifySetError": "Fouten bij temperatuursinstellingen?",
+      "NotifyModeChange": "Veranderingen van verwarmingsmodus?",
       "text": "Zijn we bezig met het spammen van je tijdlijn? Geen probleem, zet de meldingen gewoon uit."
     },
     "sentry": {
@@ -31,58 +31,64 @@
       "text": "Sentry.io is een externe service die inzicht geeft in fouten die zich hebben voorgedaan met deze app op uw Homey. Om deze reden worden foutdetails automatisch naar deze externe service verzonden. Als u deze gegevens niet wilt delen, schakelt u deze instelling uit."
     }
   },
+  
   "clone": {
     "name": {
-      "label": "Plan naam",
-      "placeholder": "Nieuwe naam van je plan"
+      "label": "Schemanaam",
+      "placeholder": "Nieuwe naam van je schema"
     },
-    "title": "Dubbel verwarmingsplan",
-    "cancel": "annuleren",
+    "title": "Dupliceer verwarmingsschema",
+    "cancel": "Annuleren",
     "ok": "OK",
-    "text": "Voer een nieuwe naam in en druk op OK om een ​​kopie van het verwarmingsplan '__name__' te maken."
+    "text": "Voer een nieuwe naam in en druk op OK om een kopie van het verwarmingsschema '__name__' te maken."
   },
+  
   "copy": {
     "text": "Selecteer de dagen waarop u het huidige schema ook wilt toepassen.",
     "Monday": "maandag",
-    "Saturday": "zaterdag",
-    "Wednesday": "woensdag",
-    "cancel": "annuleren",
-    "Sunday": "zondag",
     "Tuesday": "dinsdag",
-    "ok": "OK",
-    "Friday": "vrijdag",
+    "Wednesday": "woensdag",
     "Thursday": "donderdag",
+    "Friday": "vrijdag",
+    "Saturday": "zaterdag",
+    "Sunday": "zondag",
+    "ok": "OK",
+    "cancel": "Annuleren",
     "title": "Schema kopiëren"
   },
+  
   "overrides": {
     "title": "Bewerk schema-uitzonderingen",
-    "holiday": "...je bent op vakantie?",
-    "away": "... als u een dagje weg bent van huis?",
-    "section": "Onderbreek schema wanneer",
-    "sleeping": "...u slaapt?",
-    "athome": "... ben je een dag thuis?",
-    "outofseason": "... het is zomer?",
-    "text": "Pauzeer het geconfigureerde schema wanneer er iets bijzonders gebeurt, bijvoorbeeld u verlaat ongepland huis of u keert eerder terug. Om het speciale gedrag te activeren, moet u de planner instellen op de juiste modus met behulp van de plannenoverzichtspagina."
+    "section": "Onderbreek schema wanner",
+    "text": "Pauzeer het geconfigureerde schema wanneer er iets bijzonders gebeurt, bijvoorbeeld als ongepland ongepland niet thuis bent of juist eerder terug bent. Om het speciale gedrag te activeren, moet je de planner instellen op de juiste modus met behulp van de schemaoverzichtspagina.",
+    "holiday": "...je op vakantie bent?",
+    "away": "... als je een dagje weg bent van huis?",
+    "sleeping": "...je slaapt?",
+    "athome": "... je een dag niet thuis bent?",
+    "outofseason": "... het zomer is?"
   },
+  
   "plan": {
     "tabs": {
-      "schedule": "Planning",
+      "schedule": "Schema's",
       "overview": "Overzicht",
       "zones": "Zones (__n__)",
       "devices": "Apparaten (__n__)"
     },
     "target": {
-      "placeholder": "Target temperatuur",
-      "label": "Target temperatuur"
+      "placeholder": "Doeltemperatuur",
+      "label": "Doeltemperatuur"
     },
+    
     "confirm": {
-      "title": "Wilt u echt het verwarmingsplan verwijderen?",
-      "content": "Druk op OK om het verwarmingsplan definitief te verwijderen. Deze actie kan niet ongedaan gemaakt worden."
+      "title": "Wilt je echt het verwarmingsschema verwijderen?",
+      "content": "Druk op OK om het verwarmingsschema definitief te verwijderen. Deze actie kan niet ongedaan gemaakt worden."
     },
+    
     "overview": {
       "name": {
         "placeholder": "Weergavenaam",
-        "label": "Geef de naam van uw plan weer"
+        "label": "Geef de naam van het schema weer"
       },
       "enabled": {
         "label": "Ingeschakeld?"
@@ -91,44 +97,46 @@
         "label": "Omschrijving",
         "placeholder": "Een korte beschrijving"
       },
-      "text": "Geef je plan een sprekende naam.",
+      "text": "Geef je schema een heldere naam.",
       "section": "Overzicht",
       "text_description": "Is er iets belangrijks dat je moet onthouden?",
-      "text_enable": "Als u het plan uitschakelt, wordt het niet automatisch toegepast. U kunt het nog steeds handmatig toepassen via Flow."
+      "text_enable": "Als je het schema uitschakelt, wordt het niet langer automatisch toegepast. Je kunt het echter nog steeds handmatig toepassen via Flows."
     },
+    
     "schedules": {
       "edit": "Normaal schema",
       "section": "Planning",
       "exceptions": "Uitzonderingen",
-      "section_summary": "Samenvatting",
-      "text": "Configureer de schema's wanneer de temperatuur van uw verwarmingstoestellen moet worden aangepast. Er kunnen extra uitzonderingen worden geconfigureerd: u verlaat het huis ongepland of u keert eerder terug."
+      "section_summary": "Snel overzicht",
+      "text": "Configureer de schema's wanneer de temperatuur van uw verwarmingsapparaten moet worden aangepast. Er kunnen extra uitzonderingen worden geconfigureerd, voor als je ongepland het huis verlaat of juist eerder terug bent."
     },
+    
     "zones": {
       "section": "Zones koppelen",
       "empty": "- geen zones gevonden -",
-      "text": "Vink de zones aan waarop dit plan moet worden toegepast. Alle apparaten die ondersteuning bieden voor het instellen van een doeltemperatuur in dergelijke zones, zijn inbegrepen."
+      "text": "Vink de zones aan waarop dit schema moet worden toegepast. Alle apparaten die ondersteuning bieden voor het instellen van een doeltemperatuur in de geselecteerde zones, zijn inbegrepen."
     },
     "devices": {
-      "section": "Koppel apparaten",
+      "section": "Apparaten koppelen",
       "empty": "- geen apparaten gevonden -",
-      "text": "Vink de apparaten aan waarop dit plan moet worden toegepast. Je kunt zones en individuele apparaten mixen, geen probleem."
+      "text": "Vink de apparaten aan waarop dit schema moet worden toegepast. Je kunt zonder problemen zones en individuele apparaten mixen."
     },
-    "saved": "Plan __name__ is opgeslagen.",
-    "unnamed": "Unnamed plan",
-    "save": "opslaan",
-    "removed": "Plan __name__ is verwijderd.",
-    "duplicated": "Plan __name__ is gedupliceerd."
+    "saved": "Schema __name__ is opgeslagen.",
+    "unnamed": "Schema zonder naam",
+    "save": "Opslaan",
+    "removed": "Schema __name__ is verwijderd.",
+    "duplicated": "Schema __name__ is gedupliceerd."
   },
   "schedule": {
-    "Thursday": "TH",
-    "Sunday": "SU",
-    "Tuesday": "TU",
-    "Saturday": "SA",
-    "Friday": "FR",
-    "title": "Bewerk planningen",
-    "Monday": "MO",
-    "save": "opslaan",
-    "Wednesday": "WIJ"
+    "title": "Bewerk schema's",
+    "save": "Opslaan",
+    "Monday": "MA",
+    "Tuesday": "DI",
+    "Wednesday": "WO",
+    "Thursday": "DO",
+    "Friday": "VR",
+    "Saturday": "ZA",
+    "Sunday": "ZO"
   },
   "setpoint": {
     "start": {
@@ -139,26 +147,26 @@
       "label": "Temperatuur",
       "low": "Nacht",
       "warm": "Comfort",
-      "middle": "Economie",
+      "middle": "Economisch",
       "warmer": "Comfort plus"
     },
     "target": {
-      "placeholder": "Target temperatuur",
-      "label": "Target temperatuur"
+      "placeholder": "Doeltemperatuur",
+      "label": "Doeltemperatuur"
     },
-    "save": "opslaan",
+    "save": "Opslaan",
     "title": "Instelpunt bewerken"
   },
   "temperatures": {
     "list": {
-      "title": "Setpoints overzicht",
+      "title": "Overzicht van instelpunten",
       "empty": "- geen thermostaten gevonden -",
-      "text": "De lijst laat zien, wat de applicatie aan het configureren is. Aan de linkerkant staan ​​de huidige setpoints, versus de leestemperatuur aan de rechterkant. Als een apparaat niet wordt weergegeven, is dit niet geconfigureerd door een actief plan."
+      "text": "De lijst hieronder laat zien, wat de applicatie aan het configureert. Aan de linkerkant staan de huidige instelpunten, versus de huidig gemeten temperatuur aan de rechterkant. Als een apparaat niet wordt weergegeven, is dit niet geconfigureerd door een actief verwarmingsschema."
     },
-    "mode": "Huidige bedieningsmodus",
+    "mode": "Huidige modus",
     "title": "Huidige temperaturen",
-    "schedule": "Schema overzicht",
-    "next": "Volgende temperatuurverandering ingeschakeld"
+    "schedule": "Schema-overzicht",
+    "next": "Volgende temperatuursverandering"
   },
   "plans": {
     "heatingmode": {
@@ -166,32 +174,32 @@
       "section": "Verwarmingsmodus wijzigen"
     },
     "plans": {
-      "empty": "- geen plannen gevonden -",
-      "section": "Verwarming plannen"
+      "empty": "- geen schema's gevonden -",
+      "section": "Verwarmingsschema's"
     },
     "title": "Overzicht",
-    "toggled": "Plan __name__ is bijgewerkt.",
-    "changemode": "Veranderen van modus naar __name__.",
-    "modechanged": "De modus is gewijzigd in __name__."
+    "toggled": "Schema __name__ is bijgewerkt.",
+    "changemode": "Wijzig modus naar __name__.",
+    "modechanged": "De modus is gewijzigd naar: __name__."
   },
   "error": {
-    "title": "Whoops! Er is iets fout gegaan."
+    "title": "Oepsie! Er is iets fout gegaan."
   },
   "menu": {
     "plans": "Overzicht",
-    "help": "Helpen",
+    "help": "Hulp",
     "schedule": "Huidige temperaturen",
-    "about": "Wat betreft",
-    "settings": "instellingen",
-    "title": "Homey Heating Scheduler"
+    "about": "Over",
+    "settings": "Instellingen",
+    "title": "Homey Verwarmingsregelaar"
   },
   "confirm": {
     "ok": "OK",
-    "cancel": "annuleren",
-    "title": "Bevestig uw actie"
+    "cancel": "Annuleren",
+    "title": "Bevestig je actie"
   },
   "Modes": {
-    "0": "automatisch",
+    "0": "Automamaat",
     "1": "Een dag thuis",
     "2": "Een dag weg van huis",
     "3": "Slapen",
@@ -200,16 +208,16 @@
   },
   "Notification": {
     "set_operation_mode": "Verwarmingsmodus gewijzigd in '__mode__'",
-    "set_target_temperature": "De thermostaat '__name__' instellen op __value__ ° (__plan__)",
+    "set_target_temperature": "De thermostaat '__name__' is ingesteld op __value__ ° (__plan__)",
     "failed_set_target_temperature": "Kon thermostaat '__name__' niet instellen op __value__ ° (__error__)"
   },
   "Device": {
     "pair": "Plan __name__",
-    "plan_removed": "Het bijbehorende verwarmingsplan bestaat niet meer. Herstel het plan vanaf een back-up of verwijder het apparaat."
+    "plan_removed": "Het bijbehorende verwarmingschema bestaat niet meer. Herstel het schema vanaf een back-up of verwijder het apparaat."
   },
   "ThermostatMode": {
-    "0": "Verwarmingsplan (automatisch)",
-    "6": "Handleiding tot middernacht",
+    "0": "Verwarmingsschema (automatisch)",
+    "6": "Handmatic tot middernacht",
     "7": "Volledig handmatig"
   }
 }

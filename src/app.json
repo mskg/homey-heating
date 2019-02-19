@@ -5,7 +5,7 @@
   "sdk": 2,
   "name": {
     "en": "Homey Heating Scheduler",
-    "nl": "Homey Heating Scheduler"
+    "nl": "Homey Verwarmingsregelaar"
   },
   "tags": {},
   "brandColor": "#2196f3",
@@ -29,14 +29,14 @@
         "id": "apply_all",
         "title": {
           "en": "Apply all active heating plans",
-          "nl": "Pas alle actieve verwarmingsplannen toe"
+          "nl": "Pas alle actieve verwarmingsschema's toe"
         }
       },
       {
         "id": "apply_plan",
         "title": {
           "en": "Apply heating plan",
-          "nl": "Verwarmingsplan toepassen"
+          "nl": "Verwarmingsschema toepassen"
         },
         "args": [
           {
@@ -44,7 +44,7 @@
             "name": "plan",
             "placeholder": {
               "en": "Search for a plan...",
-              "nl": "Zoek naar een plan ..."
+              "nl": "Zoek naar een schema..."
             }
           }
         ]
@@ -64,7 +64,7 @@
                 "id": "0",
                 "label": {
                   "en": "Automatic",
-                  "nl": "automatisch"
+                  "nl": "Automatisch"
                 }
               },
               {
@@ -92,7 +92,7 @@
                 "id": "4",
                 "label": {
                   "en": "Holiday",
-                  "nl": "Holiday"
+                  "nl": "Vrije dag"
                 }
               },
               {
@@ -121,14 +121,14 @@
                 "id": "true",
                 "label": {
                   "en": "to enabled",
-                  "nl": "ingeschakeld"
+                  "nl": "naar ingeschakeld"
                 }
               },
               {
                 "id": "false",
                 "label": {
                   "en": "to disabled",
-                  "nl": "voor gehandicapten"
+                  "nl": "naar uitgeschakeld"
                 }
               }
             ]
@@ -139,7 +139,7 @@
         "id": "set_plan_state",
         "title": {
           "en": "Set heating plan",
-          "nl": "Verwarmingsplan instellen"
+          "nl": "Activeer verwarmingsschema"
         },
         "args": [
           {
@@ -147,7 +147,7 @@
             "name": "plan",
             "placeholder": {
               "en": "Search for a plan...",
-              "nl": "Zoek naar een plan ..."
+              "nl": "Zoek naar een schema..."
             }
           },
           {
@@ -158,14 +158,14 @@
                 "id": "true",
                 "label": {
                   "en": "to enabled",
-                  "nl": "ingeschakeld"
+                  "nl": "naar ingeschakeld"
                 }
               },
               {
                 "id": "false",
                 "label": {
                   "en": "to disabled",
-                  "nl": "voor gehandicapten"
+                  "nl": "naar uitgeschakeld"
                 }
               }
             ]
@@ -186,7 +186,7 @@
             "type": "string",
             "title": {
               "en": "Mode",
-              "nl": "mode"
+              "nl": "Modus"
             },
             "example": "Automatic"
           }
@@ -211,7 +211,7 @@
             "type": "string",
             "title": {
               "en": "Mode",
-              "nl": "mode"
+              "nl": "Modus"
             },
             "example": "Automatic"
           }
@@ -248,14 +248,14 @@
           "id": "0",
           "title": {
             "en": "Heating plan (automatic)",
-            "nl": "Verwarmingsplan (automatisch)"
+            "nl": "Verwarmingsschema (automatisch)"
           }
         },
         {
           "id": "6",
           "title": {
             "en": "Manual until midnight",
-            "nl": "Handleiding tot middernacht"
+            "nl": "Handmatig tot middernacht"
           }
         },
         {
