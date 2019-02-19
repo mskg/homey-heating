@@ -20,4 +20,3 @@ export class CategoryLogger implements ILogger, ICategoryLogger {
         this.logger.error(exception, `[${this.category.padEnd(10)}]`, ...args);
     }
 }
-
