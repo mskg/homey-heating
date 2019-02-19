@@ -1,0 +1,7 @@
+{
+    "colors": true,
+    "require": "./tmp/test/setup.js",
+    "recursive": true,
+    "timeout": 2000,
+    "spec": "./tmp/**/*.spec.js"
+}
