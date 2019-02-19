@@ -1,4 +1,4 @@
-import { BootStrapper, HeatingSchedulerService } from "@app/services";
+import { BootStrapper, HeatingSchedulerService, setAllowCatchAll } from "@app/services";
 import { expect } from "chai";
 import { ManagerCron } from "homey";
 import "mocha";
@@ -27,10 +27,12 @@ before(async () => {
 
 beforeEach(async () => {
     (Date as any) = FakeDate;
+    setAllowCatchAll(false);
 });
 
-after(() => {
+afterEach(() => {
     (Date as any) = OldDate;
+    setAllowCatchAll(false);
 });
 
 // tslint:disable: only-arrow-functions

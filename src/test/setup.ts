@@ -60,6 +60,3 @@ mock("homey", {
 mock("@app/model", require("../app/model"));
 mock("@app/helper", require("../app/helper"));
 mock("@app/services", require("../app/services"));
-
-import { setAllowCatchAll } from "@app/services";
-setAllowCatchAll(false);
