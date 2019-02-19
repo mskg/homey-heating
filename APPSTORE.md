@@ -26,6 +26,10 @@ Not what you expect? Than it's probably not what I do at home. Feel free to add 
 * English
 * Dutch
 
+## Release notes
+
+[https://homey-heating.mskg.app/pages/releasenotes](https://homey-heating.mskg.app/pages/releasenotes)
+
 ## Feedback
 
 Anything doesn't work? Please report issues at the [issues section on GitHub](https://github.com/mskg/homey-heating/issues) or contact me on [Slack](https://athomcommunity.slack.com/team/mskg).
