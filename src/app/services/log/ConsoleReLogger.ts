@@ -5,6 +5,7 @@ export class ConsoleReLogger implements ILogger, INeedsCleanup {
     private consolere: any = null;
 
     constructor(channel: string) {
+        console.log("********** console.re enabled");
         this.consolere = ConsoleRe.connect("console.re", "443", channel);
 
         this.consolere.toServerRe.client = false;
@@ -18,12 +19,12 @@ export class ConsoleReLogger implements ILogger, INeedsCleanup {
         return Promise.resolve(true);
     }
 
-    public information(...args: any[]) {
-        (console as any).re.info(...args);
+    public information(category, message, ...args: any[]) {
+        (console as any).re.info(`${category} ${message}`, ...args);
     }
 
-    public debug(...args: any[]) {
-        (console as any).re.log(...args);
+    public debug(category, message, ...args: any[]) {
+        (console as any).re.debug(`${category} ${message}`, ...args);
     }
 
     public error(exception, ...args: any[]) {

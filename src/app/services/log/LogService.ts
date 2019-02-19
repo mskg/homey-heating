@@ -96,7 +96,7 @@ export class LogService implements ILogger {
         if (tearDowns.length > 0) {
             Promise.all(tearDowns)
                 .catch((r) => {
-                    LogService.instance.error("Could not teardown loggers", r);
+                    LogService.instance.error(r, "Could not teardown loggers");
                 });
         }
     }

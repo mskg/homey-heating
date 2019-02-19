@@ -1,22 +1,29 @@
 import { ICategoryLogger, ILogger } from "./types";
 
 export class CategoryLogger implements ILogger, ICategoryLogger {
-    constructor(private logger: ILogger, private category: string) {
+    private category: string;
+
+    constructor(private logger: ILogger, category: string, modify = true) {
+        if (!modify) {
+            this.category = category;
+        } else {
+            this.category = `[${category.padEnd(10)}]`;
+        }
     }
 
-    public createSubLogger(category: string): ICategoryLogger {
-        return new CategoryLogger(this, category);
+    public createSubLogger(newCategory: string): ICategoryLogger {
+        return new CategoryLogger(this.logger, `${this.category} [${newCategory.padEnd(10)}]`, false);
     }
 
     public information(...args: any[]) {
-        this.logger.information(`[${this.category.padEnd(10)}]`, ...args);
+        this.logger.information(this.category, ...args);
     }
 
     public debug(...args: any[]) {
-        this.logger.debug(`[${this.category.padEnd(10)}]`, ...args);
+        this.logger.debug(this.category, ...args);
     }
 
     public error(exception, ...args: any[]) {
-        this.logger.error(exception, `[${this.category.padEnd(10)}]`, ...args);
+        this.logger.error(exception, this.category, ...args);
     }
 }

@@ -29,23 +29,25 @@ export class SentryLogger implements ILogger, INeedsCleanup {
         return Sentry.close();
     }
 
-    public information(category: string, ...args: any[]) {
+    public information(category: string, message, ...args: any[]) {
         if (this.enabled) {
             // we assume category logger
             Sentry.addBreadcrumb({
                 category,
-                message: args.join(" "),
+                message,
+                data: args,
                 level: Sentry.Severity.Info,
             });
         }
     }
 
-    public debug(category: string, ...args: any[]) {
+    public debug(category: string, message, ...args: any[]) {
         if (this.enabled) {
             // we assume category logger
             Sentry.addBreadcrumb({
                 category,
-                message: args.join(" "),
+                message,
+                data: args,
                 level: Sentry.Severity.Debug,
             });
         }
