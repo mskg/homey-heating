@@ -19,7 +19,7 @@
 
     "sentry": {
       "category": "Sentry error tracking",
-      "text": "Sentry.io is an external service, that gives insights in errors that occured with this App on your Homey. For this reason, error details are sent automatically to this external service. If you don't want to share those details, please disable this setting."
+      "text": "Sentry.io is an external service, that gives insights in errorrs that occured with this App on your Homey. For this reason, error details are sent automatically to this external service. If you don't want to share those details, please disable this setting."
     },
 
     "backup": {

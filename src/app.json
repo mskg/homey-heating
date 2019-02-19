@@ -223,6 +223,14 @@
     "name": "Markus Kling",
     "email": "markus.kling@gmail.com"
   },
+  "contributors": {
+    "contributors": [
+      {
+        "name": "Lennard Warnaar",
+        "email": "lennard@renlen.nl"
+      }
+    ]
+  },
   "bugs": {
     "url": "https://github.com/mskg/homey-heating/issues"
   },
