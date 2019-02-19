@@ -1,3 +1,4 @@
+import { flatten, keyBy } from "lodash";
 import "mocha";
 import * as mock from "mock-require";
 import "reflect-metadata";
@@ -17,17 +18,29 @@ const mockEventHandler = (args?) => ({
     once(evt, func) { this._evt[evt] = func; },
 });
 
+let allZones = [];
+let allDevices = ["Device A", "Device B", "Device C"]
+
 mock("athom-api", {
     HomeyAPI: {
         forCurrentHomey: () => ({
             devices: {
                 ...mockEventHandler(),
-                getDevices: () => ({}),
+                getDevices: () => keyBy(allDevices.map((d) => ({
+                    driverUri: "fake",
+                    id: d,
+                    name: d,
+                    capabilities: [CapabilityType.TargetTemperature, CapabilityType.MeasureTemperature],
+                    zone: allZones[0],
+                })), (d) => d.id),
             },
 
             zones: {
                 ...mockEventHandler(),
-                getZones: () => ({}),
+                getZones: () => keyBy(allZones.map((d) => ({
+                    id: d,
+                    name: d,
+                })), (d) => d.id),
             },
         }),
     },
@@ -60,3 +73,8 @@ mock("homey", {
 mock("@app/model", require("../app/model"));
 mock("@app/helper", require("../app/helper"));
 mock("@app/services", require("../app/services"));
+
+import { DEFAULT_HEATING_PLAN } from "@app/helper";
+import { CapabilityType } from "@app/services";
+allZones = flatten(DEFAULT_HEATING_PLAN.map((p) => p.zones));
+// allDevices  = flatten(DEFAULT_HEATING_PLAN.map((p) => p.devices));

@@ -174,7 +174,7 @@ export class HeatingManagerService {
             targetTemperature = parseFloat(targetTemperature);
 
             // tslint:disable-next-line: use-isnan
-            if (targetTemperature === NaN) {
+            if (isNaN(targetTemperature)) {
                 this.logger.error(null, "Setpoint has wrong datatype for temperature", setPoint);
                 return [];
             }

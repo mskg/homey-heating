@@ -10,7 +10,7 @@ import { HeatingPlanCalculator } from "../app/services/calculator";
 // tslint:disable: no-empty
 describe("Scheduler", () => {
     const scheduler = container.resolve(HeatingPlanCalculator);
-    const nextSchedulePlan: IHeatingPlan = _.find(DEFAULT_HEATING_PLAN, (p) => p.name === "Living Room");
+    const nextSchedulePlan: IHeatingPlan = _.find(JSON.parse(JSON.stringify(DEFAULT_HEATING_PLAN)), (p) => p.name === "Living Room");
 
     const MONDAY = new Date(1979, 1, 29, 0, 0, 0, 0);
     const tests = [
@@ -62,18 +62,4 @@ describe("Scheduler", () => {
             expect(sp.targetTemperature, "Target").to.equal(test.setPoint.t);
         });
     });
-
-    // it ("OverrideDay", (test) => {
-    //     const plan: IHeatingPlan = _.find(DEFAULT_HEATING_PLAN, (p) => p.name === "OverrideDay");
-
-    //     const calcDate = scheduler.getNextSchedule(nextSchedulePlan, MONDAY);
-    //     expect(calcDate).to.be.null;
-    // });
-
-    // it ("FullManual", (test) => {
-    //     const plan: IHeatingPlan = _.find(DEFAULT_HEATING_PLAN, (p) => p.name === "FullManual");
-
-    //     const calcDate = scheduler.getNextSchedule(nextSchedulePlan, MONDAY);
-    //     expect(calcDate).to.be.null;
-    // });
 });
