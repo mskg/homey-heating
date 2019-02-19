@@ -159,22 +159,28 @@ export class DeviceManagerService {
     public async setTargetTemperature(d: AuditedDevice, targetTemperature: number) {
         let target = targetTemperature;
 
-        const cap = d.watchedCapabilities.targetTemperature;
-        if (cap != null) {
-            if (target > cap.max) {
-                target = cap.max;
-            } else if (target < cap.min) {
-                target = cap.min;
-            } else {
-                // adjust fraction
-                // tslint:disable: one-line
-                if (cap.step === 0) { target = Math.round(target); }
-                else { target = Math.round(target / cap.step) * cap.step; }
-            }
+        try {
+            const cap = d.watchedCapabilities.targetTemperature;
+            if (cap != null) {
+                if (target > cap.max) {
+                    target = cap.max;
+                } else if (target < cap.min) {
+                    target = cap.min;
+                } else {
+                    if (cap.step != null && typeof cap.step === "number") {
+                        // adjust fraction
+                        // tslint:disable: one-line
+                        if (cap.step === 0) { target = Math.round(target); }
+                        else { target = Math.round(target / cap.step) * cap.step; }
+                    }
+                }
 
-            if (targetTemperature !== target) {
-                this.logger.information(`Target adjusted ${d.name} (${d.name}) was ${targetTemperature} -> ${target} (min: ${cap.min}, max: ${cap.max}, step: ${cap.step})`);
+                if (targetTemperature !== target) {
+                    this.logger.information(`Target adjusted ${d.name} (${d.name}) was ${targetTemperature} -> ${target} (min: ${cap.min}, max: ${cap.max}, step: ${cap.step})`);
+                }
             }
+        } catch (e) {
+            this.logger.error(e, `Failed to adust temperature from ${targetTemperature}`);
         }
 
         await this.homeyApi.devices.setCapabilityValue({
