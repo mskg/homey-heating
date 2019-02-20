@@ -6,6 +6,7 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
 import { StyleRulesCallback, withStyles, WithStyles } from "@material-ui/core/styles";
 import React from "react";
+import { IGroupedCalculatedTemperature, NormalOperationMode } from "../../app/model/heating";
 import { useScheduleInformation } from "../api/hooks";
 import AppHeader from "../components/AppHeader";
 import BodyText from "../components/BodyText";
@@ -54,6 +55,22 @@ const TemperaturesPage: React.FunctionComponent<Props> = (props) => {
         return YYYY + "-" + MM + "-" + DD + "T" +
             HH + ":" + II + ":" + SS;
     };
+
+    function getDisplayName(schedule: IGroupedCalculatedTemperature) {
+        if (schedule.thermostatMode !== NormalOperationMode.Automatic) {
+            return translate(`ThermostatMode.${schedule.thermostatMode}`);
+        }
+
+        if (schedule.conflictingPlans.length > 1) {
+            const otherPlans = schedule.conflictingPlans
+                .filter((p) => schedule.plan.id !== p.id)
+                .map((p) => p.name).join(", ");
+
+            return `${schedule.plan.name} (${otherPlans})`;
+        }
+
+        return schedule.plan.name;
+    }
 
     return (
         <Page>
@@ -113,7 +130,7 @@ const TemperaturesPage: React.FunctionComponent<Props> = (props) => {
                                             <ListItemAvatar>
                                                 <TemperatureAvatar value={schedule.targetTemperature} />
                                             </ListItemAvatar>
-                                            <ListItemText primary={schedule.device.name} secondary={schedule.plan.name} />
+                                            <ListItemText primary={schedule.device.name} secondary={getDisplayName(schedule)} />
                                             <ListItemSecondaryAction style={{ paddingRight: 16 }} >
                                                 <FilledTemperatureAvatar value={schedule.temperature} fill={percent(schedule.temperature, schedule.targetTemperature)} />
                                             </ListItemSecondaryAction>

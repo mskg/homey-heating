@@ -1,5 +1,9 @@
+import { sortBy } from "lodash";
 import { Day, IHeatingPlan } from "../../app/model";
 import { IndexedSetPoint } from "./PlanReducer";
+
+export const sortSchedules = (newList) => sortBy(newList, [(d: IndexedSetPoint) => (d.day === 0 ? 7 : d.day), "hour", "minute"])
+    .map<IndexedSetPoint>((sp, i) => ({ ...sp, index: i })) as IndexedSetPoint[];
 
 export function calculateDay(plan: IHeatingPlan, day: Day) {
     // filtered and sorted based on day

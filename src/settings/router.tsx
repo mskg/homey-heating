@@ -6,6 +6,7 @@ import { PlanProvider } from "./state/PlanProvider";
 const PlanDetailPage = React.lazy(() => import("./pages/plan"));
 const PlanExceptionsPage = React.lazy(() => import("./pages/plan-exceptions"));
 const PlanSchedulePage = React.lazy(() => import("./pages/plan-schedule"));
+const AllSchedulesPage = React.lazy(() => import("./pages/schedules"));
 
 const PlanRoutes: React.FunctionComponent<RouteComponentProps> = ({ match }) => {
   return (
@@ -37,6 +38,7 @@ export class AppRouter extends React.Component<any, any> {
 
               <Route exact={true} path="/settings" component={SettingsPage} />
               <Route exact={true} path="/temperatures" component={TemperaturesPage} />
+              <Route exact={true} path="/schedules" component={AllSchedulesPage} />
 
               <Route path="/plans" component={PlanRoutes} />
             </Switch>

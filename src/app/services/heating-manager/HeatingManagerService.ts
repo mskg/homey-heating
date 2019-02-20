@@ -1,14 +1,15 @@
-import { ICalculatedTemperature, IHeatingPlan, ISetPoint, NormalOperationMode, OperationMode, OverrideMode, ThermostatMode } from "@app/model";
+import { ICalculatedTemperature, IGroupedCalculatedTemperature, IHeatingDevice, IHeatingPlan, ISetPoint, NormalOperationMode, OperationMode, OverrideMode, ThermostatMode } from "@app/model";
 import { __, Notification } from "homey";
-import { forEach, isEmpty } from "lodash";
+import { forEach, groupBy, isEmpty, map } from "lodash";
 import { EventDispatcher, IEvent } from "ste-events";
 import { container, singleton } from "tsyringe";
 import { HeatingPlanCalculator } from "../calculator";
 import { AuditedDevice, DeviceManagerService } from "../device-manager";
 import { FlowService } from "../flow-service";
 import { HeatingPlanRepositoryService, PlanChangeEventType } from "../heating-plan-repository";
-import { ILogger, LoggerFactory, trycatchlog } from "../log";
+import { ICategoryLogger, LoggerFactory, trycatchlog } from "../log";
 import { InternalSettings, Settings, SettingsManagerService } from "../settings-manager";
+import { ITemperatureConflictPolicy, TemperatureConflictPolicy } from "./TemperatureConflictPolicy";
 import { ISetTemperaturePolicy, PolicyType } from "./types";
 
 export type PlansAppliedEventArgs = {
@@ -33,9 +34,10 @@ export class HeatingManagerService {
         HeatingManagerService, OperationMode>();
 
     private isRunning: boolean;
-    private logger: ILogger;
+    private logger: ICategoryLogger;
     private mode: OperationMode;
-    private policy: ISetTemperaturePolicy;
+    private setTemperaturePolicy: ISetTemperaturePolicy;
+    private planConflictPolicy: ITemperatureConflictPolicy;
 
     constructor(
         private plans: HeatingPlanRepositoryService,
@@ -46,11 +48,18 @@ export class HeatingManagerService {
         loggerFactory: LoggerFactory) {
         this.logger = loggerFactory.createLogger("Manager");
 
-        const mode: OperationMode = this.settings.get<OperationMode>(
+        this.mode = this.settings.get<OperationMode>(
             InternalSettings.OperationMode, NormalOperationMode.Automatic);
 
-        this.mode = mode;
+        // retry, throttle, ...
+        this.setTemperaturePolicy = container.resolve<ISetTemperaturePolicy>(
+            this.settings.get(InternalSettings.SetTemperaturePolicy, PolicyType.Throttled_CheckTemperature));
 
+        // min, max, ...
+        this.planConflictPolicy = container.resolve<ITemperatureConflictPolicy>(
+            this.settings.get(InternalSettings.PlanConflictPolicy, TemperatureConflictPolicy.Max));
+
+        // repository was modified
         this.plans.onChanged.subscribe(async (rep, modifiedPlans) => {
             try {
                 await Promise.all(modifiedPlans.map(async (change) => {
@@ -65,12 +74,10 @@ export class HeatingManagerService {
             }
         });
 
-        this.policy = container.resolve<ISetTemperaturePolicy>(
-            this.settings.get(InternalSettings.SetTemperaturePolicy, PolicyType.Throttled_CheckTemperature));
-
+        // mode was ticked
         this.onModeChanged.subscribe(async () => {
             await this.applyPlans();
-            await this.flow.modeChanged.trigger({mode: __(`Modes.${this.mode}`)});
+            await this.flow.modeChanged.trigger({ mode: __(`Modes.${this.mode}`) });
         });
     }
 
@@ -105,7 +112,9 @@ export class HeatingManagerService {
             this.logger.debug("Applying active plans");
 
             const settings = await this.evaluateActivePlans();
-            await this.applySettings(settings);
+            const conflictFree = this.resolveConflicts(settings);
+
+            await this.applySettings(conflictFree);
 
             this.onPlansAppliedDispatcher.dispatch(this, {
                 plans: await this.plans.activePlans,
@@ -119,7 +128,8 @@ export class HeatingManagerService {
     // erors handled by all callers
     public async applyPlan(plan: IHeatingPlan) {
         const schedule = await this.evaluatePlan(plan);
-        await this.applySettings(schedule);
+        // one plan can not conflict itself
+        await this.applySettings(schedule.map((p) => ({...p, conflictingPlans: [p.plan]})));
 
         this.onPlansAppliedDispatcher.dispatch(this, {
             plans: [plan],
@@ -128,122 +138,80 @@ export class HeatingManagerService {
     }
 
     // erors handled by all callers
-    public async evaluateActivePlans(): Promise<ICalculatedTemperature[]> {
+    public async evaluateActivePlans(): Promise<IGroupedCalculatedTemperature[]> {
         const settings: ICalculatedTemperature[] = [];
 
         forEach(await this.plans.activePlans, (plan) => {
             settings.push(...this.evaluatePlan(plan));
         });
 
-        return settings;
+        return this.resolveConflicts(settings);
     }
 
     public evaluatePlan(plan: IHeatingPlan): ICalculatedTemperature[] {
-        this.logger.debug(`Evaluating plan ${plan.id}`);
+        const planLogger = this.logger.createSubLogger(__PRODUCTION__ ? plan.id : plan.name);
+        planLogger.debug("Evaluating");
 
-        let setPoint: ISetPoint = null;
+        // if there is no devices, we are done
+        const devices = this.expandPlan(plan);
+        if (devices == null || devices.length === 0) { return []; }
+
+        // where do we need to go?
+        let targetTemperature = 0;
+        const thermostatMode = plan.thermostatMode || NormalOperationMode.Automatic;
 
         // error in first implementation used number instead of text
-        const override = plan.overrides ? (plan.overrides[this.mode] || plan.overrides[OverrideMode[this.mode]]) : null;
+        const planOverrides = plan.overrides ? (plan.overrides[this.mode] || plan.overrides[OverrideMode[this.mode]]) : null;
 
-        if (plan.thermostatMode != null && plan.thermostatMode !== NormalOperationMode.Automatic) {
-            this.logger.debug(`> Plan has thermostat that overrides ${ThermostatMode[plan.thermostatMode]}`);
-            return [];
-        } else if (override != null) {
-            this.logger.debug(`> Plan has override for ${OverrideMode[this.mode]}`);
+        if (thermostatMode != null && thermostatMode !== NormalOperationMode.Automatic) {
+            planLogger.debug(`Thermostat overrides ${ThermostatMode[thermostatMode]}`);
 
-            const date = new Date();
-            setPoint = {
-                day: date.getDay(),
-                hour: date.getHours(),
-                minute: date.getMinutes(),
-
-                targetTemperature: override.targetTemperature,
-            };
+            // we look at any of our devices ... which should be ok anyhow
+            targetTemperature = this.deviceManager.getTargetTemperature(devices[0]);
+        } else if (planOverrides != null) {
+            planLogger.debug(`Plan override for ${OverrideMode[this.mode]}`);
+            targetTemperature = planOverrides.targetTemperature;
         } else {
-            setPoint = this.calc.getSetPoint(plan);
-            if (setPoint == null) { return []; }
-        }
-
-        this.logger.debug(`> Target temperature is ${setPoint.targetTemperature}`);
-        const targets: ICalculatedTemperature[] = [];
-
-        let targetTemperature = setPoint.targetTemperature as any;
-        if (typeof targetTemperature !== "number") {
-            this.logger.debug("Setpoint has wrong datatype for temperature, trying to correct", setPoint);
-            targetTemperature = parseFloat(targetTemperature);
-
-            // tslint:disable-next-line: use-isnan
-            if (isNaN(targetTemperature)) {
-                this.logger.error(null, "Setpoint has wrong datatype for temperature", setPoint);
+            const setPoint = this.calc.getSetPoint(plan);
+            if (setPoint == null) {
+                planLogger.debug(`Plan has not setpoints, done.`);
                 return [];
+            }
+
+            targetTemperature = setPoint.targetTemperature as any;
+            if (typeof targetTemperature !== "number") {
+                planLogger.information("Setpoint has wrong datatype for temperature, trying to correct", setPoint);
+                targetTemperature = parseFloat(targetTemperature);
+
+                if (isNaN(targetTemperature)) {
+                    // we don't fail hard here
+                    planLogger.error(null, "Setpoint has wrong datatype for temperature", setPoint);
+                    return [];
+                }
             }
         }
 
-        if (plan.zones) {
-            forEach(plan.zones, (zoneId) => {
-                this.logger.debug(`Evaluating zone ${zoneId}`);
+        planLogger.debug(`Calculated target temperature is ${targetTemperature}`);
 
-                const zone = this.deviceManager.findZone(zoneId);
-                if (zone == null) {
-                    this.logger.debug("> not found");
-                    return;
-                }
-
-                const devices = this.deviceManager.getDevicesForZone(zone.id);
-                if (isEmpty(devices)) {
-                    this.logger.debug("> No devices found");
-                    return;
-                } else {
-                    this.logger.debug(`> found ${devices.length} device(s)`);
-                }
-
-                forEach(devices, (d) => {
-                    targets.push({
-                        device: { id: d.id, name: d.name },
-                        plan: {
-                            id: plan.id,
-                            name: plan.name,
-                        },
-                        temperature: this.deviceManager.getMeasuredTemperature(d),
-                        targetTemperature,
-                    });
-                });
-            });
-        }
-
-        if (plan.devices) {
-            forEach(plan.devices, (deviceID) => {
-                this.logger.debug(`Evaluating device ${deviceID})`);
-
-                const device = this.deviceManager.findDevice(deviceID);
-                if (device == null) {
-                    this.logger.debug("> not found");
-                    return;
-                }
-
-                targets.push({
-                    device: { id: device.id, name: device.name },
-                    plan: {
-                        id: plan.id,
-                        name: plan.name,
-                    },
-                    temperature: this.deviceManager.getMeasuredTemperature(device),
-                    targetTemperature,
-                });
-            });
-        }
-
-        return targets;
+        return devices.map((device) => ({
+            device: { id: device.id, name: device.name },
+            plan: {
+                id: plan.id,
+                name: plan.name,
+            },
+            temperature: this.deviceManager.getMeasuredTemperature(device),
+            targetTemperature,
+            thermostatMode,
+        }));
     }
 
-    public async setTemperature(plan: string, d: AuditedDevice, targetTemperature: number): Promise<void> {
-        const result = await this.policy.setTargetTemperature(d, targetTemperature);
+    public async setTemperature(planName: string, device: AuditedDevice, targetTemperature: number): Promise<void> {
+        const result = await this.setTemperaturePolicy.setTargetTemperature(device, targetTemperature);
 
         if (!result.success) {
             if (this.settings.get(Settings.NotifySetError, true)) {
                 this.sendNotification("failed_set_target_temperature", {
-                    name: d.name,
+                    name: device.name,
                     value: targetTemperature,
                     error: result.error,
                 });
@@ -251,27 +219,92 @@ export class HeatingManagerService {
         } else if (!result.skipped) {
             if (this.settings.get(Settings.NotifySetSuccess, true)) {
                 this.sendNotification("set_target_temperature", {
-                    name: d.name,
+                    name: device.name,
                     value: targetTemperature,
-                    plan,
+                    plan: planName,
                 });
             }
         }
     }
 
-    private async applySettings(settings: ICalculatedTemperature[]) {
-        this.logger.information(`Applying ${settings.length} settings`, settings.map((s) => {
-            return {
-                plan: s.plan && `${s.plan.name} (${s.plan.id})`,
-                device: s.device && `${s.device.name} (${s.device.id})`,
-                temp: s.temperature,
-                target: s.targetTemperature,
-            };
-        }));
+    private resolveConflicts(settings: ICalculatedTemperature[]): IGroupedCalculatedTemperature[] {
+        // there can still be multiple plans with setpoints for the same device
+        const groups = map(groupBy(settings, (s: ICalculatedTemperature) => s.device.id),
+            (groupedSettings /*, deviceId*/) => {
+                const calculated = this.planConflictPolicy.resolve(groupedSettings);
+
+                return {
+                    device: calculated.device,
+                    plan: calculated.plan,
+                    thermostatMode: calculated.thermostatMode,
+                    conflictingPlans: groupedSettings.map((s) => s.plan),
+                    targetTemperature: calculated.targetTemperature,
+                    temperature: calculated.temperature, // same device, no problem here
+                };
+            });
+
+        return groups;
+    }
+
+    private expandPlan(plan: IHeatingPlan): AuditedDevice[] {
+        const planLogger = this.logger.createSubLogger(__PRODUCTION__ ? plan.id : plan.name);
+        const result: AuditedDevice[] = [];
+
+        if (plan.zones) {
+            forEach(plan.zones, (zoneId) => {
+                // planLogger.debug(`Evaluating zone ${zoneId}`);
+
+                const zone = this.deviceManager.findZone(zoneId);
+                if (zone == null) {
+                    planLogger.information(`Zone ${zoneId} not found`);
+                    return;
+                }
+
+                const devices = this.deviceManager.getDevicesForZone(zone.id);
+                if (isEmpty(devices)) {
+                    planLogger.debug("No devices found");
+                    return;
+                } else {
+                    planLogger.debug(`Found ${devices.length} device(s)`);
+                }
+
+                result.push(...devices);
+            });
+        }
+
+        if (plan.devices) {
+            forEach(plan.devices, (deviceID) => {
+                // planLogger.debug(`Evaluating device ${deviceID})`);
+
+                const device = this.deviceManager.findDevice(deviceID);
+                if (device == null) {
+                    planLogger.information(`Device ${deviceID} not found`);
+                    return;
+                }
+
+                result.push(device);
+            });
+        }
+
+        planLogger.debug(`expanded to ${result.length} devices`);
+        return result;
+    }
+
+    private async applySettings(settings: IGroupedCalculatedTemperature[]) {
+        // filter out thermostat overrides, those don't need to be applied
+        const groups = settings.filter((f) => f.thermostatMode === NormalOperationMode.Automatic);
+
+        // debug
+        this.logger.information(`Applying ${groups.length} settings`, groups.map((s) => ({
+            plans: s.conflictingPlans && s.conflictingPlans.map((p) => `${p.name} (${p.id})`),
+            device: s.device && `${s.device.name} (${s.device.id})`,
+            temperature: s.temperature,
+            targetTemperature: s.targetTemperature,
+        })));
 
         await Promise.all(
-            settings.map(async (newSetting) =>
-                await this.setTemperature(newSetting.plan.name,
+            groups.map(async (newSetting) =>
+                await this.setTemperature(newSetting.conflictingPlans.map((p) => p.name).join(", "),
                     this.deviceManager.findDevice(newSetting.device.id),
                     newSetting.targetTemperature),
             ),

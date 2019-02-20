@@ -126,6 +126,24 @@ function utilitySchedule(): ISetPoint[] {
     return setPoints;
 }
 
+// function chart(): ISetPoint[] {
+//     const setPoints: ISetPoint[] = [];
+
+//     for (const d of [Day.Monday, Day.Tuesday, Day.Wednesday, Day.Thursday, Day.Friday, Day.Saturday, Day.Sunday]) {
+
+//         [0, 1, 2, 3, 4, 5, 6, 7].forEach(t => {
+//             setPoints.push({
+//                 day: d,
+//                 hour: t * 3,
+//                 minute: 0,
+//                 targetTemperature: t + 16,
+//             });
+//         });
+//     }
+
+//     return setPoints;
+// }
+
 const bedSchedule = [1, 2, 3, 4, 5, 6, 0].map((e) => ({ day: e, hour: 0, minute: 0, targetTemperature: 16 }));
 
 export const DEFAULT_HEATING_PLAN: IHeatingPlan[] = [
@@ -181,7 +199,14 @@ export const DEFAULT_HEATING_PLAN: IHeatingPlan[] = [
                 targetTemperature: 17,
             },
         },
-    }];
+    },
+    // {
+    //     id: "5",
+    //     name: "Chart",
+    //     enabled: true,
+    //     schedule: chart(),
+    // },
+];
 
 export const DEFAULT_HEATING_ZONES: IHeatingZone[] = [
     {

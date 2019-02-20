@@ -2,7 +2,7 @@ import { filter, forEach, isEmpty, map, remove, sortBy } from "lodash";
 import { Day, IHeatingPlan, ISetPoint, OverrideMode, Overrides } from "../../app/model";
 import { HashType as DeviceHashType } from "../api/devices";
 import { HashType as ZoneHashType } from "../api/zones";
-import { calculateDay } from "./calculateDay";
+import { calculateDay, sortSchedules } from "./calculateDay";
 
 export type IndexedSetPoint = {
     index: number,
@@ -84,9 +84,6 @@ export type Action =
     | { type: "removeSetPoint", index: number }
     | { type: "newSetPoint", day: Day }
 ;
-
-const sortList = (newList) => sortBy(newList, [(d: IndexedSetPoint) => (d.day === 0 ? 7 : d.day), "hour", "minute"])
-    .map<IndexedSetPoint>((sp, i) => ({ ...sp, index: i })) as IndexedSetPoint[];
 
 // tslint:disable: jsdoc-format
 const reducerImplementation = (state: State, action: Action) => {
@@ -327,7 +324,7 @@ const reducerImplementation = (state: State, action: Action) => {
                 dirty: true,
                 plan: {
                     ...state.plan,
-                    schedule: sortList(newSchedule),
+                    schedule: sortSchedules(newSchedule),
                 },
             };
         }
@@ -344,7 +341,7 @@ const reducerImplementation = (state: State, action: Action) => {
                 dirty: true,
                 plan: {
                     ...state.plan,
-                    schedule: sortList(newList),
+                    schedule: sortSchedules(newList),
                 },
             };
         }
@@ -361,7 +358,7 @@ const reducerImplementation = (state: State, action: Action) => {
                 dirty: true,
                 plan: {
                     ...state.plan,
-                    schedule: sortList(newList),
+                    schedule: sortSchedules(newList),
                 },
             };
         }
@@ -378,7 +375,7 @@ const reducerImplementation = (state: State, action: Action) => {
                 dirty: true,
                 plan: {
                     ...state.plan,
-                    schedule: sortList(newList),
+                    schedule: sortSchedules(newList),
                 },
             };
         }
@@ -410,7 +407,7 @@ const reducerImplementation = (state: State, action: Action) => {
                     zones: action.plan.zones || [],
                     devices: action.plan.devices || [],
                     overrides: action.plan.overrides || {},
-                    schedule: sortList([...action.plan.schedule]),
+                    schedule: sortSchedules([...action.plan.schedule]),
                 },
             };
         }

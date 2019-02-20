@@ -1,6 +1,6 @@
 
 import { map, sortBy } from "lodash";
-import { ICalculatedTemperature, IHeatingPlan, IScheduleInformation, OperationMode } from "../../../app/model";
+import { IGroupedCalculatedTemperature, IHeatingPlan, IScheduleInformation, OperationMode } from "../../../app/model";
 import callAPI from "../callAPI";
 
 const fetchPlans = async (): Promise<IHeatingPlan[]> => {
@@ -46,7 +46,7 @@ const fetchPlanById = async (id: string): Promise<IHeatingPlan> => {
 
 const fetchSchedule = async (): Promise<IScheduleInformation> => {
   const schedule = await callAPI<IScheduleInformation>("GET", `/schedule`);
-  schedule.temperatures = sortBy(schedule.temperatures, [(s: ICalculatedTemperature) => s.device.name]);
+  schedule.temperatures = sortBy(schedule.temperatures, [(s: IGroupedCalculatedTemperature) => s.device.name]);
 
   return schedule;
 };

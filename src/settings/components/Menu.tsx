@@ -51,7 +51,11 @@ const AppMenuBase: React.FunctionComponent<Props> = (props) => {
         },
         {
             to: "/temperatures",
-            text: translate("menu.schedule"),
+            text: translate("menu.temperatures"),
+        },
+        {
+            to: "/schedules",
+            text: translate("menu.schedules"),
         },
         {
             to: "/settings",

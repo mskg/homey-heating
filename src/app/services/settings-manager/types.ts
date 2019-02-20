@@ -16,6 +16,8 @@ export enum InternalSettings {
     OperationMode = "mode",
     LogApi = "logapi",
 
+    PlanConflictPolicy = "planconflictpolicy",
+
     SetTemperaturePolicy = "temperaturepolicy",
     SetTemperatureThrottle = "temperatureThrottle",
     SchedulerTimeSlots = "schedulerTimeslots",

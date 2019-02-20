@@ -1,6 +1,7 @@
 import { Day } from "../../../app/model";
 import translate from "../../i18n/Translation";
 import { IndexedSetPoint } from "../../state/PlanReducer";
+import { temperatureToColor } from "../temperatureToColor";
 import { MIN_DATE } from "./SVGGenerator";
 
 const translateDay = (day: Day) => {
@@ -14,18 +15,6 @@ const translateDay = (day: Day) => {
         case Day.Saturday: return translate("schedule.Saturday");
         default: return "XX";
     }
-};
-
-const translateTemperature = (n) => {
-    if (n <= 16) {
-        return "LOW";
-    }
-
-    if (n <= 18.5) {
-        return "MEDIUM";
-    }
-
-    return "HIGH";
 };
 
 export class SeriesElement {
@@ -55,7 +44,7 @@ export class SeriesElement {
     public readonly temperature: number;
     public readonly taskName: string;
 
-    public readonly color: "LOW" | "MEDIUM" | "HIGH";
+    public readonly color: string;
 
     constructor(from?: IndexedSetPoint, to?: IndexedSetPoint) {
         this.temperature = from ? from.targetTemperature : to.targetTemperature;
@@ -64,6 +53,6 @@ export class SeriesElement {
         this.end.setHours(to ? to.hour : 24, to ? to.minute : 0);
 
         this.taskName = translateDay(from ? from.day : to.day);
-        this.color = translateTemperature(this.temperature);
+        this.color = temperatureToColor(this.temperature);
     }
 }

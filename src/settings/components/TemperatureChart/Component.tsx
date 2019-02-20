@@ -1,43 +1,63 @@
-import deepOrange from "@material-ui/core/colors/deepOrange";
-import green from "@material-ui/core/colors/green";
-import blue from "@material-ui/core/colors/lightBlue";
 import { StyleRulesCallback, withStyles, WithStyles } from "@material-ui/core/styles";
-import React, { Suspense } from "react";
+import { debounce } from "lodash";
+import React from "react";
 import { Day, IHeatingPlan } from "../../../app/model";
-import { calculateDay } from "../../state/calculateDay";
+import { calculateDay, sortSchedules } from "../../state/calculateDay";
 import { IndexedSetPoint } from "../../state/PlanReducer";
 import { SeriesElement } from "./SeriesElement";
 import { SVGGenerator } from "./SVGGenerator";
 
-const styles: StyleRulesCallback = (theme) => ({
-    high: {
-        fill: deepOrange[500],
+const useDimensions = () => {
+    const [ref, setRef] = React.useState<HTMLDivElement>(null);
 
-        ["& text"]: {
-            fill: "white",
-            fontSize: "12px",
-        },
-    },
-    medium: {
-        fill: green[500],
-        ["& text"]: {
-            fill: "white",
-            fontSize: "12px",
-        },
-    },
-    low: {
-        fill: blue[500],
-        ["& text"]: {
-            fill: "white",
-            fontSize: "12px",
-        },
-    },
+    const [dimensions, setDimensions] = React.useState({
+        width: ref ? ref.clientWidth : 0,
+        height: ref ? ref.clientHeight : 0,
+    });
 
-    chart: {
-        padding: theme.spacing.unit * 2,
-        width: "100%",
-    },
-});
+    function updateDimensions(inner) {
+        setDimensions({
+            width: inner ? inner.clientWidth : 0,
+            height: inner ? inner.clientHeight : 0,
+        });
+    }
+
+    React.useEffect(() => {
+        if (ref != null) {
+            updateDimensions(ref);
+
+            const func = ((savedRef) => debounce(() => {
+                updateDimensions(savedRef);
+            }, 300))(ref);
+
+            window.addEventListener("resize", func);
+
+            return () => {
+                window.removeEventListener("resize", func);
+            };
+        }
+    }, [ref]);
+
+    return [setRef, dimensions];
+};
+
+const styles: StyleRulesCallback = (theme) => {
+    return {
+        chart: {
+            padding: theme.spacing.unit * 2,
+            width: "100%",
+
+            ["& .axis domain"]: {
+                fill: theme.palette.text.primary,
+            },
+
+            ["& text"]: {
+                fill: theme.palette.text.primary,
+                fontSize: "12px",
+            },
+        },
+    };
+};
 
 type Props = {
     plan: IHeatingPlan,
@@ -48,20 +68,19 @@ type Props = {
 const TemperatureChart: React.FunctionComponent<Props> = (props) => {
     const { classes, plan, height, legend } = props;
     const ref = React.createRef<HTMLDivElement>();
+    const [setRef, dimensions] = useDimensions();
 
     React.useEffect(() => {
-        const chart = new SVGGenerator(ref.current, legend);
-        chart.colors = {
-            HIGH: classes.high,
-            MEDIUM: classes.medium,
-            LOW: classes.low,
-        };
+        const chart = new SVGGenerator(ref.current, legend,
+            (dimensions as any).width,
+            (dimensions as any).height);
 
         const tasks: SeriesElement[] = [];
 
         // setpoints get translated to [from - to]
         [Day.Monday, Day.Tuesday, Day.Wednesday, Day.Thursday, Day.Friday, Day.Saturday, Day.Sunday].forEach((day) => {
-            const { schedules, last } = calculateDay(plan, day);
+            // schedules need to be sorted
+            const { schedules, last } = calculateDay({...plan, schedule: sortSchedules(plan.schedule)}, day);
 
             if (schedules.length === 0) {
                 if (last == null) { return; }
@@ -91,21 +110,13 @@ const TemperatureChart: React.FunctionComponent<Props> = (props) => {
         });
 
         chart.data(tasks);
-    }, [plan]);
+    }, [plan, dimensions]);
+
+    React.useEffect(() => {
+        (setRef as any)(ref.current);
+    }, [ref]);
 
     return (<div style={{ height: height || 300 }} className={classes.chart} ref={ref} />);
 };
-
-// const lazy = (args: Props) => React.lazy(() => {
-//     return Promise.resolve((<TemperatureChart {...args} />));
-// });
-
-// const LazyChart: React.FunctionComponent<Props> = (props) => {
-//     return (
-//         <Suspense fallback={<span>Loading...</span>}>
-//             <TemperatureChart {...props} />
-//         </Suspense>
-//     );
-// }
 
 export default withStyles(styles)(TemperatureChart);

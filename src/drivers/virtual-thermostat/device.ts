@@ -250,7 +250,11 @@ class VirtualThermostat extends Device {
                 await this.flow.thermostatModeChanged.trigger(this, {mode: __(`ThermostatMode.${thermostatMode}`)});
             }
 
-            const dev = this.manager.evaluatePlan(this.plan);
+            // need to filter out our own overrides
+            const dev = this.manager
+                .evaluatePlan(this.plan)
+                .filter((t) => t.thermostatMode === NormalOperationMode.Automatic);
+
             if (dev.length > 0) {
                 await this.doSetCapbilityValue(CapabilityType.TargetTemperature, this.adjustTemperatureValue(dev[0].targetTemperature));
             }

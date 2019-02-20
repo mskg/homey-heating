@@ -186,7 +186,7 @@ const PlanOverviewPage: React.FunctionComponent<Props> = (props) => {
                                     </Fragment>
                                 ),
                                 subBar: (
-                                    <Tabs value={selectedTab} onChange={(e, v) => selectTab(v)} variant="scrollable">
+                                    <Tabs value={selectedTab} onChange={(e, v) => selectTab(v)} variant="scrollable" scrollButtons="off" >
                                         <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("plan.tabs.overview")} />
                                         <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("plan.tabs.schedule")} />
                                         <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("plan.tabs.zones", { n: plan.zones.length })} />

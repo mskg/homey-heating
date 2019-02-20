@@ -210,8 +210,9 @@
   "menu": {
     "title": "Homey Heating Scheduler",
     "plans": "Overview",
-    "schedule": "Current temperatures",
+    "temperatures": "Current temperatures",
     "settings": "Settings",
+    "schedules": "All schedules",
     "help": "Help",
     "about": "About"
   },

@@ -74,7 +74,7 @@ export interface IHeatingZone extends IExternalReference {
 export interface IScheduleInformation {
     mode: OperationMode;
     nextDate?: Date;
-    temperatures: ICalculatedTemperature[];
+    temperatures: IGroupedCalculatedTemperature[];
 }
 
 export interface ICalculatedTemperature {
@@ -82,5 +82,11 @@ export interface ICalculatedTemperature {
 
     temperature?: number;
     targetTemperature: number;
+
     plan: IExternalReference;
+    thermostatMode: ThermostatMode | NormalOperationMode;
+}
+
+export interface IGroupedCalculatedTemperature extends ICalculatedTemperature {
+    conflictingPlans: IExternalReference[];
 }

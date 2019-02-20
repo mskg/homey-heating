@@ -1,3 +1,4 @@
+
 /**
  * Inspired by https://github.com/dk8996/Gantt-Chart
  */
@@ -12,13 +13,11 @@ export const MAX_DATE = new Date(1979, 1, 30, 0, 0, 0, 0);
 
 export class SVGGenerator {
     public tickFormat = "%H:%M";
-    public colors = {};
-
     public margin = {
         top: 0,
         right: 16,
         bottom: 16,
-        left: 24,
+        left: 28,
     };
 
     private minTime: Date;
@@ -68,10 +67,11 @@ export class SVGGenerator {
         ];
 
         this.initAxis();
+        this.createChart(true);
     }
 
     public data(data: SeriesElement[]) {
-        const svg = this.createChart();
+        const svg = this.createChart(false);
         const chart = svg.select(".chart");
 
         const allData = chart.selectAll("g").data<SeriesElement>(
@@ -79,10 +79,7 @@ export class SVGGenerator {
 
         const timeslot = allData.enter()
             .insert("g")
-            .attr("class", (d) => {
-                if (this.colors[d.color] == null) { return "rect"; }
-                return this.colors[d.color];
-            })
+            .attr("fill", (d) => d.color)
             .attr("transform", (d) => "translate(" + this.xScale(d.start) + "," + this.yScale(d.taskName) + ")");
 
         const rect = timeslot.insert("rect")
@@ -94,7 +91,7 @@ export class SVGGenerator {
         if (this.showLegend) {
             const text = timeslot.insert("text")
                 .attr("text-anchor", "start")
-                .attr("x", 8)
+                .attr("x", 6)
                 .attr("y", 20)
                 .attr("width", (d: SeriesElement) => {
                     return Math.max(1, (this.xScale(d.end) - this.xScale(d.start) - 6));
@@ -102,7 +99,7 @@ export class SVGGenerator {
                 .text((d) => this.fixedDigits(d.temperature, 1));
 
             this.dotme(text);
-            }
+        }
         allData.exit().remove();
     }
 
@@ -131,24 +128,11 @@ export class SVGGenerator {
     private dotme(textNode) {
         textNode.each(function() {
             const text = d3.select(this);
-            const characters = text.text().split("");
-            // const numChars = characters.length;
+            const width = parseInt(text.attr("width"), 10);
 
-            const ellipsis = text.text("").append("tspan").attr("class", "elip").text("...");
-            const width = parseFloat(text.attr("width")) - ellipsis.node().getComputedTextLength();
-
-            const tspan = text.insert("tspan", ":first-child").text(characters.join(""));
-
-            // Try the whole word
-            // While it's too long, and we have characters left, keep removing them
-            while (tspan.node().getComputedTextLength() > width && characters.length) {
-                characters.pop();
-                tspan.text(characters.join(""));
+            if (text.text().length * (27 / 4 /* per character */) > width) {
+                text.text("");
             }
-
-            // if (characters.length === numChars) {
-            ellipsis.remove();
-            // }
         });
     }
 
@@ -156,8 +140,9 @@ export class SVGGenerator {
         return (Math.round(value * Math.pow(10, digits)) / Math.pow(10, digits)).toFixed(digits);
     }
 
-    private createChart() {
+    private createChart(init) {
         let svg = d3.select(this.rootElement).select("svg");
+        if (init) { svg.remove(); }
 
         if (svg.empty()) {
             svg = d3.select(this.rootElement)
