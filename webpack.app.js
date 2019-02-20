@@ -90,7 +90,7 @@ var appConfig = (env, argv) => {
         to: distPath
       },
     ])
-  ];
+  ].filter(Boolean);
 
   if (PRODUCTION) {
     plugins.push(

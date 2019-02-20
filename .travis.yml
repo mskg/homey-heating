@@ -31,6 +31,13 @@ deploy:
       tags: true
 
   - provider: script
+    skip_cleanup: true
     script: npm run travis:sentry -- releases files homey-heating@${TRAVIS_TAG:1} upload-sourcemaps ../homey-heating-dist --rewrite --ignore-file scripts/.sentryignore
+    on:
+      tags: true
+
+  - provider: script
+    skip_cleanup: true
+    script: npm run travis:sentry -- releases set-commits homey-heating@${TRAVIS_TAG:1} --auto
     on:
       tags: true
