@@ -69,6 +69,7 @@
     "homey:run": "npm run build:app:dev && athom -p ../homey-heating-dist app run",
     "homey:install": "npm run build:app:prod && npm run build:web:prod && athom -p ../homey-heating-dist app install",
     "dist": "npm run build:app:prod && npm run build:web:prod && athom -p ../homey-heating-dist app validate --level publish",
+    "tag": "npm run lint:app && npm run lint:web && npm run test && git tag",
     "test": "tsc -p ./tsconfig.test.json && mocha",
     "release:install": "node scripts/install.js",
     "travis:setversion": "node scripts/update-version.js",
