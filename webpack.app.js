@@ -31,12 +31,15 @@ var appConfig = (env, argv) => {
       __VERSION: JSON.stringify(package.version),
       __BUILD: JSON.stringify(process.env.TRAVIS_BUILD_NUMBER)
     }),
+    new webpack.SourceMapDevToolPlugin({
+      filename: '[file].map',
+      noSources: true,
+      publicPath: PRODUCTION && package.version !== "0.0.0"
+        ? `https://raw.githubusercontent.com/mskg/homey-heating/release/${package.version}/`
+        : `file:///${distPath}/`.replace(/\\/g, "/"),
+    }),
     new CleanWebpackPlugin(distPath),
     new CopyWebpackPlugin([
-      // {
-      //   from: './src/env.json',
-      //   to: distPath + "/env.json"
-      // },
       {
         from: "./tmp/app.json",
         to: distPath
@@ -44,6 +47,10 @@ var appConfig = (env, argv) => {
       {
         from: './scripts/CI.md',
         to: distPath + "/README.md"
+      },
+      {
+        from: './scripts/.homeyignore',
+        to: distPath
       },
       {
         from: './APPSTORE.md',
@@ -125,7 +132,6 @@ var appConfig = (env, argv) => {
       'drivers/virtual-thermostat/driver': './src/drivers/virtual-thermostat/driver.ts',
     },
 
-    devtool: 'cheap-module-source-map',
     module: {
       rules: [{
         test: /\.tsx?$/,
@@ -133,6 +139,7 @@ var appConfig = (env, argv) => {
         exclude: /node_modules/
       }]
     },
+    devtool: false,
     resolve: {
       extensions: ['.tsx', '.ts', '.js'],
     },
@@ -151,7 +158,6 @@ var appConfig = (env, argv) => {
     output: {
       filename: '[name].js',
       path: distPath,
-
       libraryTarget: "commonjs2",
     }
   }

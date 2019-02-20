@@ -32,6 +32,14 @@ var scriptConfig = (env, argv) => {
       }));
   }
   else {
+    plugins.push(new webpack.SourceMapDevToolPlugin({
+      filename: '[file].map',
+      exclude: 'node_modules',
+      publicPath: PRODUCTION && version !== "0.0.0"
+        ? `https://raw.githubusercontent.com/mskg/homey-heating/release/v${version}/`
+        : `file://${distPath}/`.replace(/\\/g, "/"),
+    }));
+
     plugins.push(
       new CopyWebpackPlugin([{
         from: './index.prod.html',
@@ -55,7 +63,7 @@ var scriptConfig = (env, argv) => {
       app: './index.tsx',
     },
 
-    devtool: PRODUCTION ? 'cheap-module-source-map' : 'inline-source-map',
+    devtool: PRODUCTION ? false : 'source-map',
 
     resolve: {
       extensions: [".ts", ".tsx", ".js", ".json"],

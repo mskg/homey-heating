@@ -35,14 +35,14 @@ export class HeatingSchedulerApp {
             this.logger.error(reason, "Unhandled Rejection at:", p, "reason:", reason);
         });
 
+        // Flow hooks
+        await this.flowService.init();
+
         // apply what we have
         await this.heatingManager.applyPlans();
 
         // startup scheduler
         await this.heatingScheduler.start();
-
-        // Flow hooks
-        await this.flowService.init();
     }
 }
 
