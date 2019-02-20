@@ -107,7 +107,7 @@ export const usePlan = (id: string, keep: boolean = true) => {
     const isDirty = usePlanGlobalState("dirty");
 
     if (!loaded || !keep) {
-        if (id == null || id === "new") {
+        if ((id == null || id === "new") && !cachedPlan) {
             cachedPlan = true;
             dispatch({
                 type: "loadPlan", plan: {
