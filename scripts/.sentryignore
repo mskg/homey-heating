@@ -1,0 +1,5 @@
+../homey-heating-dist/**/*athom-api*
+../homey-heating-dist/**/*lodash*
+../homey-heating-dist/**/*tsyringe*
+../homey-heating-dist/**/*settings/*
+../homey-heating-dist/**/*reflect-meta*

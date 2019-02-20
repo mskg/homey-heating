@@ -28,7 +28,7 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "@vitalets/google-translate-api": "^2.7.0",
+    "@sentry/cli": "^1.39.1",
     "@types/chai": "^4.1.7",
     "@types/d3": "^5.7.1",
     "@types/lodash": "^4.14.120",
@@ -38,6 +38,7 @@
     "@types/react-dom": "^16.0.11",
     "@types/react-router": "^4.4.3",
     "@types/react-router-dom": "^4.3.1",
+    "@vitalets/google-translate-api": "^2.7.0",
     "athom-cli": "^2.1.69",
     "awesome-typescript-loader": "^5.2.1",
     "chai": "^4.2.0",
@@ -73,6 +74,7 @@
     "test": "tsc -p ./tsconfig.test.json && mocha",
     "release:install": "node scripts/install.js",
     "travis:setversion": "node scripts/update-version.js",
+    "travis:sentry": "sentry-cli",
     "lint:app": "tslint --project tsconfig.json",
     "lint:web": "tslint --project tsconfig.react.json",
     "build:app:dev": "webpack --mode development --config webpack.app.js",
