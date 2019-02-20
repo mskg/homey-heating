@@ -1,22 +1,33 @@
 import * as ConsoleRe from "console-remote-client";
-import { ILogger } from "./types";
+import { ILogger, INeedsCleanup } from "./types";
 
-export class ConsoleReLogger implements ILogger {
+export class ConsoleReLogger implements ILogger, INeedsCleanup {
     private consolere: any = null;
 
     constructor(channel: string) {
-        this.consolere = ConsoleRe.connect("console.re", "80", channel);
+        console.log("********** console.re enabled");
+        this.consolere = ConsoleRe.connect("console.re", "443", channel);
+
+        this.consolere.toServerRe.client = false;
+        this.consolere.re.client = false;
     }
 
-    public information(...args: any[]) {
-        (console as any).re.information(...args);
+    public teardown() {
+        this.consolere.disconnect();
+        delete this.consolere;
+
+        return Promise.resolve(true);
     }
 
-    public debug(...args: any[]) {
-        (console as any).re.log(...args);
+    public information(category, message, ...args: any[]) {
+        (console as any).re.info(`${category} ${message}`, ...args);
     }
 
-    public error(...args: any[]) {
-        (console as any).re.error(...args);
+    public debug(category, message, ...args: any[]) {
+        (console as any).re.debug(`${category} ${message}`, ...args);
+    }
+
+    public error(exception, ...args: any[]) {
+        (console as any).re.error(...args, exception);
     }
 }

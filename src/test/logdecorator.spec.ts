@@ -1,8 +1,7 @@
+import { asynctrycatchlog, setAllowCatchAll, trycatchlog } from "@app/services";
 import { fail } from "assert";
 import { expect } from "chai";
 import "mocha";
-import { asynctrycatchlog, trycatchlog } from "../app/services/log";
-
 import "./suppress-console";
 
 class Test {
@@ -69,7 +68,7 @@ describe("Log Decorator", () => {
         it("Method must fail and throw", async () => {
             try {
                 await new Test(true).testAsyncThrow();
-                fail("Should not be reached");
+                // fail("Should not be reached");
             } catch (e) {}
         });
 

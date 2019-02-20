@@ -4,8 +4,7 @@ import { container } from "tsyringe";
 import { Settings, SettingsManagerService } from "../settings-manager";
 import { AppLogger } from "./AppLogger";
 import { ConsoleLogger } from "./ConsoleLogger";
-import { ConsoleReLogger } from "./ConsoleReLogger";
-import { ILogger } from "./types";
+import { ILogger, INeedsCleanup } from "./types";
 
 export class LogService implements ILogger {
 
@@ -13,14 +12,13 @@ export class LogService implements ILogger {
         return LogService.instance;
     }
 
-    public static setupForTest() {
-        LogService.instance.loggers = [];
-    }
-
     public static init(app) {
         const manager = container.resolve(SettingsManagerService);
         manager.onChanged.subscribe((v, e) => {
-            if (e.setting === Settings.LogEnabled || e.setting === Settings.LogCategory) {
+            if (e.setting === Settings.ConsoleReLogEnabled
+                || e.setting === Settings.ConsoleReLogCategory
+                || e.setting === Settings.SentryEnabled) {
+
                 LogService.instance.information("Reload due to settings change.");
                 LogService.instance.evaluateLogger(app);
             }
@@ -35,38 +33,71 @@ export class LogService implements ILogger {
     private constructor() { }
 
     public information(...args: any[]) {
-        this.loggers.forEach((e) => {
-            e.debug(...args);
+        this.loggers.forEach((l) => {
+            try {
+                l.information(...args);
+            // tslint:disable-next-line: no-console
+            } catch (e) { console.error("Failed to log", e); }
         });
     }
 
     public debug(...args: any[]) {
-        this.loggers.forEach((e) => {
-            e.debug(...args);
+        this.loggers.forEach((l) => {
+            try {
+                l.debug(...args);
+            // tslint:disable-next-line: no-console
+            } catch (e) { console.error("Failed to log", e); }
         });
     }
 
-    public error(...args: any[]) {
-        this.loggers.forEach((e) => {
-            e.error(...args);
+    public error(exception, ...args: any[]) {
+        this.loggers.forEach((l) => {
+            try {
+                l.error(exception, ...args);
+            // tslint:disable-next-line: no-console
+            } catch (e) { console.error("Failed to log", e); }
         });
     }
+
     private evaluateLogger(app) {
         const newLoggers = [];
 
         const manager = container.resolve(SettingsManagerService);
-        const channel = manager.get<string>(Settings.LogCategory);
-        const logEnabled = manager.get<boolean>(Settings.LogEnabled, false);
+        const channel = manager.get(Settings.ConsoleReLogCategory) as string;
+        const logEnabled = manager.get(Settings.ConsoleReLogEnabled, false) as boolean;
+        const sentryEnabled = manager.get(Settings.SentryEnabled, true) as boolean;
 
-        // console.re also outputs to standard console
+        if (sentryEnabled === true) {
+            const SentryLogger = require("./SentryLogger").SentryLogger;
+            newLoggers.push(new SentryLogger());
+        } else {
+            LogService.instance.information("********** Sentry is disabled.");
+        }
+
         if (!isEmpty(channel) && logEnabled) {
+            const ConsoleReLogger = require("./ConsoleReLogger").ConsoleReLogger;
             newLoggers.push(new ConsoleReLogger(channel));
-        } else if (app != null) {
+        }
+
+        if (app != null && __PRODUCTION__) {
             newLoggers.push(new AppLogger(app));
         } else {
             newLoggers.push(new ConsoleLogger());
         }
 
+        const tearDowns = this.loggers.map((l) => {
+            if ((l as any).hasOwnProperty("teardown")) {
+                return (l as unknown as INeedsCleanup).teardown();
+            }
+        });
+
         this.loggers = newLoggers;
+
+        if (tearDowns.length > 0) {
+            Promise.all(tearDowns)
+                .catch((r) => {
+                    LogService.instance.error(r, "Could not teardown loggers");
+                });
+        }
     }
 }

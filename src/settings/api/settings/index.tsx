@@ -1,4 +1,4 @@
-import { Settings } from "../../../app/services/settings-manager";
+import { Settings } from "../../../app/services/settings-manager/types";
 import callAPI from "../callAPI";
 
 export type SettingsHashMap = {

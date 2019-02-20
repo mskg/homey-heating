@@ -1,0 +1,10 @@
+*.js.map
+**/*.js.map
+node_modules/@app/services/*.js.map
+node_modules/@app/helper/*.js.map
+node_modules/@app/model/*.js.map
+node_modules/tsyringe/*.js.map
+drivers/virtual-thermostat/*.js.map
+settings/*.js.map
+ThirdPartyNotices.txt
+settings/ThirdPartyNotices.txt

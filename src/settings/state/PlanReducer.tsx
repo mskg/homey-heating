@@ -2,6 +2,7 @@ import { filter, forEach, isEmpty, map, remove, sortBy } from "lodash";
 import { Day, IHeatingPlan, ISetPoint, OverrideMode, Overrides } from "../../app/model";
 import { HashType as DeviceHashType } from "../api/devices";
 import { HashType as ZoneHashType } from "../api/zones";
+import { calculateDay, sortSchedules } from "./calculateDay";
 
 export type IndexedSetPoint = {
     index: number,
@@ -32,6 +33,7 @@ export const initialState = {
         id: "",
         enabled: false,
         name: "",
+        description: "",
         zones: [] as string[],
         devices: [] as string[],
         schedule: [] as IndexedSetPoint[],
@@ -47,13 +49,14 @@ export const initialState = {
 export type State = typeof initialState;
 
 export type Action =
-    // plan
+    // data
     | { type: "loadZones", zones: ZoneHashType }
     | { type: "loadDevices", devices: DeviceHashType }
 
     // plan
     | { type: "loadPlan", plan: IHeatingPlan }
     | { type: "setName", name: string }
+    | { type: "setDescription", description: string }
     | { type: "toggleDevice", device: string }
     | { type: "toggleZone", zone: string }
     | { type: "toggleEnabled" }
@@ -81,9 +84,6 @@ export type Action =
     | { type: "removeSetPoint", index: number }
     | { type: "newSetPoint", day: Day }
 ;
-
-const sortList = (newList) => sortBy(newList, [(d: IndexedSetPoint) => (d.day === 0 ? 7 : d.day), "hour", "minute"])
-    .map<IndexedSetPoint>((sp, i) => ({ ...sp, index: i })) as IndexedSetPoint[];
 
 // tslint:disable: jsdoc-format
 const reducerImplementation = (state: State, action: Action) => {
@@ -115,7 +115,7 @@ const reducerImplementation = (state: State, action: Action) => {
             return {
                 ...state,
                 // latest wins
-                savePoint: JSON.stringify({...state, history: null}),
+                savePoint: JSON.stringify({...state, savePoint: null}),
             };
         }
 
@@ -253,6 +253,18 @@ const reducerImplementation = (state: State, action: Action) => {
         };
 
         /**
+         * Set name of plan
+         */
+        case "setDescription": return {
+            ...state,
+            dirty: true,
+            plan: {
+                ...state.plan,
+                description: action.description,
+            },
+        };
+
+        /**
          * Toggle device membership in plan
          */
         case "toggleDevice": {
@@ -312,7 +324,7 @@ const reducerImplementation = (state: State, action: Action) => {
                 dirty: true,
                 plan: {
                     ...state.plan,
-                    schedule: sortList(newSchedule),
+                    schedule: sortSchedules(newSchedule),
                 },
             };
         }
@@ -329,7 +341,7 @@ const reducerImplementation = (state: State, action: Action) => {
                 dirty: true,
                 plan: {
                     ...state.plan,
-                    schedule: sortList(newList),
+                    schedule: sortSchedules(newList),
                 },
             };
         }
@@ -346,7 +358,7 @@ const reducerImplementation = (state: State, action: Action) => {
                 dirty: true,
                 plan: {
                     ...state.plan,
-                    schedule: sortList(newList),
+                    schedule: sortSchedules(newList),
                 },
             };
         }
@@ -363,7 +375,7 @@ const reducerImplementation = (state: State, action: Action) => {
                 dirty: true,
                 plan: {
                     ...state.plan,
-                    schedule: sortList(newList),
+                    schedule: sortSchedules(newList),
                 },
             };
         }
@@ -372,53 +384,9 @@ const reducerImplementation = (state: State, action: Action) => {
          * Select day from plan
          */
         case "selectDay": {
-            // filtered and sorted based on day
-            const newSchedules = state.plan.schedule.filter((sp) => sp.day === action.day);
-
-            // previous is last
-            const lastSchedule = (() => {
-                // no elements
-                if (state.plan.schedule.length === 0) { return null; }
-
-                // first element is first element
-                if (newSchedules.length !== 0 && newSchedules[0].index === 0) {
-                    if (state.plan.schedule[state.plan.schedule.length - 1].day !== newSchedules[0].day) {
-                        return state.plan.schedule[state.plan.schedule.length - 1];
-                    }
-
-                    return null;
-                }
-
-                if (newSchedules.length === 0) {
-                    let nd = action.day - 1;
-                    if (nd < 0) { nd = 6; }
-
-                    // we search from right to left
-                    while (nd >= 0) {
-                        const last = state.plan.schedule.filter((sp) => sp.day === nd);
-
-                        if (last.length > 0) {
-                            // already sorted
-                            return last[last.length - 1];
-                        }
-
-                        nd -= 1;
-                    }
-
-                    // cannot happen
-                    return null;
-                }
-
-                // highest from last schedule
-                return state.plan.schedule[newSchedules[0].index - 1];
-            })();
-
             return {
                 ...state,
-                selectedDay: {
-                    last: lastSchedule,
-                    schedules: newSchedules,
-                },
+                selectedDay: calculateDay(state.plan, action.day),
             };
         }
 
@@ -434,11 +402,12 @@ const reducerImplementation = (state: State, action: Action) => {
                 plan: {
                     ...action.plan,
                     // needs default values
+                    description: action.plan.description,
                     name: action.plan.name || "",
                     zones: action.plan.zones || [],
                     devices: action.plan.devices || [],
                     overrides: action.plan.overrides || {},
-                    schedule: sortList([...action.plan.schedule]),
+                    schedule: sortSchedules([...action.plan.schedule]),
                 },
             };
         }
@@ -462,7 +431,6 @@ const loggingReducer = (state: State, action: Action) => {
     }
 };
 
-declare var PRODUCTION: boolean;
-export const reducer = PRODUCTION
+export const reducer = __PRODUCTION__
     ? reducerImplementation
     : loggingReducer;

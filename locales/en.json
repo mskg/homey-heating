@@ -17,11 +17,24 @@
       "placeholder": "Log category"
     },
 
+    "sentry": {
+      "category": "Sentry error tracking",
+      "text": "Sentry.io is an external service, that gives insights in errorrs that occured with this App on your Homey. For this reason, error details are sent automatically to this external service. If you don't want to share those details, please disable this setting."
+    },
+
     "backup": {
       "title": "Backup and restore your heating plans",
       "text": "Just copy the whole text from the textfield and store it in a regular text file. Be careful: Changing the contents overrides all existing plans.",
       "label": "Heating plan configuration",
       "placeholder": "Heating plan configuration"
+    },
+
+    "notifications": {
+      "category": "Notifications",
+      "text": "Are we spamming your timeline? No problem, just turn the notifications off.",
+      "NotifyModeChange": "Heating mode changes?",
+      "NotifySetError": "Set temperature errors?",
+      "NotifySetSuccess": "Set temperature success?"
     }
   },
 
@@ -35,7 +48,7 @@
     "cancel": "Cancel",
     "ok": "OK"
   },
-  
+
   "copy": {
     "title": "Copy schedule",
     "text": "Select the days, you want the current schedule also be applied to.",
@@ -50,7 +63,7 @@
     "Saturday": "Saturday",
     "Sunday": "Sunday"
   },
-  
+
   "overrides": {
     "title": "Edit schedule exceptions",
     "section": "Pause schedule when",
@@ -68,6 +81,13 @@
     "saved": "Plan __name__ has been saved.",
     "removed": "Plan __name__ has been removed.",
     "duplicated": "Plan __name__ has been duplicated.",
+
+    "tabs": {
+      "overview": "Overview",
+      "schedule": "Schedule",
+      "zones": "Zones (__n__)",
+      "devices": "Devices (__n__)"
+    },
 
     "target": {
       "label": "Target temperature",
@@ -88,15 +108,25 @@
         "label": "Display name of your plan",
         "placeholder": "Display name"
       },
-      "text_enable": "If you disable the plan, it is not applied automatically. Yut can still apply it manually via Flow.",
+      "text_enable": "If you disable the plan, it is not applied automatically. You can still apply it manually via Flow.",
       "enabled": {
         "label": "Enabled?"
       },
-      "text_schedule": "Configure the schedules when your heating devices' temperature need to be adjusted. Additional exceptions can be configured: You leave home unplanned, or you return earlier.",
-      "edit": "Normal Schedule",
-      "exceptions": "Exceptions"
+      "text_description": "Anything important you need to remember?",
+      "description": {
+        "label": "Description",
+        "placeholder": "A short description"
+      }
     },
-   
+
+    "schedules": {
+      "section": "Schedule",
+      "text": "Configure the schedules when your heating devices' temperature need to be adjusted. Additional exceptions can be configured: You leave home unplanned, or you return earlier.",
+      "edit": "Normal Schedule",
+      "exceptions": "Exceptions",
+      "section_summary": "Summary"
+    },
+
     "zones": {
       "section": "Associate zones",
       "text": "Tick the zones, to which you want this plan to be applied to. All devices that support setting a target temperature inside such zones are included.",
@@ -121,7 +151,7 @@
     "Saturday": "SA",
     "Sunday": "SU"
   },
-  
+
   "setpoint": {
     "title": "Edit set point",
     "save": "save",
@@ -160,6 +190,7 @@
     "title": "Overview",
 
     "toggled": "Plan __name__ has been updated.",
+    "changemode": "Chaning mode to __name__.",
     "modechanged": "Mode has been changed to __name__.",
 
     "heatingmode": {
@@ -179,8 +210,9 @@
   "menu": {
     "title": "Homey Heating Scheduler",
     "plans": "Overview",
-    "schedule": "Current temperatures",
+    "temperatures": "Current temperatures",
     "settings": "Settings",
+    "schedules": "All schedules",
     "help": "Help",
     "about": "About"
   },
@@ -198,6 +230,17 @@
     "3": "Sleeping",
     "4": "On Holiday",
     "5": "Out of Season"
+  },
+
+  "ThermostatMode": {
+    "0": "Heating plan (automatic)",
+    "6": "Manual until midnight",
+    "7": "Fully manual"
+  },
+
+  "Device": {
+    "plan_removed": "Associated heating plan does no longer exist. Restore the plan from backup or remove the device.",
+    "pair": "Plan __name__"
   },
 
   "Notification": {

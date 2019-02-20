@@ -8,14 +8,14 @@ export class AppLogger implements ILogger {
     }
 
     public information(...args: any[]) {
-        this.app.log(...args);
+        this.app.log("[INFO ]", ...args);
     }
 
     public debug(...args: any[]) {
-        this.app.log(...args);
+        this.app.log("[DEBUG]", ...args);
     }
 
-    public error(...args: any[]) {
-        this.app.error(...args);
+    public error(exception, ...args: any[]) {
+        this.app.error("[ERROR]", ...args, exception);
     }
 }

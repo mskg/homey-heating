@@ -4,18 +4,18 @@ const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const LicenseCheckerWebpackPlugin = require("license-checker-webpack-plugin");
 const path = require('path');
-
 const distPath = path.resolve(__dirname, '../homey-heating-dist');
-
 const version = require("./package.json").version;
 
 var scriptConfig = (env, argv) => {
   const PRODUCTION = argv.mode === 'production';
   const plugins = [
     new webpack.DefinePlugin({
-      PRODUCTION: JSON.stringify(argv.mode === 'production'),
-      HOMEY_DEV_URL: JSON.stringify(process.env.HOMEY_DEV_URL || "http://192.168.178.117"),
-      VERSION: JSON.stringify(version)
+      __PRODUCTION__: JSON.stringify(argv.mode === 'production'),
+      __HOMEY_DEV_URL: JSON.stringify(process.env.HOMEY_DEV_URL || "http://192.168.178.117"),
+      __VERSION: JSON.stringify(version),
+      __HOMEY_LANG: JSON.stringify(process.env.HOMEY_LANG || "en"),
+      __BUILD: JSON.stringify(process.env.TRAVIS_BUILD_NUMBER),
     }),
 
     new MiniCssExtractPlugin({
@@ -28,10 +28,15 @@ var scriptConfig = (env, argv) => {
     plugins.push(
       new HtmlWebPackPlugin({
         template: "./index.dev.html",
-        filename: "./index.html"
+        filename: "./index.html",
       }));
   }
   else {
+    plugins.push(new webpack.SourceMapDevToolPlugin({
+      filename: '[file].map',
+      publicPath: `https://raw.githubusercontent.com/mskg/homey-heating/release/v${version}/`
+    }));
+
     plugins.push(
       new CopyWebpackPlugin([{
         from: './index.prod.html',
@@ -55,7 +60,7 @@ var scriptConfig = (env, argv) => {
       app: './index.tsx',
     },
 
-    devtool: PRODUCTION ? 'cheap-module-source-map' : 'inline-source-map',
+    devtool: PRODUCTION ? false : 'inline-source-map',
 
     resolve: {
       extensions: [".ts", ".tsx", ".js", ".json"],
