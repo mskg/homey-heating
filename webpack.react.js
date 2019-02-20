@@ -34,10 +34,7 @@ var scriptConfig = (env, argv) => {
   else {
     plugins.push(new webpack.SourceMapDevToolPlugin({
       filename: '[file].map',
-      exclude: 'node_modules',
-      publicPath: PRODUCTION && version !== "0.0.0"
-        ? `https://raw.githubusercontent.com/mskg/homey-heating/release/v${version}/`
-        : `file://${distPath}/`.replace(/\\/g, "/"),
+      publicPath: `https://raw.githubusercontent.com/mskg/homey-heating/release/v${version}/`
     }));
 
     plugins.push(
@@ -63,7 +60,7 @@ var scriptConfig = (env, argv) => {
       app: './index.tsx',
     },
 
-    devtool: PRODUCTION ? false : 'source-map',
+    devtool: PRODUCTION ? false : 'inline-source-map',
 
     resolve: {
       extensions: [".ts", ".tsx", ".js", ".json"],

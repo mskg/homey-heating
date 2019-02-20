@@ -31,13 +31,13 @@ var appConfig = (env, argv) => {
       __VERSION: JSON.stringify(package.version),
       __BUILD: JSON.stringify(process.env.TRAVIS_BUILD_NUMBER)
     }),
-    new webpack.SourceMapDevToolPlugin({
+
+    // source-map is wrong for typescript code but better than nothing
+    PRODUCTION ? new webpack.SourceMapDevToolPlugin({
       filename: '[file].map',
-      noSources: true,
-      publicPath: PRODUCTION && package.version !== "0.0.0"
-        ? `https://raw.githubusercontent.com/mskg/homey-heating/release/${package.version}/`
-        : `file:///${distPath}/`.replace(/\\/g, "/"),
-    }),
+      publicPath: `https://raw.githubusercontent.com/mskg/homey-heating/release/v${package.version}/`
+    }) : null,
+
     new CleanWebpackPlugin(distPath),
     new CopyWebpackPlugin([
       {
@@ -139,7 +139,9 @@ var appConfig = (env, argv) => {
         exclude: /node_modules/
       }]
     },
-    devtool: false,
+
+    devtool: PRODUCTION ? false : "inline-source-map",
+
     resolve: {
       extensions: ['.tsx', '.ts', '.js'],
     },
