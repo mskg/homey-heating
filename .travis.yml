@@ -33,4 +33,4 @@ deploy:
   - provider: script
     script: npm run travis:sentry -- releases files homey-heating@${TRAVIS_TAG:1} upload-sourcemaps ../homey-heating-dist --rewrite --ignore-file scripts/.sentryignore
     on:
-      trags: true
+      tags: true
