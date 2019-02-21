@@ -51,21 +51,30 @@ export class ConsoleReLogger implements ILogger, INeedsCleanup {
     public information(category: string, message: string, ...args: any[]) {
         if (this.socket.connected) {
             this.buffer.add((async () =>
-                await this.sendLog("info", `${category} ${message}`, ...args))());
+                await this.sendLog("info", `${category} ${message}`, ...args))())
+                .catch((e) => {
+                    LogService.transportLog.error(e, "ConsoleRe could not send log: ", category, message, args);
+                });
         }
     }
 
     public debug(category: string, message: string, ...args: any[]) {
         if (this.socket.connected) {
             this.buffer.add((async () =>
-                await this.sendLog("debug", `${category} ${message}`, ...args))());
+                await this.sendLog("debug", `${category} ${message}`, ...args))())
+                .catch((e) => {
+                    LogService.transportLog.error(e, "ConsoleRe could not send log: ", category, message, args);
+                });
         }
     }
 
     public error(exception: any, ...args: any[]) {
         if (this.socket.connected) {
             this.buffer.add((async () =>
-                await this.sendLog("error", ...args, exception))());
+                await this.sendLog("error", ...args, exception))())
+                .catch((e) => {
+                    LogService.transportLog.error(e, "ConsoleRe could not send log: ", ...args, exception);
+                });
         }
     }
 

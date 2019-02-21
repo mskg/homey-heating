@@ -13,7 +13,6 @@ export class SentryLogger implements ILogger, INeedsCleanup {
         } else {
             // tslint:disable-next-line: no-console
             LogService.transportLog.information("sentry has been enabled");
-
             this.enabled = true;
 
             Sentry.init({
@@ -28,6 +27,7 @@ export class SentryLogger implements ILogger, INeedsCleanup {
     public teardown(): Promise<boolean> {
         if (!this.enabled) { return Promise.resolve(true); }
 
+        this.enabled = false;
         LogService.transportLog.information("Sentry cleaned up");
         return Sentry.close();
     }
@@ -61,7 +61,7 @@ export class SentryLogger implements ILogger, INeedsCleanup {
             Sentry.configureScope((scope) => {
                 scope.setExtra("messages", args);
                 const eventId = Sentry.captureException(exception);
-                LogService.transportLog.debug(`Sentry eventId`, eventId);
+                LogService.transportLog.information(`Created sentry.io issue`, eventId);
             });
         }
     }
