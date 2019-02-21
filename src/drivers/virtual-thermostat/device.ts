@@ -91,7 +91,7 @@ class VirtualThermostat extends Device {
      * Plans in the repository changed
      */
     @asynctrycatchlog(true)
-    private async plansChanged(plans: PlansChangedEventArgs) {
+    private async plansChanged(_rep: HeatingPlanRepositoryService, plans: PlansChangedEventArgs) {
         await Promise.all(plans.filter((pc) => pc.plan.id === this.id).map(async (change) => {
             // if the plan was removed => we are null
             this.plan = change.event === PlanChangeEventType.Removed ? undefined : change.plan;
