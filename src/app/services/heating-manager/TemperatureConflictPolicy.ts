@@ -8,14 +8,14 @@ export enum TemperatureConflictPolicy {
 }
 
 export interface ITemperatureConflictPolicy {
-    resolve(setPoints: ICalculatedTemperature[]): ICalculatedTemperature;
+    resolve(setPoints: ICalculatedTemperature[] | undefined): ICalculatedTemperature | undefined;
 }
 
 @injectable()
 @registry([{ token: TemperatureConflictPolicy.Max, useToken: MaxTemperatureConflictPolicy }])
 export class MaxTemperatureConflictPolicy implements ITemperatureConflictPolicy {
-    public resolve(setPoints: ICalculatedTemperature[]): ICalculatedTemperature {
-        if (setPoints == null) { return null; }
+    public resolve(setPoints: ICalculatedTemperature[]): ICalculatedTemperature | undefined {
+        if (setPoints == null) { return undefined; }
         if (setPoints.length === 1) { return setPoints[0]; }
 
         return maxBy<ICalculatedTemperature>(setPoints, (t) => t.targetTemperature);
@@ -25,8 +25,8 @@ export class MaxTemperatureConflictPolicy implements ITemperatureConflictPolicy 
 @injectable()
 @registry([{ token: TemperatureConflictPolicy.Min, useToken: MinTemperatureConflictPolicy }])
 export class MinTemperatureConflictPolicy implements ITemperatureConflictPolicy {
-    public resolve(setPoints: ICalculatedTemperature[]): ICalculatedTemperature {
-        if (setPoints == null) { return null; }
+    public resolve(setPoints: ICalculatedTemperature[]): ICalculatedTemperature | undefined {
+        if (setPoints == null) { return undefined; }
         if (setPoints.length === 1) { return setPoints[0]; }
 
         return minBy<ICalculatedTemperature>(setPoints, (t) => t.targetTemperature);

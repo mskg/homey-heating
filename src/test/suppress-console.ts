@@ -5,7 +5,7 @@ import "mocha";
  * Saves the log until end of test.
  */
 class TestLogger implements ILogger {
-    public lines = [];
+    public lines: any[] = [];
 
     public debug(...args: any[]) {
         this.lines.push(args);
@@ -35,6 +35,7 @@ beforeEach(() => {
  * Dumps the saved log if a test has failed
  */
 afterEach(function() {
+    // @ts-ignore
     if (this.currentTest.state === "failed") {
         const log = ((LogService as any).instance.loggers[0] as TestLogger);
 

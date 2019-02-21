@@ -1,6 +1,6 @@
 import { forEach, reduce } from "lodash";
 
-let translate: (id: string, param?: any) => string = null;
+let translate: (id: string, param?: any) => string;
 
 if (__PRODUCTION__) {
     translate = Homey.__;
@@ -9,7 +9,7 @@ if (__PRODUCTION__) {
     const lang = require(`../../../locales/${__HOMEY_LANG}.json`);
 
     translate = (id: string, param?: any) => {
-        let value = reduce(id.split("."), (r, v, k) => {
+        let value = reduce(id.split("."), (r, v, _k) => {
             if (r == null) { throw new Error(`Resource ${id} not found.`); }
             return r[v];
         }, lang);

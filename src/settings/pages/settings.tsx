@@ -4,7 +4,7 @@ import { StyleRulesCallback, withStyles, WithStyles } from "@material-ui/core/st
 import Switch from "@material-ui/core/Switch";
 import CancelIcon from "@material-ui/icons/Cancel";
 import { InjectedNotistackProps, withSnackbar } from "notistack";
-import React from "react";
+import React, { ChangeEvent } from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { Settings } from "../../app/services/settings-manager/types";
 import { useSettings } from "../api/hooks";
@@ -18,7 +18,7 @@ import SubHeader from "../components/SubHeader";
 import translate from "../i18n/Translation";
 import Page from "../layouts/Page";
 
-const styles: StyleRulesCallback = (theme) => ({
+const styles: StyleRulesCallback = (_theme) => ({
 });
 
 type Params = {
@@ -37,7 +37,7 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
         return val == null ? def : val;
     }
 
-    const updateField = (name: SettingsName, field: "value" | "checked" = "value") => (event) => {
+    const updateField = (name: SettingsName, field: "value" | "checked" = "value") => (event: ChangeEvent) => {
         const val = event.target[field];
 
         setSettings((old) => {
@@ -47,7 +47,7 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
     };
 
     const save = () => {
-        settingsAPI.updateSettings(settings).then((p) => {
+        settingsAPI.updateSettings(settings).then((_p) => {
             props.enqueueSnackbar(translate("settings.saved"));
             setDirty(false);
         });

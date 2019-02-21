@@ -24,7 +24,7 @@ export interface ICapabilityInstance<T> {
     readonly desc: Date;
 
     setValue(val: T): Promise<void>;
-    destroy();
+    destroy(): void;
 }
 
 type EventHandler<T> = (param: T) => void;
@@ -54,8 +54,8 @@ export interface ICapability {
         title: string,
     }];
 
-    on(s: "$update", cb: EventHandler<ICapability>);
-    on(s: "$delete", cb: EventHandler<void>);
+    on(s: "$update", cb: EventHandler<ICapability>): void;
+    on(s: "$delete", cb: EventHandler<void>): void;
 }
 
 export type StringHashMap<T> = {
@@ -126,8 +126,8 @@ export interface IDevice {
 export interface IZoneManager {
     getZones(): Promise<StringHashMap<IZone>>;
 
-    on(s: "zone.create" | "zone.update" | "zone.delete", cb: EventHandler<IZone>);
-    destroy();
+    on(s: "zone.create" | "zone.update" | "zone.delete", cb: EventHandler<IZone>): void;
+    destroy(): void;
 }
 
 export interface IDeviceManager {
@@ -148,10 +148,10 @@ export interface IDeviceManager {
         id: string,
     }): Promise<ICapability>;
 
-    on(s: "device.create" | "device.update" | "device.delete", cb: EventHandler<IDevice>);
-    on(s: "capability.create" | "capability.update" | "capability.delete", cb: EventHandler<ICapability>);
+    on(s: "device.create" | "device.update" | "device.delete", cb: EventHandler<IDevice>): void;
+    on(s: "capability.create" | "capability.update" | "capability.delete", cb: EventHandler<ICapability>): void;
 
-    destroy();
+    destroy(): void;
 }
 
 export interface HomeyAPI {

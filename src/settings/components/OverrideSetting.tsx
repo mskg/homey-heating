@@ -32,7 +32,7 @@ const OverrideSetting: React.FunctionComponent<PlanOverrideProps> = (props) => {
                     control={
                         <Switch
                             checked={props.enabled}
-                            onChange={(e, checked) => {
+                            onChange={(_e, checked) => {
                                 props.setOverride(props.mode,
                                     checked ? (props.targetTemperature === 0 ? 16 : props.targetTemperature) : 0);
                             }}

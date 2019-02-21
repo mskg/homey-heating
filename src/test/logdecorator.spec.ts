@@ -1,14 +1,11 @@
-import { asynctrycatchlog, setAllowCatchAll, trycatchlog } from "@app/services";
+import { asynctrycatchlog, trycatchlog } from "@app/services";
 import { fail } from "assert";
 import { expect } from "chai";
 import "mocha";
 import "./suppress-console";
 
 class Test {
-    private mustFail;
-
-    constructor(mustFail) {
-        this.mustFail = mustFail;
+    constructor(private mustFail: boolean) {
     }
 
     @trycatchlog(true)

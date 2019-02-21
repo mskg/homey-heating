@@ -1,4 +1,4 @@
-import { ICalculatedTemperature, IGroupedCalculatedTemperature, IHeatingDevice, IHeatingPlan, ISetPoint, NormalOperationMode, OperationMode, OverrideMode, ThermostatMode } from "@app/model";
+import { ICalculatedTemperature, IGroupedCalculatedTemperature, IHeatingPlan, NormalOperationMode, OperationMode, OverrideMode, ThermostatMode } from "@app/model";
 import { __, Notification } from "homey";
 import { forEach, groupBy, isEmpty, map } from "lodash";
 import { EventDispatcher, IEvent } from "ste-events";
@@ -35,7 +35,7 @@ export class HeatingManagerService {
 
     private isRunning: boolean;
     private logger: ICategoryLogger;
-    private mode: OperationMode;
+    private mode!: OperationMode;
     private setTemperaturePolicy: ISetTemperaturePolicy;
     private planConflictPolicy: ITemperatureConflictPolicy;
 
@@ -47,20 +47,21 @@ export class HeatingManagerService {
         private flow: FlowService,
         loggerFactory: LoggerFactory) {
         this.logger = loggerFactory.createLogger("Manager");
+        this.isRunning = false;
 
         this.mode = this.settings.get<OperationMode>(
-            InternalSettings.OperationMode, NormalOperationMode.Automatic);
+            InternalSettings.OperationMode, NormalOperationMode.Automatic) as OperationMode;
 
         // retry, throttle, ...
         this.setTemperaturePolicy = container.resolve<ISetTemperaturePolicy>(
-            this.settings.get(InternalSettings.SetTemperaturePolicy, PolicyType.Throttled_CheckTemperature));
+            this.settings.get(InternalSettings.SetTemperaturePolicy, PolicyType.Throttled_CheckTemperature) as string);
 
         // min, max, ...
         this.planConflictPolicy = container.resolve<ITemperatureConflictPolicy>(
-            this.settings.get(InternalSettings.PlanConflictPolicy, TemperatureConflictPolicy.Max));
+            this.settings.get(InternalSettings.PlanConflictPolicy, TemperatureConflictPolicy.Max) as string);
 
         // repository was modified
-        this.plans.onChanged.subscribe(async (rep, modifiedPlans) => {
+        this.plans.onChanged.subscribe(async (_rep, modifiedPlans) => {
             try {
                 await Promise.all(modifiedPlans.map(async (change) => {
                     if (!change.plan.enabled || change.event === PlanChangeEventType.Removed) {
@@ -149,7 +150,7 @@ export class HeatingManagerService {
     }
 
     public evaluatePlan(plan: IHeatingPlan): ICalculatedTemperature[] {
-        const planLogger = this.logger.createSubLogger(__PRODUCTION__ ? plan.id : plan.name);
+        const planLogger = this.logger.createSubLogger(__PRODUCTION__ ? plan.id : (plan.name || ""));
         planLogger.debug("Evaluating");
 
         // if there is no devices, we are done
@@ -161,7 +162,7 @@ export class HeatingManagerService {
         const thermostatMode = plan.thermostatMode || NormalOperationMode.Automatic;
 
         // error in first implementation used number instead of text
-        const planOverrides = plan.overrides ? (plan.overrides[this.mode] || plan.overrides[OverrideMode[this.mode]]) : null;
+        const planOverrides = plan.overrides ? (plan.overrides[this.mode] || plan.overrides[OverrideMode[this.mode] as unknown as OverrideMode]) : null;
 
         if (thermostatMode != null && thermostatMode !== NormalOperationMode.Automatic) {
             planLogger.debug(`Thermostat overrides ${ThermostatMode[thermostatMode]}`);
@@ -231,7 +232,7 @@ export class HeatingManagerService {
         // there can still be multiple plans with setpoints for the same device
         const groups = map(groupBy(settings, (s: ICalculatedTemperature) => s.device.id),
             (groupedSettings /*, deviceId*/) => {
-                const calculated = this.planConflictPolicy.resolve(groupedSettings);
+                const calculated = this.planConflictPolicy.resolve(groupedSettings) as ICalculatedTemperature;
 
                 return {
                     device: calculated.device,
@@ -247,7 +248,7 @@ export class HeatingManagerService {
     }
 
     private expandPlan(plan: IHeatingPlan): AuditedDevice[] {
-        const planLogger = this.logger.createSubLogger(__PRODUCTION__ ? plan.id : plan.name);
+        const planLogger = this.logger.createSubLogger(__PRODUCTION__ ? plan.id : (plan.name || ""));
         const result: AuditedDevice[] = [];
 
         if (plan.zones) {

@@ -11,17 +11,21 @@ export type AuditedDevice = {
     },
 } & IDevice;
 
-export const VirtualDevice = (device: IDevice): boolean => {
+export function VirtualDevice(device: IDevice): boolean {
     return device.driverUri.match(/app\.mskg\.homey\-heating/ig) != null;
-};
+}
 
-export const CanSetTargetTemperature = (device: IDevice): boolean =>
-    device.capabilities != null
+export function CanSetTargetTemperature(device: IDevice): boolean {
+    return device.capabilities != null
         ? device.capabilities.find((c) => c === CapabilityType.TargetTemperature) != null
         : false;
+}
 
-export const CanMeasureTemperature = (device: IDevice): boolean =>
-    device.capabilities != null ? device.capabilities.find((c) => c === CapabilityType.MeasureTemperature) != null : false;
+export function CanMeasureTemperature(device: IDevice): boolean {
+    return device.capabilities != null
+        ? device.capabilities.find((c) => c === CapabilityType.MeasureTemperature) != null
+        : false;
+}
 
 export type CapabilityChangedEventArgs =
     // | { device: IDevice, capability: CapabilityType.OnOff, value: boolean }
@@ -45,11 +49,11 @@ export class DeviceManagerService {
 
     private onCapabilityChangedDispatcher = new EventDispatcher<DeviceManagerService, CapabilityChangedEventArgs>();
 
-    private deviceList: StringHashMap<AuditedDevice>;
-    private zoneList: StringHashMap<IZone>;
+    private deviceList!: StringHashMap<AuditedDevice>;
+    private zoneList!: StringHashMap<IZone>;
+    private homeyApi!: HomeyAPI;
 
     private logger: ILogger;
-    private homeyApi: HomeyAPI;
 
     constructor(
         private apiService: HomeyAPIService,
@@ -144,14 +148,20 @@ export class DeviceManagerService {
     // mask, default is 0 - no change in logic
     @trycatchlog(true, 0)
     public getTargetTemperature(d: AuditedDevice): number {
-        const capability = d.watchedCapabilities.targetTemperature;
+        const capability = d.watchedCapabilities != null
+            ? d.watchedCapabilities.targetTemperature
+            : null;
+
         return capability != null ? capability.value : 0;
     }
 
     // mask, default is 0 - no change in logic
     @trycatchlog(true, 0)
     public getMeasuredTemperature(d: AuditedDevice): number {
-        const capability = d.watchedCapabilities.temperature || d.watchedCapabilities.targetTemperature;
+        const capability = d.watchedCapabilities != null
+            ? (d.watchedCapabilities.temperature || d.watchedCapabilities.targetTemperature)
+            : null;
+
         return capability != null ? capability.value : 0;
     }
 
@@ -160,7 +170,7 @@ export class DeviceManagerService {
         let target = targetTemperature;
 
         try {
-            const cap = d.watchedCapabilities.targetTemperature;
+            const cap = d.watchedCapabilities != null ? d.watchedCapabilities.targetTemperature : null;
             if (cap != null) {
                 if (target > cap.max) {
                     target = cap.max;

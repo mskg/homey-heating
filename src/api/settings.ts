@@ -1,4 +1,4 @@
-import { InternalSettings, Settings, SettingsManagerService } from "@app/services";
+import { AllSettings, InternalSettings, Settings, SettingsManagerService } from "@app/services";
 import { forEach } from "lodash";
 import { injectable } from "tsyringe";
 import { ApiBase, IAPIParams, SUCCESS } from "./types";
@@ -10,11 +10,13 @@ class GetSettings extends ApiBase {
     }
 
     protected async execute() {
-        const result = {};
+        const result: {
+            [key: string]: any,
+        } = {};
         // const manager = this.myApp.getService(SettingsManagerService);
 
-        forEach(Object.keys(Settings), (s) => {
-            result[s] = this.manager.get(Settings[s]);
+        forEach(Object.keys(Settings), (s: any) => {
+            result[s] = this.manager.get((Settings as any)[s]);
         });
 
         return result;
@@ -32,12 +34,12 @@ class PutSettings extends ApiBase {
     protected async execute(args: IAPIParams<Body>) {
         const settings = args.body;
 
-        forEach([...Object.keys(Settings), ...Object.keys(InternalSettings)], (publicKey) => {
-            const privateKey = Settings[publicKey];
+        forEach([...Object.keys(Settings), ...Object.keys(InternalSettings)], (publicKey: any) => {
+            const privateKey: string = Settings[publicKey];
 
             if (settings.hasOwnProperty(publicKey)) {
-                if (this.manager.get(privateKey) !== settings[publicKey]) {
-                    this.manager.set(privateKey, settings[publicKey]);
+                if (this.manager.get(privateKey as AllSettings) !== settings[publicKey]) {
+                    this.manager.set(privateKey as AllSettings, settings[publicKey]);
                 } else {
                     this.logger.debug(`Setting ${privateKey} did not change.`);
                 }

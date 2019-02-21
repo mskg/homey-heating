@@ -27,7 +27,7 @@ const styles: StyleRulesCallback = (theme) => ({
 
 type Props = WithStyles<typeof styles>;
 
-function percent(a, b) {
+function percent(a: number, b: number) {
     if (a > b) { return 100; }
 
     return Math.round(a / b * 100);
@@ -41,7 +41,7 @@ const TemperaturesPage: React.FunctionComponent<Props> = (props) => {
         if (d == null) { return ""; }
 
         const date = new Date(d);
-        const ten = (i) => {
+        const ten = (i: number) => {
             return (i < 10 ? "0" : "") + i;
         };
 
@@ -132,7 +132,7 @@ const TemperaturesPage: React.FunctionComponent<Props> = (props) => {
                                             </ListItemAvatar>
                                             <ListItemText primary={schedule.device.name} secondary={getDisplayName(schedule)} />
                                             <ListItemSecondaryAction style={{ paddingRight: 16 }} >
-                                                <FilledTemperatureAvatar value={schedule.temperature} fill={percent(schedule.temperature, schedule.targetTemperature)} />
+                                                <FilledTemperatureAvatar value={schedule.temperature || schedule.targetTemperature} fill={percent(schedule.temperature || schedule.targetTemperature , schedule.targetTemperature)} />
                                             </ListItemSecondaryAction>
                                         </ListItem>
                                         <Divider />

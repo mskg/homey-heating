@@ -1,15 +1,14 @@
-import { LogService } from "@app/services";
 import { injectable } from "tsyringe";
 import { ApiBase, IAPIParams, SUCCESS } from "./types";
 
 @injectable()
 class DebuggerOn extends ApiBase {
     constructor() {
-        super("get", "/debugger/on");
+        super("GET", "/debugger/on");
         this.public = !__PRODUCTION__ || __VERSION === "0.0.0";
     }
 
-    protected async execute(args: IAPIParams<Body>) {
+    protected async execute(_args: IAPIParams) {
         if (__VERSION !== "0.0.0") { throw new Error("Access denied."); }
 
         const inspector = require("inspector");
@@ -21,11 +20,11 @@ class DebuggerOn extends ApiBase {
 
 class DebuggerOff extends ApiBase {
     constructor() {
-        super("get", "/debugger/off");
+        super("GET", "/debugger/off");
         this.public = !__PRODUCTION__ || __VERSION === "0.0.0";
     }
 
-    protected async execute(args: IAPIParams<Body>) {
+    protected async execute(_args: IAPIParams) {
         if (__VERSION !== "0.0.0") { throw new Error("Access denied."); }
 
         const inspector = require("inspector");

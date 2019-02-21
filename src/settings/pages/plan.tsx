@@ -1,3 +1,4 @@
+import { IHeatingPlan } from "@app/model";
 import { Button, LinearProgress, Tab, Tabs } from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -106,7 +107,7 @@ const PlanOverviewPage: React.FunctionComponent<Props> = (props) => {
     });
 
     const save = () => {
-        planAPI.updatePlan(plan).then((p) => {
+        planAPI.updatePlan(plan as IHeatingPlan).then((_p) => {
             props.history.push({
                 pathname: `/`,
                 state: false,
@@ -119,7 +120,7 @@ const PlanOverviewPage: React.FunctionComponent<Props> = (props) => {
     };
 
     const removePlan = () => {
-        planAPI.removePlan(plan.id).then((p) => {
+        planAPI.removePlan(plan.id).then((_p) => {
             props.history.push({
                 pathname: `/`,
                 state: false,
@@ -131,10 +132,10 @@ const PlanOverviewPage: React.FunctionComponent<Props> = (props) => {
         });
     };
 
-    const duplicatePlan = (name) => {
-        const newPlan = { ...plan, enabled: false, id: uuidv1(), name };
+    const duplicatePlan = (name: string) => {
+        const newPlan = { ...plan, enabled: false, id: uuidv1(), name } as IHeatingPlan;
 
-        planAPI.updatePlan(newPlan).then((p) => {
+        planAPI.updatePlan(newPlan).then((_p) => {
             props.history.push({
                 pathname: `/plans/${newPlan.id}`,
                 state: false,
@@ -143,7 +144,7 @@ const PlanOverviewPage: React.FunctionComponent<Props> = (props) => {
             props.enqueueSnackbar(translate("plan.duplicated", {
                 name: plan.name,
             }));
-        }).catch((r) => {
+        }).catch((r: any) => {
             throw r;
         });
     };
@@ -166,7 +167,7 @@ const PlanOverviewPage: React.FunctionComponent<Props> = (props) => {
                             {{
                                 title: plan.name || translate("plan.unnamed"),
                                 button: (
-                                    <MenuButton first={true} {...{ to: `/` }} component={Link} icon={isDirty ? <CancelIcon /> : <BackIcon />} />
+                                    <MenuButton first={true} {...{ to: `/` }} component={Link as unknown as "a"} icon={isDirty ? <CancelIcon /> : <BackIcon />} />
                                 ),
                                 actions: (
                                     <Fragment>
@@ -186,7 +187,7 @@ const PlanOverviewPage: React.FunctionComponent<Props> = (props) => {
                                     </Fragment>
                                 ),
                                 subBar: (
-                                    <Tabs value={selectedTab} onChange={(e, v) => selectTab(v)} variant="scrollable" scrollButtons="off" >
+                                    <Tabs value={selectedTab} onChange={(_e, v) => selectTab(v)} variant="scrollable" scrollButtons="off" >
                                         <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("plan.tabs.overview")} />
                                         <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("plan.tabs.schedule")} />
                                         <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("plan.tabs.zones", { n: plan.zones.length })} />
@@ -255,7 +256,7 @@ const PlanOverviewPage: React.FunctionComponent<Props> = (props) => {
                                     </div>
 
                                     {plan.schedule.length !== 0 && <SubHeader text={translate("plan.schedules.section_summary")} />}
-                                    {plan.schedule.length !== 0 && <Chart plan={plan} />}
+                                    {plan.schedule.length !== 0 && <Chart plan={plan as IHeatingPlan} />}
                                 </TabContainer>
 
                                 <TabContainer id={2} activeTab={selectedTab}>

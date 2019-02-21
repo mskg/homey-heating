@@ -1,33 +1,95 @@
-import * as ConsoleRe from "console-remote-client";
+import { PromiseBuffer } from "@sentry/core/dist/promisebuffer";
+import { connect } from "socket.io-client";
+import { LogService } from "./LogService";
 import { ILogger, INeedsCleanup } from "./types";
 
 export class ConsoleReLogger implements ILogger, INeedsCleanup {
-    private consolere: any = null;
+    private cleanup = false;
+    private socket: SocketIOClient.Socket;
+    private buffer = new PromiseBuffer<void>(30);
 
-    constructor(channel: string) {
-        console.log("********** console.re enabled");
-        this.consolere = ConsoleRe.connect("console.re", "443", channel);
+    constructor(private channel: string) {
+        this.socket = connect("https://console.re:443", {
+            transports: ["websocket"],
+        });
 
-        this.consolere.toServerRe.client = false;
-        this.consolere.re.client = false;
+        this.socket.on("connect", () => {
+            LogService.transportLog.information("ConsoleRe connected");
+        });
+
+        this.socket.on("connect_error", (error: any) => {
+            LogService.transportLog.error(error, "ConsoleRe socket connect_error");
+        });
+
+        this.socket.on("reconnect_error", (error: any) => {
+            LogService.transportLog.error(error, "ConsoleRe socket reconnect_error");
+        });
+
+        this.socket.on("error", (error: any) => {
+            LogService.transportLog.error(error, "ConsoleRe socket error");
+        });
+
+        this.socket.on("disconnect", () => {
+            LogService.transportLog.information("ConsoleRe disconnected");
+            if (!this.cleanup) { this.socket.connect(); }
+        });
     }
 
-    public teardown() {
-        this.consolere.disconnect();
-        delete this.consolere;
+    public teardown(): Promise<boolean> {
+        return this.buffer.drain().then(() => {
+            this.cleanup = true;
+            this.socket.disconnect();
 
-        return Promise.resolve(true);
+            delete this.socket;
+            delete this.buffer;
+
+            LogService.transportLog.information("ConsoleRe cleaned up");
+            return true;
+        });
     }
 
-    public information(category, message, ...args: any[]) {
-        (console as any).re.info(`${category} ${message}`, ...args);
+    public information(category: string, message: string, ...args: any[]) {
+        if (this.socket.connected) {
+            this.buffer.add((async () =>
+                await this.sendLog("info", `${category} ${message}`, ...args))());
+        }
     }
 
-    public debug(category, message, ...args: any[]) {
-        (console as any).re.debug(`${category} ${message}`, ...args);
+    public debug(category: string, message: string, ...args: any[]) {
+        if (this.socket.connected) {
+            this.buffer.add((async () =>
+                await this.sendLog("debug", `${category} ${message}`, ...args))());
+        }
     }
 
-    public error(exception, ...args: any[]) {
-        (console as any).re.error(...args, exception);
+    public error(exception: any, ...args: any[]) {
+        if (this.socket.connected) {
+            this.buffer.add((async () =>
+                await this.sendLog("error", ...args, exception))());
+        }
+    }
+
+    private sendLog(level: "info" | "debug" | "error", ...args: any[]) {
+        if (!this.socket.connected) { return; }
+
+        this.socket.emit("toServerRe", {
+            // command: null,
+            channel: this.channel,
+            level,
+            args,
+            caller: { /* that's true */
+                file: "ConsoleReLogger.ts",
+                line: 75,
+                column: 9,
+            },
+            browser: {
+                browser: {
+                    f: "homey-heating",
+                    s: "H",
+                },
+                version: __VERSION,
+                OS: "Homey",
+            },
+        });
     }
 }

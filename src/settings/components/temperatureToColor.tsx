@@ -3,7 +3,7 @@ import blue from "@material-ui/core/colors/blue";
 import deepOrange from "@material-ui/core/colors/deepOrange";
 import green from "@material-ui/core/colors/green";
 
-export function slotTemperature(val: number, min, max, a, b) {
+export function slotTemperature(val: number, min: number, max: number, a: number, b: number) {
     //        (b-a)(x - min)
     // f(x) = -------------- +  a
     //        max - min
@@ -15,7 +15,7 @@ export function slotTemperature(val: number, min, max, a, b) {
     );
 }
 
-export const temperatureToColor = (n) => {
+export const temperatureToColor = (n: number) => {
     // project 16 ... 24 to 200 ... 900
     const shade = Math.round(slotTemperature(
         Math.min(Math.max(16, n), 24),

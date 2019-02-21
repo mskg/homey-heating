@@ -11,7 +11,7 @@ describe("Debounce", () => {
         let i = 0;
 
         const t = AsyncDebounce(async () => { ++i; }, 100);
-        await Promise.all([1, 2, 3, 5, 6, 7, 8, 9, 10].map(async (m) => await t()));
+        await Promise.all([1, 2, 3, 5, 6, 7, 8, 9, 10].map(async () => await t()));
 
         expect(1).to.equal(i);
     });
@@ -20,7 +20,7 @@ describe("Debounce", () => {
         let i = 0;
 
         const t = AsyncDebounce(async () => { i = i === 0 ? 100 : i + 1; }, 100, true);
-        await Promise.all([1, 2, 3, 5, 6, 7, 8, 9, 10].map(async (m) => await t()));
+        await Promise.all([1, 2, 3, 5, 6, 7, 8, 9, 10].map(async () => await t()));
 
         expect(100).to.equal(i);
     });

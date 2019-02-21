@@ -11,26 +11,35 @@
 		"jsx": "react",
 		"outDir": "tmp",
 		"baseUrl": "./src",
+		"downlevelIteration": true,
+		"inlineSources": true,
+		"importHelpers": true,
+		"lib": [
+			"es6",
+		],
+		"noEmitHelpers": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitAny": true,
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"pretty": true,
+		"strict": true,
+		"strictBindCallApply": false,
 		"plugins": [
 			{
 				"name": "typescript-tslint-plugin",
-				"alwaysShowRuleFailuresAsWarnings": false
+				"alwaysShowRuleFailuresAsWarnings": false,
+				"configFile": "./tslint.json",
+				"ignoreDefinitionFiles": false,
+				"suppressWhileTypeErrorsPresent": false,
+				"mockTypeScriptVersion": false
 			}
 		],
 		"paths": {
-			"@app/*": [
-				"app/*"
-			],
-			"*": [
-				"types/*"
-			]
+			"@app/*": [ "app/*" ],
+			"*": [ "types/*" ]
 		},
 	},
-	"include": [
-		"./src/types/global.d.ts",
-		"./src/app/app.ts",
-		"./src/api/api.ts",
-		"./src/drivers/virtual-thermostat/device.ts",
-		"./src/drivers/virtual-thermostat/driver.ts"
-	]
 }

@@ -1,4 +1,3 @@
-import { sortBy } from "lodash";
 import { IHeatingDevice, IHeatingPlan, IHeatingZone, IScheduleInformation, OperationMode } from "../../app/model";
 import { deviceAPI } from "./devices";
 import { modeAPI, planAPI } from "./heating";

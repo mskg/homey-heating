@@ -2,7 +2,7 @@
 import { Mutex, slotTime } from "@app/helper";
 import { IHeatingPlan, NormalOperationMode, OverrideMode, ThermostatMode } from "@app/model";
 import { ManagerCron } from "homey";
-import { first, groupBy, map, sortBy, union } from "lodash";
+import { first, groupBy, map, sortBy, unionBy } from "lodash";
 import { singleton } from "tsyringe";
 import { HeatingPlanCalculator } from "../calculator";
 import { HeatingManagerService } from "../heating-manager";
@@ -15,13 +15,13 @@ export class HeatingSchedulerService {
 
     // api only, null is ok
     @trycatchlog(true, null)
-    public get nextSchedule(): Date {
+    public get nextSchedule(): Date | null {
         return this.next;
     }
 
     private mutex: Mutex = new Mutex();
     private logger: ICategoryLogger;
-    private next: Date = null;
+    private next: Date | null = null;
     private isRunning = false;
 
     constructor(
@@ -99,7 +99,7 @@ export class HeatingSchedulerService {
             logger.information("Running");
 
             const allPlans = await this.repository.plans;
-            const modifiedPlans = [];
+            const modifiedPlans: IHeatingPlan[] = [];
 
             allPlans.forEach((plan) => {
                 if (plan.thermostatMode === ThermostatMode.OverrideDay) {
@@ -125,7 +125,7 @@ export class HeatingSchedulerService {
                 await this.manager.applyPlans();
             } else {
                 // we only apply those that should have been applied or were modified
-                await Promise.all(union(plans || [], modifiedPlans, (p) => p.id).map(async (p) => {
+                await Promise.all(unionBy(plans || [], modifiedPlans, (p: IHeatingPlan) => p.id).map(async (p: IHeatingPlan) => {
                     await this.manager.applyPlan(p);
                 }));
             }
@@ -157,6 +157,8 @@ export class HeatingSchedulerService {
             this.next = null;
         } else {
             type TempArray = { date: Date, plan: IHeatingPlan };
+            // type GroupedTempArray = { date: Date, plans: IHeatingPlan[] };
+
             const allSchedules: TempArray[] = [];
 
             // 60 / 12 = 5 minutes
@@ -193,6 +195,7 @@ export class HeatingSchedulerService {
             if (this.next == null) {
                 this.logger.debug(`No setpoint execution planned.`);
             } else {
+                // @ts-ignore
                 plansToExecute = lowestDate.plans;
             }
         }

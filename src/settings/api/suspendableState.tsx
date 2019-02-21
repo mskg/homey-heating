@@ -19,12 +19,12 @@ async function tryMethod<T>(apiMethod: () => Promise<T>, setStateAction: Dispatc
         setStateAction(await apiMethod());
     } catch (e) {
         // required for the error to popup the hierarchy
-        setStateAction((t) => { throw e; });
+        setStateAction(() => { throw e; });
     }
 }
 
 const cache = new Map<string, any>();
-const LOADING = "Loading...";
+const LOADING: any = "Loading...";
 
 /**
  * Create a "hook" that is able to suspend.
@@ -39,7 +39,8 @@ export function useSuspendableState<T extends MapType>(name: string, method: Asy
         let [state, setState] = [null, null];
         if (provideState) {
             // we use instance compare on LOADING to determine non existing value
-            [state, setState] = React.useState(val !== LOADING ? val : null);
+            // @ts-ignore
+            [state, setState] = React.useState<any>(val !== LOADING ? val : null);
         }
 
         const [failed, setFailed] = React.useState(false);

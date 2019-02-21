@@ -1,5 +1,5 @@
 import { OperationMode } from "@app/model";
-import { HeatingManagerService, HeatingSchedulerService } from "@app/services";
+import { HeatingManagerService } from "@app/services";
 import { injectable } from "tsyringe";
 import { ApiBase, IAPIParams, SUCCESS } from "./types";
 

@@ -21,7 +21,7 @@ const styles: StyleRulesCallback = (theme) => ({
 
 type Props = WithStyles<typeof styles> & RouteComponentProps & InjectedNotistackProps;
 
-const SchedulesPage: React.FunctionComponent<Props> = (props) => {
+const SchedulesPage: React.FunctionComponent<Props> = (_props) => {
     const { plans } = usePlans();
 
     return (

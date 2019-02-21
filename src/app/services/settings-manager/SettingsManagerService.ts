@@ -22,14 +22,17 @@ export class SettingsManagerService {
         return this.onChangedDispatcher.asEvent();
     }
 
+    public get<T extends AllowedSetting>(setting: AllSettings, def: T): T;
+    public get<T extends AllowedSetting>(setting: AllSettings): T | undefined;
+
     // Catastrophic failure, cannot be handeled here.
     @trycatchlog()
-    public get<T extends AllowedSetting>(setting: AllSettings, def: T = null): T {
+    public get<T extends AllowedSetting>(setting: AllSettings, def?: T): T | undefined {
         let val = __PRODUCTION__
             ? ManagerSettings.get<T>(setting)
-            : this.devSettings[setting] as unknown as T;
+            : this.devSettings[setting];
 
-        if (val == null || val === undefined) { val = def; }
+        if (val == null) { val = def; }
 
         this.logger.debug(`Get '${setting}' => '${val}'`);
         return val;

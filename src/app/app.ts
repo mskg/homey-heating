@@ -64,5 +64,5 @@ export default class App extends HomeyApp {
 }
 
 // // we are a script, but the startup class is still bound to the export
-declare var module;
+declare var module: NodeModule;
 module.exports = App;

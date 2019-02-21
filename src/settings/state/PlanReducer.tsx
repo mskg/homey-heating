@@ -1,4 +1,4 @@
-import { filter, forEach, isEmpty, map, remove, sortBy } from "lodash";
+import { filter, forEach, isEmpty, map, remove } from "lodash";
 import { Day, IHeatingPlan, ISetPoint, OverrideMode, Overrides } from "../../app/model";
 import { HashType as DeviceHashType } from "../api/devices";
 import { HashType as ZoneHashType } from "../api/zones";
@@ -37,11 +37,11 @@ export const initialState = {
         zones: [] as string[],
         devices: [] as string[],
         schedule: [] as IndexedSetPoint[],
-        overrides: null as Overrides,
+        overrides: null as (Overrides | null),
     },
 
     selectedDay: {
-        last: null as IndexedSetPoint,
+        last: null as (IndexedSetPoint | null),
         schedules: [] as IndexedSetPoint[],
     },
 };
@@ -124,6 +124,7 @@ const reducerImplementation = (state: State, action: Action) => {
          */
         case "undo": {
             if (state.savePoint == null) { return state; }
+            // @ts-ignore
             return JSON.parse(state.savePoint);
         }
 
@@ -386,7 +387,7 @@ const reducerImplementation = (state: State, action: Action) => {
         case "selectDay": {
             return {
                 ...state,
-                selectedDay: calculateDay(state.plan, action.day),
+                selectedDay: calculateDay(state.plan as IHeatingPlan, action.day),
             };
         }
 

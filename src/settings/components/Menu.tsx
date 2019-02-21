@@ -112,7 +112,7 @@ const MenuButtonBase: React.FunctionComponent<MenuButtonProps> = (props) => {
     );
 };
 
-export const AppMenuButton: React.FunctionComponent = (props) => {
+export const AppMenuButton: React.FunctionComponent = (_props) => {
     const [openMenu, setOpenMenu] = React.useState<boolean>(false);
 
     return (

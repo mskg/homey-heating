@@ -24,8 +24,8 @@ const togglePlanState = async (plan: IHeatingPlan): Promise<boolean> => {
 const updatePlan = async (newPlan: IHeatingPlan): Promise<IHeatingPlan> => {
   const planCopy = {...newPlan};
 
-  if (!planCopy.zones || planCopy.zones.length === 0) { planCopy.zones = null; }
-  if (!planCopy.devices || planCopy.devices.length === 0) { planCopy.devices = null; }
+  if (!planCopy.zones || planCopy.zones.length === 0) { planCopy.zones = undefined; }
+  if (!planCopy.devices || planCopy.devices.length === 0) { planCopy.devices = undefined; }
 
   return await callAPI<IHeatingPlan>("PUT", `/plans/${newPlan.id}`, planCopy);
 };

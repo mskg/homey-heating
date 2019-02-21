@@ -5,12 +5,14 @@ import "reflect-metadata";
 import { AsyncDebounce } from "@app/helper";
 import { ICalculatedTemperature, IHeatingPlan, NormalOperationMode, ThermostatMode } from "@app/model";
 import {
-    asynctrycatchlog, BootStrapper, CapabilityChangedEventArgs, CapabilityType, DeviceManagerService,
-    FlowService, HeatingManagerService, HeatingPlanRepositoryService, ILogger,
-    InternalSettings, LoggerFactory, PlanChangeEventType, PlansAppliedEventArgs, PlansChangedEventArgs, SettingsManagerService,
+    asynctrycatchlog, AuditedDevice, BootStrapper, CapabilityChangedEventArgs, CapabilityType,
+    DeviceManagerService, FlowService, HeatingManagerService, HeatingPlanRepositoryService,
+    HeatingSchedulerService, ILogger, InternalSettings, LoggerFactory, PlanChangeEventType,
+    PlansAppliedEventArgs, PlansChangedEventArgs, SettingsManagerService,
 } from "@app/services";
 import { __, Device } from "homey";
 import { filter, find } from "lodash";
+import { IEventHandler } from "ste-events";
 import { container } from "tsyringe";
 
 type Data = {
@@ -18,19 +20,19 @@ type Data = {
 };
 
 class VirtualThermostat extends Device {
-    private devices: DeviceManagerService;
-    private repository: HeatingPlanRepositoryService;
-    private manager: HeatingManagerService;
-    private flow: FlowService;
-    private logger: ILogger;
-    private id: string;
-    private plan: IHeatingPlan;
+    private devices!: DeviceManagerService;
+    private repository!: HeatingPlanRepositoryService;
+    private manager!: HeatingManagerService;
 
-    private subscriptions = {
-        repositoryChanged: null,
-        capabilitiesChanged: null,
-        plansApplied: null,
-    };
+    private flow!: FlowService;
+    private logger!: ILogger;
+    private id!: string;
+
+    private plan: IHeatingPlan | undefined = undefined;
+
+    private repositoryChanged!: IEventHandler<HeatingPlanRepositoryService, PlansChangedEventArgs>;
+    private capabilitiesChanged!: IEventHandler<DeviceManagerService, CapabilityChangedEventArgs>;
+    private plansApplied!: IEventHandler<HeatingManagerService, PlansAppliedEventArgs>;
 
     @asynctrycatchlog(true)
     public async onInit() {
@@ -56,14 +58,14 @@ class VirtualThermostat extends Device {
         this.tryRegisterCapability(CapabilityType.ThermostatOverride,
             AsyncDebounce(this.onThermostatModeChanged.bind(this), settings.get<number>(InternalSettings.DriverDebounce, 5 * 1000)));
 
-        this.subscriptions.repositoryChanged = this.plansChanged.bind(this);
-        this.subscriptions.capabilitiesChanged = this.capabilititesChanged.bind(this);
-        this.subscriptions.plansApplied = this.scheduleChanged.bind(this);
+        this.repositoryChanged = this.plansChanged.bind(this);
+        this.capabilitiesChanged = this.capabilititesChanged.bind(this);
+        this.plansApplied = this.scheduleChanged.bind(this);
 
         // Service hooks
-        this.repository.onChanged.subscribe(this.subscriptions.repositoryChanged);
-        this.devices.onCapabilityChanged.subscribe(this.subscriptions.capabilitiesChanged);
-        this.manager.onPlansApplied.subscribe(this.subscriptions.plansApplied);
+        this.repository.onChanged.subscribe(this.repositoryChanged);
+        this.devices.onCapabilityChanged.subscribe(this.capabilitiesChanged);
+        this.manager.onPlansApplied.subscribe(this.plansApplied);
 
         // Update values
         this.plan = await this.repository.find(this.id);
@@ -73,14 +75,14 @@ class VirtualThermostat extends Device {
 
     @asynctrycatchlog(true)
     public async onDeleted() {
-        this.repository.onChanged.unsubscribe(this.subscriptions.repositoryChanged);
-        this.devices.onCapabilityChanged.unsubscribe(this.subscriptions.capabilitiesChanged);
-        this.manager.onPlansApplied.unsubscribe(this.subscriptions.plansApplied);
+        this.repository.onChanged.unsubscribe(this.repositoryChanged);
+        this.devices.onCapabilityChanged.unsubscribe(this.capabilitiesChanged);
+        this.manager.onPlansApplied.unsubscribe(this.plansApplied);
 
-        this.plan = null;
-        this.devices = null;
-        this.repository = null;
-        this.manager = null;
+        this.plan = undefined;
+        delete this.devices;
+        delete this.repository;
+        delete this.manager;
 
         this.logger.information(`was removed`);
     }
@@ -89,10 +91,10 @@ class VirtualThermostat extends Device {
      * Plans in the repository changed
      */
     @asynctrycatchlog(true)
-    private async plansChanged(rep, plans: PlansChangedEventArgs) {
+    private async plansChanged(plans: PlansChangedEventArgs) {
         await Promise.all(plans.filter((pc) => pc.plan.id === this.id).map(async (change) => {
             // if the plan was removed => we are null
-            this.plan = change.event === PlanChangeEventType.Removed ? null : change.plan;
+            this.plan = change.event === PlanChangeEventType.Removed ? undefined : change.plan;
             this.logger.information(`plan was ${PlanChangeEventType[change.event]}`);
 
             // must be processed, we don't care
@@ -105,7 +107,7 @@ class VirtualThermostat extends Device {
      * Plan was applied
      */
     @asynctrycatchlog(true)
-    private async scheduleChanged(scheduler, evt: PlansAppliedEventArgs) {
+    private async scheduleChanged(_scheduler: HeatingSchedulerService, evt: PlansAppliedEventArgs) {
         // we are removed
         if (this.plan == null) { return; }
 
@@ -128,7 +130,7 @@ class VirtualThermostat extends Device {
      * A device's capability changed
      */
     @asynctrycatchlog(true)
-    private async capabilititesChanged(devices, evt: CapabilityChangedEventArgs) {
+    private async capabilititesChanged(_devices: DeviceManagerService, evt: CapabilityChangedEventArgs) {
         // we are removed
         if (this.plan == null) { return; }
 
@@ -155,7 +157,7 @@ class VirtualThermostat extends Device {
      * @param callback The for the capability
      */
     @asynctrycatchlog(true)
-    private async tryRegisterCapability(capability: CapabilityType, callback: (val, opts) => Promise<void>) {
+    private async tryRegisterCapability(capability: CapabilityType, callback: (val: any, opts: CallableFunction) => Promise<void>) {
         if (!find(this.getCapabilities(), (c) => c === capability)) {
             this.logger.information(`does not have ${capability} - cannot register listener`);
         } else {
@@ -211,7 +213,7 @@ class VirtualThermostat extends Device {
 
         let sum: number = 0;
         calculation.forEach((v) => {
-            sum += v.temperature;
+            sum += v.temperature || 0;
         });
 
         // we take the target if we don't have readings
@@ -268,7 +270,7 @@ class VirtualThermostat extends Device {
      * @param opts unused
      */
     @asynctrycatchlog(true)
-    private async onThermostatModeChanged(value: string, opts) {
+    private async onThermostatModeChanged(value: string, _opts: any) {
         if (this.plan == null) { return; } // should not happen unavailable
         this.logger.information(`${CapabilityType.ThermostatOverride} ${value}`);
 
@@ -286,8 +288,9 @@ class VirtualThermostat extends Device {
      * @param opts unsused
      */
     @asynctrycatchlog(true)
-    private async onTargetTemperatureChanged(value: number, opts) {
+    private async onTargetTemperatureChanged(value: number, _opts: any) {
         if (this.plan == null) { return; } // should not happen unavailable
+
         this.logger.information(`${CapabilityType.TargetTemperature} ${value}`);
 
         if (this.plan.thermostatMode !== ThermostatMode.FullManual) {
@@ -305,7 +308,7 @@ class VirtualThermostat extends Device {
             }
         }
 
-        const devices = [];
+        const devices: AuditedDevice[] = [];
         (this.plan.devices || []).forEach((id) => {
             const dev = this.devices.findDevice(id);
             if (dev != null) { devices.push(dev); }
@@ -319,7 +322,7 @@ class VirtualThermostat extends Device {
         if (devices.length !== 0) {
             // should debounce here
             await Promise.all(devices.map(async (d) =>
-                await this.manager.setTemperature(this.plan.name, d, value)),
+                await this.manager.setTemperature(this.plan!.name || "", d, value)),
             );
         } else {
             this.logger.debug(`we don't have associated devices`);

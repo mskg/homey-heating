@@ -1,0 +1,10 @@
+{
+	"extends": "../tsconfig.json",
+	"include": [
+		"./types/global.d.ts",
+		"./app/app.ts",
+		"./api/api.ts",
+		"./drivers/virtual-thermostat/device.ts",
+		"./drivers/virtual-thermostat/driver.ts"
+	]
+}

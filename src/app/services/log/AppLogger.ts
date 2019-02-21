@@ -1,9 +1,10 @@
+import { App } from "homey";
 import { ILogger } from "./types";
 
 export class AppLogger implements ILogger {
     private app: any;
 
-    public constructor(app: any) {
+    public constructor(app: App) {
         this.app = app;
     }
 
@@ -15,7 +16,7 @@ export class AppLogger implements ILogger {
         this.app.log("[DEBUG]", ...args);
     }
 
-    public error(exception, ...args: any[]) {
+    public error(exception: any, ...args: any[]) {
         this.app.error("[ERROR]", ...args, exception);
     }
 }

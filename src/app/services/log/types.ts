@@ -1,8 +1,8 @@
 
 export interface ILogger {
-    debug(...args: any[]);
-    information(...args: any[]);
-    error(exception, ...args: any[]);
+    debug(...args: any[]): void;
+    information(...args: any[]): void;
+    error(exception: any, ...args: any[]): void;
 }
 
 export interface INeedsCleanup {

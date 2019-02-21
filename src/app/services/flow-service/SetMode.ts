@@ -6,9 +6,9 @@ type ChangeModeArgs = {
     state: string;
 };
 
-export const SetModeAction = ({ logger, manager, scheduler }: IFlowContext) => {
-    return flowCardActionFactory<ChangeModeArgs>("set_mode", logger, async (args, state) => {
+export function SetModeAction({ logger, manager }: IFlowContext) {
+    return flowCardActionFactory<ChangeModeArgs>("set_mode", logger, async (args, _state) => {
         manager.operationMode = parseInt(args.state, 10) as OperationMode;
         return true;
     });
-};
+}

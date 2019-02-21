@@ -22,10 +22,10 @@ const CopyDayDialog: React.FunctionComponent<Props> = (props: Props) => {
   const [days, setDays] = React.useState<Day[]>([]);
 
   React.useEffect(() => {
-    setDays(null);
+    setDays([]);
   }, [props.open]);
 
-  const toggleDay = (day) => () => {
+  const toggleDay = (day: Day) => () => {
     setDays((oldDays) => {
       if (oldDays == null) { oldDays = []; }
 
@@ -41,7 +41,7 @@ const CopyDayDialog: React.FunctionComponent<Props> = (props: Props) => {
     });
   };
 
-  const checkDay = (day) => {
+  const checkDay = (day: Day) => {
     return find(days, (d) => d === day) != null;
   };
 

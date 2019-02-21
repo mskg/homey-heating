@@ -94,7 +94,7 @@ const SchedulePage: React.FunctionComponent<Props> = (props: Props) => {
     }, [dispatch]);
 
     // depends on local variables
-    const removeSetPoint = (idx) => {
+    const removeSetPoint = (idx: number) => {
         removeSetPointFunc(idx);
         selectTab(selectedTab);
     };
@@ -171,7 +171,7 @@ const SchedulePage: React.FunctionComponent<Props> = (props: Props) => {
                                     </React.Fragment>
                                 ),
                                 subBar: (
-                                    <Tabs value={selectedTab} onChange={(e, v) => selectTab(v)} variant="fullWidth">
+                                    <Tabs value={selectedTab} onChange={(_e, v) => selectTab(v)} variant="fullWidth">
                                         <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("schedule.Monday")} />
                                         <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("schedule.Tuesday")} />
                                         <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("schedule.Wednesday")} />
@@ -193,7 +193,7 @@ const SchedulePage: React.FunctionComponent<Props> = (props: Props) => {
                                     {
                                         selectedDay.last &&
                                         <React.Fragment key="-1">
-                                            <ListItem button={true} onClick={() => selectTab(dateToTab(selectedDay.last.day))}>
+                                            <ListItem button={true} onClick={() => selectTab(dateToTab((selectedDay.last && selectedDay.last.day) || 0))}>
                                                 <TemperatureAvatar value={selectedDay.last.targetTemperature} />
 
                                                 <ListItemText

@@ -11,7 +11,7 @@ import Transition from "../components/Transition";
 import translate from "../i18n/Translation";
 import { useModifySetPoints } from "../state/planHooks";
 
-const styles: StyleRulesCallback = (theme) => ({
+const styles: StyleRulesCallback = (_theme) => ({
     resetPadding: {
         paddingLeft: 0,
         paddingRight: 0,

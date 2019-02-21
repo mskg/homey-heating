@@ -18,7 +18,7 @@ const translateDay = (day: Day) => {
 };
 
 export class SeriesElement {
-    public static fullDay(day, temperature) {
+    public static fullDay(day: Day, temperature: number) {
         return new SeriesElement({
             hour: 0,
             minute: 0,
@@ -47,12 +47,17 @@ export class SeriesElement {
     public readonly color: string;
 
     constructor(from?: IndexedSetPoint, to?: IndexedSetPoint) {
-        this.temperature = from ? from.targetTemperature : to.targetTemperature;
+        this.temperature = from
+            ? from.targetTemperature
+            : to ? to.targetTemperature : 0;
 
         this.start.setHours(from ? from.hour : 0, from ? from.minute : 0);
         this.end.setHours(to ? to.hour : 24, to ? to.minute : 0);
 
-        this.taskName = translateDay(from ? from.day : to.day);
+        this.taskName = translateDay(from
+                ? from.day
+                : to ? to.day : 0);
+
         this.color = temperatureToColor(this.temperature);
     }
 }

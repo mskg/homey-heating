@@ -30,7 +30,7 @@ export class HeatingPlanRepositoryService {
         loggerFactory: LoggerFactory) {
         this.logger = loggerFactory.createLogger("Repository");
 
-        this.settings.onChanged.subscribe((s, e) => {
+        this.settings.onChanged.subscribe((_s, e) => {
             if (this.changed) {
                 // we skip our save event
                 this.changed = false;
@@ -112,7 +112,7 @@ export class HeatingPlanRepositoryService {
     }
 
     // caller needs to know
-    public async find(id: string): Promise<IHeatingPlan> {
+    public async find(id: string): Promise<IHeatingPlan | undefined> {
         const unlockPromise = this.mutex.lock();
 
         return unlockPromise.then((umlock) => {
@@ -161,7 +161,7 @@ export class HeatingPlanRepositoryService {
 
     // caller needs to know
     public async remove(id: string) {
-        let plan: IHeatingPlan;
+        let plan: IHeatingPlan | undefined;
 
         const unlock = await this.mutex.lock();
         {
@@ -174,6 +174,8 @@ export class HeatingPlanRepositoryService {
         }
         unlock();
 
-        this.onChangedDispatcher.dispatch(this, [{plan, event: PlanChangeEventType.Removed}]);
+        if (plan != null) {
+            this.onChangedDispatcher.dispatch(this, [{plan, event: PlanChangeEventType.Removed}]);
+        }
     }
 }

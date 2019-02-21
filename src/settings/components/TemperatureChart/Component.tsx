@@ -8,20 +8,21 @@ import { SeriesElement } from "./SeriesElement";
 import { SVGGenerator } from "./SVGGenerator";
 
 const useDimensions = () => {
-    const [ref, setRef] = React.useState<HTMLDivElement>(null);
+    const [ref, setRef] = React.useState<HTMLDivElement | null>(null);
 
     const [dimensions, setDimensions] = React.useState({
         width: ref ? ref.clientWidth : 0,
         height: ref ? ref.clientHeight : 0,
     });
 
-    function updateDimensions(inner) {
+    function updateDimensions(inner: HTMLDivElement) {
         setDimensions({
             width: inner ? inner.clientWidth : 0,
             height: inner ? inner.clientHeight : 0,
         });
     }
 
+    // @ts-ignore
     React.useEffect(() => {
         if (ref != null) {
             updateDimensions(ref);
@@ -71,45 +72,49 @@ const TemperatureChart: React.FunctionComponent<Props> = (props) => {
     const [setRef, dimensions] = useDimensions();
 
     React.useEffect(() => {
-        const chart = new SVGGenerator(ref.current, legend,
-            (dimensions as any).width,
-            (dimensions as any).height);
+        if (ref.current != null) {
+            const chart = new SVGGenerator(ref.current, legend,
+                (dimensions as any).width,
+                (dimensions as any).height);
 
-        const tasks: SeriesElement[] = [];
+            const tasks: SeriesElement[] = [];
 
-        // setpoints get translated to [from - to]
-        [Day.Monday, Day.Tuesday, Day.Wednesday, Day.Thursday, Day.Friday, Day.Saturday, Day.Sunday].forEach((day) => {
-            // schedules need to be sorted
-            const { schedules, last } = calculateDay({...plan, schedule: sortSchedules(plan.schedule)}, day);
+            // setpoints get translated to [from - to]
+            [Day.Monday, Day.Tuesday, Day.Wednesday, Day.Thursday, Day.Friday, Day.Saturday, Day.Sunday].forEach((day) => {
+                // schedules need to be sorted
+                const { schedules, last } = calculateDay({ ...plan, schedule: sortSchedules(plan.schedule) }, day);
 
-            if (schedules.length === 0) {
-                if (last == null) { return; }
+                if (schedules.length === 0) {
+                    if (last == null) { return; }
 
-                tasks.push(SeriesElement.fullDay(day, last.targetTemperature));
-                return;
-                // only one setpoint
-            } else if (schedules.length === 1 && last == null) {
-                tasks.push(SeriesElement.fullDay(day, schedules[0].targetTemperature));
-                return;
-            }
-
-            let previous: IndexedSetPoint = null;
-
-            schedules.forEach((current) => {
-                if (previous == null) {
-                    tasks.push(SeriesElement.firstHalf(last, current));
-                } else {
-                    tasks.push(new SeriesElement(previous, current));
+                    tasks.push(SeriesElement.fullDay(day, last.targetTemperature));
+                    return;
+                    // only one setpoint
+                } else if (schedules.length === 1 && last == null) {
+                    tasks.push(SeriesElement.fullDay(day, schedules[0].targetTemperature));
+                    return;
                 }
 
-                previous = current;
+                let previous: IndexedSetPoint | null = null;
+
+                schedules.forEach((current) => {
+                    if (previous == null) {
+                        tasks.push(SeriesElement.firstHalf(last, current));
+                    } else {
+                        tasks.push(new SeriesElement(previous, current));
+                    }
+
+                    previous = current;
+                });
+
+                if (previous != null) {
+                    // until eod
+                    tasks.push(new SeriesElement(previous));
+                }
             });
 
-            // until eod
-            tasks.push(new SeriesElement(previous));
-        });
-
-        chart.data(tasks);
+            chart.data(tasks);
+        }
     }, [plan, dimensions]);
 
     React.useEffect(() => {

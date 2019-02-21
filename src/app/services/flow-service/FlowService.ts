@@ -16,8 +16,8 @@ import { ThermostatModeChangedTrigger, ThermostatModeChangedTriggerTokens } from
 @singleton()
 export class FlowService {
     private logger: ILogger;
-    private modeChangedTrigger;
-    private thermostatModeChangedTrigger;
+    private modeChangedTrigger!: FlowCardTrigger<ModeChangedTriggerTokens, void>;
+    private thermostatModeChangedTrigger!: FlowCardTriggerDevice<ThermostatModeChangedTriggerTokens, void>;
 
     public get modeChanged(): FlowCardTrigger<ModeChangedTriggerTokens, void> {
         return this.modeChangedTrigger;

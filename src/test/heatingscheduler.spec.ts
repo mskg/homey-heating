@@ -9,7 +9,7 @@ import "./suppress-console";
 class FakeDate extends Date {
     public static dateNow = new Date();
 
-    constructor(...args) {
+    constructor(...args: any[]) {
         super();
 
         if (args.length !== 0) { return new (OldDate as any)(...args) as any; }
@@ -41,9 +41,12 @@ afterEach(() => {
 describe("HeatingSchedulerService", () => {
     const scheduler = container.resolve<HeatingSchedulerService>(HeatingSchedulerService);
 
-    function checkSchedule(hour, minute, task: "schedule" | "cleanup" = "schedule", day = FakeDate.dateNow.getDate()) {
+    function checkSchedule(hour: number, minute: number, task: "schedule" | "cleanup" = "schedule", day = FakeDate.dateNow.getDate()) {
+        // @ts-ignore
         expect(day, "Next Date").to.equal(scheduler.nextSchedule.getDate());
+        // @ts-ignore
         expect(hour, "Next Hour").to.equal(scheduler.nextSchedule.getHours());
+        // @ts-ignore
         expect(minute, "Next Minute").to.equal(scheduler.nextSchedule.getMinutes());
 
         expect(ManagerCron._tasks[task], "Task").to.not.be.null;

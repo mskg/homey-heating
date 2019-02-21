@@ -9,7 +9,7 @@ const fetchSettings = async (): Promise<SettingsHashMap> => {
   return await callAPI<SettingsHashMap>("GET", "/settings");
 };
 
-const updateSettings = async (settings): Promise<void> => {
+const updateSettings = async (settings: {}): Promise<void> => {
   return await callAPI<any>("PUT", `/settings`, settings);
 };
 

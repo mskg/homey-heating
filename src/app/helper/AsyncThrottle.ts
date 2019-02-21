@@ -13,7 +13,7 @@ export function AsyncThrottle<T>(funcToThrottle: AnyArgsFunc<T>, duration: numbe
 
     // throttle function
     return async function(...args: any[]) {
-        return new Promise<T>((resolve, reject) => {
+        return new Promise<T>((resolve, _reject) => {
             const now = Date.now();
 
             if ((now - ticks) > 1) {
@@ -26,6 +26,7 @@ export function AsyncThrottle<T>(funcToThrottle: AnyArgsFunc<T>, duration: numbe
                 processCount = 1;
             }
 
+            // @ts-ignore
             setTimeout(() => { resolve(funcToThrottle.apply(this, args)); }, ticks - now);
         });
     };
