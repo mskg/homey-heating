@@ -77,8 +77,16 @@ export class HeatingManagerService {
 
         // mode was ticked
         this.onModeChanged.subscribe(async () => {
-            await this.applyPlans();
+            if (this.flow.mode != null) { this.flow.mode.setValue(__(`Modes.${this.mode}`)); }
             await this.flow.modeChanged.trigger({ mode: __(`Modes.${this.mode}`) });
+
+            if (this.settings.get(Settings.NotifyModeChange, true)) {
+                this.sendNotification("set_operation_mode", {
+                    mode: __(`Modes.${this.mode}`),
+                });
+            }
+
+            await this.applyPlans();
         });
     }
 
@@ -94,18 +102,11 @@ export class HeatingManagerService {
         this.mode = mode;
         this.settings.set<number>(InternalSettings.OperationMode, mode);
 
-        if (this.flow.mode != null) { this.flow.mode.setValue(__(`Modes.${mode}`)); }
         this.onModeDispatcher.dispatch(this, mode);
-
-        if (this.settings.get(Settings.NotifyModeChange, true)) {
-            this.sendNotification("set_operation_mode", {
-                mode: __(`Modes.${mode}`),
-            });
-        }
     }
 
     public async init() {
-        this.flow.mode.setValue(__(`Modes.${this.mode}`));
+        if (this.flow.mode != null) { this.flow.mode.setValue(__(`Modes.${this.mode}`)); }
         await this.applyPlans();
     }
 
