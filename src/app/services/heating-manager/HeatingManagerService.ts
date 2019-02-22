@@ -260,13 +260,13 @@ export class HeatingManagerService {
 
         if (plan.zones) {
             forEach(plan.zones, (zoneId) => {
-                // planLogger.debug(`Evaluating zone ${zoneId}`);
-
                 const zone = this.deviceManager.findZone(zoneId);
                 if (zone == null) {
                     planLogger.information(`Zone ${zoneId} not found`);
                     return;
                 }
+
+                planLogger.debug(`Looking at zone ${zoneId}`);
 
                 const devices = this.deviceManager.getDevicesForZone(zone.id);
                 if (isEmpty(devices)) {
@@ -282,19 +282,18 @@ export class HeatingManagerService {
 
         if (plan.devices) {
             forEach(plan.devices, (deviceID) => {
-                // planLogger.debug(`Evaluating device ${deviceID})`);
-
                 const device = this.deviceManager.findDevice(deviceID);
                 if (device == null) {
                     planLogger.information(`Device ${deviceID} not found`);
                     return;
                 }
 
+                planLogger.debug(`Add device ${deviceID})`);
                 result.push(device);
             });
         }
 
-        planLogger.debug(`expanded to ${result.length} devices`);
+        planLogger.debug(`Expanded to ${result.length} devices`);
         return result;
     }
 
