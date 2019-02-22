@@ -35,6 +35,17 @@ declare module "homey" {
         on(s: "update", cb: EventHandler<void>): void
     }
 
+    export class Image {
+
+    }
+
+    export class FlowToken<T extends string | boolean | number | Image> {
+        constructor(id: string, args: { type: "string" | "boolean" | "number" | "Image", title: string});
+        public register(): Promise<void>;
+        public setValue(arg: T): void;
+    }
+
+
     export class FlowCardTrigger<T, S> extends FlowCard {
         trigger(tokens: T, state: S): Promise<void>;
     }

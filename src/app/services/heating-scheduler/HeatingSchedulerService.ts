@@ -3,8 +3,9 @@ import { Mutex, slotTime } from "@app/helper";
 import { IHeatingPlan, NormalOperationMode, OverrideMode, ThermostatMode } from "@app/model";
 import { ManagerCron } from "homey";
 import { first, groupBy, map, sortBy, unionBy } from "lodash";
-import { singleton } from "tsyringe";
+import { inject, singleton } from "tsyringe";
 import { HeatingPlanCalculator } from "../calculator";
+import { FlowService } from "../flow-service";
 import { HeatingManagerService } from "../heating-manager";
 import { HeatingPlanRepositoryService } from "../heating-plan-repository";
 import { asynctrycatchlog, ICategoryLogger, LoggerFactory, trycatchlog } from "../log";
@@ -29,6 +30,7 @@ export class HeatingSchedulerService {
         private calculator: HeatingPlanCalculator,
         private repository: HeatingPlanRepositoryService,
         private settings: SettingsManagerService,
+        @inject("FlowService") private flow: FlowService,
 
         loggerFactory: LoggerFactory) {
         this.logger = loggerFactory.createLogger("Scheduler");
@@ -210,6 +212,10 @@ export class HeatingSchedulerService {
 
         this.logger.information(`Next execution is at ${this.next.toLocaleString()}`, plansToExecute.map((p) => `${p.name} (${p.id})`));
         const task = await ManagerCron.registerTask(taskName, this.next, plansToExecute);
+
+        if (this.flow.nextDate != null) {
+            this.flow.nextDate.setValue(this.next.toLocaleString());
+        }
 
         if (this.next === END_OF_DAY) {
             task.once("run", this.clearOverrides.bind(this));

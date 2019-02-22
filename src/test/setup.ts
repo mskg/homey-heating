@@ -1,7 +1,8 @@
+import "reflect-metadata";
+
 import { flatten, keyBy } from "lodash";
 import "mocha";
 import * as mock from "mock-require";
-import "reflect-metadata";
 
 (global as any).__PRODUCTION__ = false;
 // @ts-ignore

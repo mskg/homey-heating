@@ -2,7 +2,7 @@ import { ICalculatedTemperature, IGroupedCalculatedTemperature, IHeatingPlan, No
 import { __, Notification } from "homey";
 import { forEach, groupBy, isEmpty, map } from "lodash";
 import { EventDispatcher, IEvent } from "ste-events";
-import { container, singleton } from "tsyringe";
+import { container, inject, singleton } from "tsyringe";
 import { HeatingPlanCalculator } from "../calculator";
 import { AuditedDevice, DeviceManagerService } from "../device-manager";
 import { FlowService } from "../flow-service";
@@ -44,7 +44,7 @@ export class HeatingManagerService {
         private calc: HeatingPlanCalculator,
         private deviceManager: DeviceManagerService,
         private settings: SettingsManagerService,
-        private flow: FlowService,
+        @inject("FlowService") private flow: FlowService,
         loggerFactory: LoggerFactory) {
         this.logger = loggerFactory.createLogger("Manager");
         this.isRunning = false;
@@ -94,13 +94,19 @@ export class HeatingManagerService {
         this.mode = mode;
         this.settings.set<number>(InternalSettings.OperationMode, mode);
 
+        if (this.flow.mode != null) { this.flow.mode.setValue(__(`Modes.${mode}`)); }
+        this.onModeDispatcher.dispatch(this, mode);
+
         if (this.settings.get(Settings.NotifyModeChange, true)) {
             this.sendNotification("set_operation_mode", {
                 mode: __(`Modes.${mode}`),
             });
         }
+    }
 
-        this.onModeDispatcher.dispatch(this, mode);
+    public async init() {
+        this.flow.mode.setValue(__(`Modes.${this.mode}`));
+        await this.applyPlans();
     }
 
     // erors handled by all callers

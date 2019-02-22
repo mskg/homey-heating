@@ -6,20 +6,21 @@ import { AsyncDebounce } from "@app/helper";
 import { ICalculatedTemperature, IHeatingPlan, NormalOperationMode, ThermostatMode } from "@app/model";
 import {
     asynctrycatchlog, AuditedDevice, BootStrapper, CapabilityChangedEventArgs, CapabilityType,
-    DeviceManagerService, FlowService, HeatingManagerService, HeatingPlanRepositoryService,
-    HeatingSchedulerService, ILogger, InternalSettings, LoggerFactory, PlanChangeEventType,
-    PlansAppliedEventArgs, PlansChangedEventArgs, SettingsManagerService,
+    DeviceManagerService, FlowService, HeatingManagerService,
+    HeatingPlanRepositoryService, HeatingSchedulerService, ILogger, InternalSettings, LoggerFactory,
+    PlanChangeEventType, PlansAppliedEventArgs, PlansChangedEventArgs, SettingsManagerService,
 } from "@app/services";
 import { __, Device } from "homey";
 import { filter, find } from "lodash";
 import { IEventHandler } from "ste-events";
 import { container } from "tsyringe";
+import { IVirtualThermostat } from "../types";
 
 type Data = {
     id: string;
 };
 
-class VirtualThermostat extends Device {
+class VirtualThermostat extends Device implements IVirtualThermostat {
     private devices!: DeviceManagerService;
     private repository!: HeatingPlanRepositoryService;
     private manager!: HeatingManagerService;
@@ -47,7 +48,7 @@ class VirtualThermostat extends Device {
         this.repository = container.resolve<HeatingPlanRepositoryService>(HeatingPlanRepositoryService);
         this.manager = container.resolve<HeatingManagerService>(HeatingManagerService);
         this.devices = container.resolve<DeviceManagerService>(DeviceManagerService);
-        this.flow = container.resolve<FlowService>(FlowService);
+        this.flow = container.resolve<FlowService>("FlowService");
 
         const settings = container.resolve<SettingsManagerService>(SettingsManagerService);
 
@@ -85,6 +86,11 @@ class VirtualThermostat extends Device {
         delete this.manager;
 
         this.logger.information(`was removed`);
+    }
+
+    public async changeThermostatMode(mode: ThermostatMode | NormalOperationMode) {
+        // conversion forward, backward, ...
+        await this.onThermostatModeChanged(mode.toString(), null);
     }
 
     /**
