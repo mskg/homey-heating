@@ -1,21 +1,15 @@
 import { StyleRulesCallback, Typography, WithStyles, withStyles } from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import deepOrange from "@material-ui/core/colors/deepOrange";
-import green from "@material-ui/core/colors/green";
 import blue from "@material-ui/core/colors/lightBlue";
 import React from "react";
+import { temperatureToColor } from "./temperatureToColor";
 
 // tslint:disable-next-line: no-var-requires
 const Icon = require("../../../assets/icon_black.svg");
 
-const getColor = (temp: number) => {
-    if (temp <= 16) { return blue; }
-    if (temp <= 20) { return green; }
-    return deepOrange;
-};
-
 const AVATAR_DIMENSION = 35;
-const styles: StyleRulesCallback = (theme) => ({
+const styles: StyleRulesCallback = (_theme) => ({
     root: {
         fontSize: "1em",
         float: "left",
@@ -130,7 +124,7 @@ const BaseTemperatureAvatar: React.FunctionComponent<Props> = (props) => {
     const { value } = props;
 
     return (
-        <Avatar style={{ padding: "25px", background: getColor(value)[500], fontSize: "1em" }}>{FixedDigits(value, 1)}°</Avatar>
+        <Avatar style={{ padding: "25px", background: temperatureToColor(value), fontSize: "1em" }}>{FixedDigits(value, 1)}°</Avatar>
     );
 };
 

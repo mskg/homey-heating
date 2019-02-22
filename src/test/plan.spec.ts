@@ -3,14 +3,14 @@ import * as _ from "lodash";
 import "mocha";
 import { container } from "tsyringe";
 import { COOL, DEFAULT_HEATING_PLAN, INTERMEDIATE, WARM } from "../app/helper/defaultPlan";
-import { IHeatingPlan } from "../app/model/heating";
+import { IHeatingPlan, ISetPoint } from "../app/model/heating";
 import { HeatingPlanCalculator } from "../app/services/calculator";
 
 // tslint:disable: no-unused-expression
 // tslint:disable: no-empty
 describe("Scheduler", () => {
     const scheduler = container.resolve(HeatingPlanCalculator);
-    const plan: IHeatingPlan = _.find(DEFAULT_HEATING_PLAN, (p) => p.name == "Living Room");
+    const nextSchedulePlan: IHeatingPlan = _.find(JSON.parse(JSON.stringify(DEFAULT_HEATING_PLAN)), (p) => p.name === "Living Room");
 
     const MONDAY = new Date(1979, 1, 29, 0, 0, 0, 0);
     const tests = [
@@ -46,7 +46,7 @@ describe("Scheduler", () => {
             const ref = new Date(MONDAY);
             ref.setHours(test.time.h, test.time.m);
 
-            const calcDate = scheduler.getNextSchedule(plan, ref);
+            const calcDate = scheduler.getNextSchedule(nextSchedulePlan, ref) as Date;
             expect(calcDate.getHours()).to.equal(test.schedule.h);
             expect(calcDate.getMinutes()).to.equal(test.schedule.m);
         });
@@ -55,7 +55,7 @@ describe("Scheduler", () => {
             const ref = new Date(MONDAY);
             ref.setHours(test.time.h, test.time.m);
 
-            const sp = scheduler.getSetPoint(plan, ref);
+            const sp = scheduler.getSetPoint(nextSchedulePlan, ref) as ISetPoint;
             expect(sp.hour, "Hour").to.equal(test.setPoint.h);
             expect(sp.minute, "Minute").to.equal(test.setPoint.m);
 

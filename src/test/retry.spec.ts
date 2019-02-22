@@ -1,8 +1,8 @@
+import { ILogger } from "@app/services";
 import { fail } from "assert";
 import { expect } from "chai";
 import "mocha";
 import { Retry } from "../app/helper/Retry";
-
 import "./suppress-console";
 
 // tslint:disable: no-unused-expression
@@ -13,7 +13,7 @@ describe("Retry", () => {
         let i = 0;
 
         try {
-            await Retry(async () => { ++i; throw new Error(("abc")); }, null, retries, 0, false);
+            await Retry(async () => { ++i; throw new Error(("abc")); }, null as unknown as ILogger, retries, 0, false);
             fail("Should not be reached");
         } catch (e) {
             expect(retries).to.equal(i);
@@ -25,7 +25,7 @@ describe("Retry", () => {
         let i = 0;
 
         try {
-            await Retry(() => { ++i; return Promise.reject("abc"); }, null, retries, 0, false);
+            await Retry(() => { ++i; return Promise.reject("abc"); }, null as unknown as ILogger, retries, 0, false);
             fail("Should not be reached");
         } catch (e) {
             expect(retries).to.equal(i);
@@ -47,8 +47,8 @@ describe("Retry", () => {
         try {
             await (
                 async () => await (
-                        async () => await Retry(
-                                async () => { ++i; throw new Error(("abc")); }, null, retries, 0, false)
+                    async () => await Retry(
+                        async () => { ++i; throw new Error(("abc")); }, null as unknown as ILogger, retries, 0, false)
                 )()
             )();
 
@@ -56,4 +56,5 @@ describe("Retry", () => {
         } catch (e) {
             expect(retries).to.equal(i);
         }
-    }); });
+    });
+});

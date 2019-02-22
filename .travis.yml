@@ -3,7 +3,7 @@
 dist: trusty
 
 language: node_js
-node_js: 
+node_js:
   - 11
 
 git:
@@ -11,21 +11,33 @@ git:
   depth: 1
 
 before_script:
-  - if [ $TRAVIS_TAG != '' ]; then 
-    npm run travis:setversion $TRAVIS_TAG; 
+  - if [ $TRAVIS_TAG != '' ]; then
+      npm run travis:setversion $TRAVIS_TAG;
     fi
   - npm install -g athom-cli
 
-script: 
+script:
   - npm run test
   - npm run dist
 
 deploy:
-    provider: pages
+  - provider: pages
     github-token: $GITHUB_OAUTH_TOKEN
     skip_cleanup: true
     keep-history: false
     target-branch: release/$TRAVIS_TAG
     local-dir: ../homey-heating-dist
+    on:
+      tags: true
+
+  - provider: script
+    skip_cleanup: true
+    script: npm run travis:sentry -- releases files homey-heating@${TRAVIS_TAG:1} upload-sourcemaps ../homey-heating-dist --rewrite --ignore-file scripts/.sentryignore
+    on:
+      tags: true
+
+  - provider: script
+    skip_cleanup: true
+    script: npm run travis:sentry -- releases set-commits homey-heating@${TRAVIS_TAG:1} --auto
     on:
       tags: true

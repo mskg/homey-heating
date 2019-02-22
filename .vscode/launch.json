@@ -1,0 +1,30 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Attach to Remote",
+            "address": "192.168.178.117",
+            "port": 9229,
+            "localRoot": "${workspaceRoot}/",
+            "remoteRoot": "/",
+            "sourceMaps": true,
+            "sourceMapPathOverrides": {
+                "webpack:///./~/@app/*": "${workspaceRoot}/src/app/*",
+                "webpack:///./~/*": "${workspaceRoot}/node_modules/*",
+                "webpack:///./*": "${workspaceRoot}/*",
+                "webpack:///*": "*"
+            }
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome against localhost",
+            "url": "http://localhost:8080/#",
+            "webRoot": "${workspaceFolder}/src/settings",
+            "sourceMaps": true,
+            "trace": true
+        }
+    ]
+}

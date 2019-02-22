@@ -1,26 +1,22 @@
 import { OperationMode } from "@app/model";
-import { HeatingManagerService, HeatingSchedulerService } from "@app/services";
+import { HeatingManagerService } from "@app/services";
 import { injectable } from "tsyringe";
 import { ApiBase, IAPIParams, SUCCESS } from "./types";
 
 type Body = {
-    mode: OperationMode;
+    mode: OperationMode,
 };
 
 @injectable()
 class PutMode extends ApiBase<Body> {
-    constructor(private manager: HeatingManagerService,
-                private scheduler: HeatingSchedulerService) {
+    constructor(
+        private manager: HeatingManagerService) {
         super("PUT", "/mode");
     }
 
     protected async execute(args: IAPIParams<Body>) {
         const mode: number = args.body.mode;
-
         this.manager.operationMode = mode;
-        await this.manager.applyPlans();
-        await this.scheduler.start();
-
         return SUCCESS;
     }
 }
@@ -32,7 +28,7 @@ class GetMode extends ApiBase {
     }
 
     protected async execute() {
-        return this.manager.operationMode;
+        return {mode: this.manager.operationMode};
     }
 }
 

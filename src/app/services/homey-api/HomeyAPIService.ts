@@ -1,13 +1,11 @@
-import * as AthomAPI from "athom-api";
+import { HomeyAPI } from "athom-api";
 import { singleton } from "tsyringe";
-import { asynctrycatchlog, LoggerFactory } from "../log";
-import { IHomeyAPI } from "./declarations";
+import { ICategoryLogger, LoggerFactory } from "../log";
 
 @singleton()
-// @injectable()
 export class HomeyAPIService {
-    private logger;
-    private homeyAPI = null;
+    private logger: ICategoryLogger;
+    private homeyAPI: HomeyAPI | null = null;
 
     public constructor(loggerFactory: LoggerFactory) {
         this.logger = loggerFactory.createLogger("APISvc");
@@ -15,13 +13,13 @@ export class HomeyAPIService {
 
     // if that fails we're dead anyhow
     //  All pathes capture the failure
-    public async getInstance(): Promise<IHomeyAPI> {
+    public async getInstance(): Promise<HomeyAPI> {
         if (this.homeyAPI == null) {
             try {
                 this.logger.debug("Connecting to API");
-                this.homeyAPI = await AthomAPI.HomeyAPI.forCurrentHomey();
+                this.homeyAPI = await HomeyAPI.forCurrentHomey();
             } catch (e) {
-                this.logger.console.error("CATASTROPHIC FAILURE **** CANNOT BE HANDELED *****", e);
+                this.logger.error(e, "CATASTROPHIC FAILURE **** CANNOT BE HANDELED *****");
 
                 this.homeyAPI = null;
                 throw e;

@@ -7,8 +7,6 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import translate from "../i18n/Translation";
 import ListItemLink from "./ListItemLink";
 
-declare var VERSION: string;
-
 const styles: StyleRulesCallback = (theme) => ({
     text: {
         padding: theme.spacing.unit * 2,
@@ -53,7 +51,11 @@ const AppMenuBase: React.FunctionComponent<Props> = (props) => {
         },
         {
             to: "/temperatures",
-            text: translate("menu.schedule"),
+            text: translate("menu.temperatures"),
+        },
+        {
+            to: "/schedules",
+            text: translate("menu.schedules"),
         },
         {
             to: "/settings",
@@ -74,7 +76,7 @@ const AppMenuBase: React.FunctionComponent<Props> = (props) => {
                 {translate("menu.title")}
             </Typography>
             <Typography className={classes.version} variant="body2" color="textSecondary" gutterBottom={true}>
-                Version {VERSION}
+                Version {__VERSION} ({__BUILD})
             </Typography>
 
             <Divider />
@@ -110,7 +112,7 @@ const MenuButtonBase: React.FunctionComponent<MenuButtonProps> = (props) => {
     );
 };
 
-export const AppMenuButton: React.FunctionComponent = (props) => {
+export const AppMenuButton: React.FunctionComponent = (_props) => {
     const [openMenu, setOpenMenu] = React.useState<boolean>(false);
 
     return (

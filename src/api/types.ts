@@ -1,7 +1,6 @@
 import { ILogger, InternalSettings, LoggerFactory, SettingsManagerService } from "@app/services";
 import { container } from "tsyringe";
 
-declare var PRODUCTION: boolean;
 type UnkownParameters = { [k: string]: string; };
 
 /***
@@ -42,29 +41,24 @@ export abstract class ApiBase<B = any, P = UnkownParameters, Q = UnkownParameter
         if (ApiBase.initialized) { return; }
 
         const settings = container.resolve<SettingsManagerService>(SettingsManagerService);
-        settings.onChanged.subscribe((s, v) => {
+        settings.onChanged.subscribe((_s, v) => {
             if (v.setting === InternalSettings.LogApi) {
                 ApiBase.logApi = v.value;
             }
         });
 
-        ApiBase.logApi = settings.get(InternalSettings.LogApi, false);
+        ApiBase.logApi = settings.get<boolean>(InternalSettings.LogApi, false) === true;
         ApiBase.logger = container.resolve<LoggerFactory>(LoggerFactory).createLogger("Api");
         ApiBase.initialized = true;
     }
-    private static logger: ILogger = null;
+    private static logger: ILogger;
     private static logApi = false;
     private static initialized = false;
 
-    public readonly method;
-    public readonly path;
-    public readonly public = !PRODUCTION;
+    public public = !__PRODUCTION__;
 
-    constructor(method: string, path: string) {
+    constructor(public readonly method: Method, public readonly path: string) {
         ApiBase.initialize();
-
-        this.method = method;
-        this.path = path;
         this.logger.information(`Bound endpoint ${method} ${path}`);
     }
 
@@ -86,7 +80,7 @@ export abstract class ApiBase<B = any, P = UnkownParameters, Q = UnkownParameter
 
             callback(null, result);
         } catch (e) {
-            this.logger.error(`${this.method} ${this.path} failed`, e, args);
+            this.logger.error(e, `${this.method} ${this.path} failed`, args);
             callback (e, null);
         }
     }

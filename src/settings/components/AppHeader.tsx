@@ -4,7 +4,7 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import React, { Fragment, ReactChild } from "react";
 
-const styles: StyleRulesCallback = (theme) => ({
+const styles: StyleRulesCallback = (_theme) => ({
     appBar: {
     },
 

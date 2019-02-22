@@ -27,8 +27,17 @@ var appConfig = (env, argv) => {
   const PRODUCTION = argv.mode === 'production';
   const plugins = [
     new webpack.DefinePlugin({
-      PRODUCTION: JSON.stringify(PRODUCTION),
+      __PRODUCTION__: JSON.stringify(PRODUCTION),
+      __VERSION: JSON.stringify(package.version),
+      __BUILD: JSON.stringify(process.env.TRAVIS_BUILD_NUMBER)
     }),
+
+    // source-map is wrong for typescript code but better than nothing
+    PRODUCTION ? new webpack.SourceMapDevToolPlugin({
+      filename: '[file].map',
+      publicPath: `https://raw.githubusercontent.com/mskg/homey-heating/release/v${package.version}/`
+    }) : null,
+
     new CleanWebpackPlugin(distPath),
     new CopyWebpackPlugin([
       {
@@ -36,7 +45,11 @@ var appConfig = (env, argv) => {
         to: distPath
       },
       {
-        from: './README.md',
+        from: './scripts/CI.md',
+        to: distPath + "/README.md"
+      },
+      {
+        from: './scripts/.homeyignore',
         to: distPath
       },
       {
@@ -50,6 +63,11 @@ var appConfig = (env, argv) => {
       {
         from: 'assets/**/*.svg',
         to: distPath
+      },
+      {
+        from: '**/assets/**/*',
+        context: "src/drivers",
+        to: distPath + "/drivers"
       },
       {
         from: 'src/settings/index.remote.html',
@@ -72,7 +90,7 @@ var appConfig = (env, argv) => {
         to: distPath
       },
     ])
-  ];
+  ].filter(Boolean);
 
   if (PRODUCTION) {
     plugins.push(
@@ -104,15 +122,16 @@ var appConfig = (env, argv) => {
       app: './src/app/app.ts',
       api: './src/api/api.ts',
 
-      model: './src/app/model/index.ts',
-      helper: './src/app/helper/index.ts',
-      services: './src/app/services/index.ts',
-      flows: './src/app/flows/index.ts',
+      'node_modules/@app/model/index': './src/app/model/index.ts',
+      'node_modules/@app/helper/index': './src/app/helper/index.ts',
+      'node_modules/@app/services/index': './src/app/services/index.ts',
 
-      tsyringe: './node_modules/tsyringe/dist/esm2015/index.js',
+      'node_modules/tsyringe/index': './node_modules/tsyringe/dist/esm2015/index.js',
+
+      'drivers/virtual-thermostat/device': './src/drivers/virtual-thermostat/device.ts',
+      'drivers/virtual-thermostat/driver': './src/drivers/virtual-thermostat/driver.ts',
     },
 
-    devtool: argv.mode === 'production' ? 'cheap-module-source-map' : 'inline-source-map',
     module: {
       rules: [{
         test: /\.tsx?$/,
@@ -120,25 +139,30 @@ var appConfig = (env, argv) => {
         exclude: /node_modules/
       }]
     },
+
+    devtool: PRODUCTION ? false : "inline-source-map",
+
     resolve: {
       extensions: ['.tsx', '.ts', '.js'],
     },
     externals: {
+      "bufferutil": "bufferutil",
+      "utf-8-validate": "utf-8-validate",
+      "ws": "ws",
       "athom-api": "athom-api",
       "homey": "homey",
       "reflect-metadata": "reflect-metadata",
-      "tsyringe": "./tsyringe",
+      "tsyringe": "tsyringe",
       "lodash": "lodash",
-      "@app/model": "./model",
-      "@app/helper": "./helper",
-      "@app/services": "./services",
-      "@app/flows": "./flows",
+      "@app/model": "@app/model",
+      "@app/helper": "@app/helper",
+      "@app/services": "@app/services",
+      "@app/flows": "@app/flows",
     },
     plugins: plugins,
     output: {
       filename: '[name].js',
       path: distPath,
-
       libraryTarget: "commonjs2",
     }
   }

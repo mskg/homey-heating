@@ -1,5 +1,5 @@
 
-import { flowCardFactory, IFlowContext } from "./args";
+import { flowCardActionFactory, IFlowContext } from "./args";
 
 type PlaceHolderArg = {
     name: string;
@@ -14,8 +14,8 @@ type ChangePlanArgs = PlanRefArgs & {
     state: string;
 };
 
-export const SetPlanStateAction = ({ logger, repository }: IFlowContext) => {
-    return flowCardFactory<ChangePlanArgs>("set_plan_state", logger, async (args, state) => {
+export function SetPlanStateAction({ logger, repository }: IFlowContext) {
+    return flowCardActionFactory<ChangePlanArgs>("set_plan_state", logger, async (args, _state) => {
             const plan = await repository.find(args.plan.id);
             if (plan == null) { return false; }
 
@@ -25,7 +25,7 @@ export const SetPlanStateAction = ({ logger, repository }: IFlowContext) => {
             return true;
         })
         .getArgument("plan")
-        .registerAutocompleteListener(async (query, args) => {
+        .registerAutocompleteListener(async (_query, _args) => {
             const plans = await repository.plans;
 
             return plans.map<PlaceHolderArg>((p) => {
@@ -35,4 +35,4 @@ export const SetPlanStateAction = ({ logger, repository }: IFlowContext) => {
                 };
             });
         });
-};
+}

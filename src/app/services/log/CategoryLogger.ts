@@ -1,38 +1,29 @@
-import { LogService } from "./LogService";
-import { ILogger } from "./types";
+import { ICategoryLogger, ILogger } from "./types";
 
-export class CategoryLogger implements ILogger {
-    private category: any;
+export class CategoryLogger implements ILogger, ICategoryLogger {
+    private category: string;
 
-    public constructor(category: string) {
-        this.category = category;
-
-        if (this.category.length > 10) {
-            LogService.defaultLog.debug(`Category ${category} is too big.`);
+    constructor(private logger: ILogger, category: string, modify = true) {
+        if (!modify) {
+            this.category = category;
+        } else {
+            this.category = `[${category.padEnd(10)}]`;
         }
+    }
+
+    public createSubLogger(newCategory: string): ICategoryLogger {
+        return new CategoryLogger(this.logger, `${this.category} [${newCategory.padEnd(10)}]`, false);
     }
 
     public information(...args: any[]) {
-        if (args != null && args.length === 1 && typeof args[0] === "string") {
-            LogService.defaultLog.information(`[INFO ] [${this.category.padEnd(10)}] ${args[0]}`);
-        } else {
-            LogService.defaultLog.information(`[INFO ] [${this.category.padEnd(10)}]`, ...args);
-        }
+        this.logger.information(this.category, ...args);
     }
 
     public debug(...args: any[]) {
-        if (args != null && args.length === 1 && typeof args[0] === "string") {
-            LogService.defaultLog.information(`[DEBUG] [${this.category.padEnd(10)}] ${args[0]}`);
-        } else {
-            LogService.defaultLog.information(`[DEBUG] [${this.category.padEnd(10)}]`, ...args);
-        }
+        this.logger.debug(this.category, ...args);
     }
 
-    public error(...args: any[]) {
-        if (args != null && args.length === 1 && typeof args[0] === "string") {
-            LogService.defaultLog.information(`[ERROR] [${this.category.padEnd(10)}] ${args[0]}`);
-        } else {
-            LogService.defaultLog.information(`[ERROR] [${this.category.padEnd(10)}]`, ...args);
-        }
+    public error(exception: any, ...args: any[]) {
+        this.logger.error(exception, this.category, ...args);
     }
 }

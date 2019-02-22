@@ -19,12 +19,13 @@ import AddFab from "../components/AddFab";
 import AppHeader from "../components/AppHeader";
 import { MenuButton } from "../components/Menu";
 import { TemperatureAvatar } from "../components/TemperatureAvatar";
-import CopyDayDialog from "../dialogs/CopyDayDialog";
-import SetPointDialog from "../dialogs/SetPointDialog";
 import translate from "../i18n/Translation";
 import Page from "../layouts/Page";
 import { useHistory, useModifySetPoints, usePlan } from "../state/planHooks";
 import { usePlanDispatch } from "../state/PlanProvider";
+
+const CopyDayDialog = React.lazy(() => import("../dialogs/CopyDayDialog"));
+const SetPointDialog = React.lazy(() => import("../dialogs/SetPointDialog"));
 
 const styles: StyleRulesCallback = (theme) => ({
     list: {
@@ -93,7 +94,7 @@ const SchedulePage: React.FunctionComponent<Props> = (props: Props) => {
     }, [dispatch]);
 
     // depends on local variables
-    const removeSetPoint = (idx) => {
+    const removeSetPoint = (idx: number) => {
         removeSetPointFunc(idx);
         selectTab(selectedTab);
     };
@@ -170,7 +171,7 @@ const SchedulePage: React.FunctionComponent<Props> = (props: Props) => {
                                     </React.Fragment>
                                 ),
                                 subBar: (
-                                    <Tabs value={selectedTab} onChange={(e, v) => selectTab(v)} variant="fullWidth">
+                                    <Tabs value={selectedTab} onChange={(_e, v) => selectTab(v)} variant="fullWidth">
                                         <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("schedule.Monday")} />
                                         <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("schedule.Tuesday")} />
                                         <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("schedule.Wednesday")} />
@@ -192,7 +193,7 @@ const SchedulePage: React.FunctionComponent<Props> = (props: Props) => {
                                     {
                                         selectedDay.last &&
                                         <React.Fragment key="-1">
-                                            <ListItem button={true} onClick={() => selectTab(dateToTab(selectedDay.last.day))}>
+                                            <ListItem button={true} onClick={() => selectTab(dateToTab((selectedDay.last && selectedDay.last.day) || 0))}>
                                                 <TemperatureAvatar value={selectedDay.last.targetTemperature} />
 
                                                 <ListItemText

@@ -60,19 +60,25 @@ const OverviewPage: React.FunctionComponent<Props> = (props) => {
         return sortBy(elements, (e) => e).join(", ");
     }
 
-    const setHeatingMode = (newMode) => {
+    const setHeatingMode = (newMode: string) => {
         (async () => {
             setModeChange(true);
+            // props.enqueueSnackbar(translate("plans.changemode", {
+            //     name: translate(`Modes.${newMode}`),
+            // }));
+
             await modeAPI.setMode(parseInt(newMode, 10));
+
             props.enqueueSnackbar(translate("plans.modechanged", {
                 name: translate(`Modes.${newMode}`),
             }));
+
             await loadMode();
             setModeChange(false);
         })();
     };
 
-    const toggleState = (thePlan) => {
+    const toggleState = (thePlan: IHeatingPlan) => {
         (async () => {
             await planAPI.togglePlanState(thePlan);
             props.enqueueSnackbar(translate("plans.toggled", {
@@ -118,8 +124,17 @@ const OverviewPage: React.FunctionComponent<Props> = (props) => {
                                 {plans.length > 0 && <Divider key="0" />}
                                 {plans.map((plan) => (
                                     <React.Fragment key={plan.id}>
-                                        <ListItem {...{ to: `/plans/${plan.id}` }} component={Link} button={true}>
-                                            <ListItemText primary={plan.name} secondary={formatAttachments(plan)} />
+                                        <ListItem {...{ to: `/plans/${plan.id}` }} component={Link as unknown as "a"} button={true}>
+                                            <ListItemText
+                                                primary={plan.name}
+                                                secondary={formatAttachments(plan)}
+                                                // secondary = {
+                                                //     <React.Fragment>
+                                                //         {formatAttachments(plan)}
+                                                //         <Chart height={30} legend={false} plan={plan} />
+                                                //     </React.Fragment>
+                                                // }
+                                            />
 
                                             <ListItemSecondaryAction>
                                                 <Switch

@@ -1,17 +1,17 @@
 
 import { map, sortBy } from "lodash";
-import { ICalculatedTemperature, IHeatingPlan, IScheduleInformation, OperationMode } from "../../../app/model";
+import { IGroupedCalculatedTemperature, IHeatingPlan, IScheduleInformation, OperationMode } from "../../../app/model";
 import callAPI from "../callAPI";
 
 const fetchPlans = async (): Promise<IHeatingPlan[]> => {
   const res = await callAPI<IHeatingPlan[]>("GET", "/plans");
 
-  return map(res, (plan) => {
+  return sortBy(map(res, (plan: IHeatingPlan) => {
     plan.zones = plan.zones || [];
     plan.devices = plan.devices || [];
 
     return plan;
-  });
+  }), (p) => p.name);
 };
 
 const togglePlanState = async (plan: IHeatingPlan): Promise<boolean> => {
@@ -24,8 +24,8 @@ const togglePlanState = async (plan: IHeatingPlan): Promise<boolean> => {
 const updatePlan = async (newPlan: IHeatingPlan): Promise<IHeatingPlan> => {
   const planCopy = {...newPlan};
 
-  if (!planCopy.zones || planCopy.zones.length === 0) { planCopy.zones = null; }
-  if (!planCopy.devices || planCopy.devices.length === 0) { planCopy.devices = null; }
+  if (!planCopy.zones || planCopy.zones.length === 0) { planCopy.zones = undefined; }
+  if (!planCopy.devices || planCopy.devices.length === 0) { planCopy.devices = undefined; }
 
   return await callAPI<IHeatingPlan>("PUT", `/plans/${newPlan.id}`, planCopy);
 };
@@ -46,14 +46,14 @@ const fetchPlanById = async (id: string): Promise<IHeatingPlan> => {
 
 const fetchSchedule = async (): Promise<IScheduleInformation> => {
   const schedule = await callAPI<IScheduleInformation>("GET", `/schedule`);
-  schedule.temperatures = sortBy(schedule.temperatures, [(s: ICalculatedTemperature) => s.device.name]);
+  schedule.temperatures = sortBy(schedule.temperatures, [(s: IGroupedCalculatedTemperature) => s.device.name]);
 
   return schedule;
 };
 
 const fetchMode = async (): Promise<OperationMode> => {
-  const res = await callAPI<OperationMode>("GET", "/mode");
-  return res;
+  const res = await callAPI<{mode: OperationMode}>("GET", "/mode");
+  return res.mode;
 };
 
 const setMode = async (mode: OperationMode): Promise<void> => {

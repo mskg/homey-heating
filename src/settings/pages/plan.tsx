@@ -1,4 +1,5 @@
-import { Button, Divider } from "@material-ui/core";
+import { IHeatingPlan } from "@app/model";
+import { Button, LinearProgress, Tab, Tabs } from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -15,7 +16,7 @@ import RemoveIcon from "@material-ui/icons/Delete";
 import CopyIcon from "@material-ui/icons/FileCopy";
 import { map } from "lodash";
 import { InjectedNotistackProps, withSnackbar } from "notistack";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, ReactNode, useEffect, useState } from "react";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { ScrollLocky } from "react-scroll-locky";
 import * as uuidv1 from "uuid/v1";
@@ -27,12 +28,14 @@ import FormTextField from "../components/FormTextField";
 import ZoneIcon from "../components/Icons";
 import { MenuButton } from "../components/Menu";
 import SubHeader from "../components/SubHeader";
-import CloneDialog from "../dialogs/CloneDialog";
 import translate from "../i18n/Translation";
 import Page from "../layouts/Page";
 import { useDevices } from "../state/deviceHooks";
 import { useModifyPlan, usePlan } from "../state/planHooks";
 import { useZones } from "../state/zoneHooks";
+
+const CloneDialog = React.lazy(() => import("../dialogs/CloneDialog"));
+const Chart = React.lazy(() => import("../components/TemperatureChart"));
 
 const styles: StyleRulesCallback = (theme) => ({
     button: {
@@ -55,26 +58,44 @@ type Params = {
     id: string;
 };
 
-type Props = WithStyles<typeof styles> & RouteComponentProps<Params, any, boolean> & InjectedNotistackProps;
+type Props = WithStyles<typeof styles>
+    & RouteComponentProps<Params, any, boolean>
+    & InjectedNotistackProps;
 
-declare var PRODUCTION: boolean;
-declare var HOMEY_DEV_URL: string;
+type TabProps = {
+    id: number,
+    activeTab: number,
+    children?: ReactNode,
+};
+
+const TabContainer: React.FunctionComponent<TabProps> = (props) => {
+    const { children, id, activeTab } = props;
+
+    return (
+        <React.Suspense fallback={<LinearProgress style={{margin: 16}} color="secondary" />}>
+            {id === activeTab && children}
+        </React.Suspense>
+    );
+};
 
 const PlanOverviewPage: React.FunctionComponent<Props> = (props) => {
     const { classes } = props;
+    const [selectedTab, selectTab] = React.useState(0);
 
     const { plan, isDirty } = usePlan(
         props.match.params.id,
         props.location.state === true,
     );
 
-    const { setName, toggleState, toggleZone, toggleDevice } = useModifyPlan();
+    const { setName, setDescription, toggleState, toggleZone, toggleDevice } = useModifyPlan();
 
     const zones = useZones(props.location.state === true);
     const devices = useDevices(props.location.state === true);
 
     useEffect(() => {
         setIsCloneDialogOpen(false);
+        // we use 1 as tab (which is true)
+        selectTab(props.location.state === true ? 1 : 0);
     }, [props.location]);
 
     const [isCloneDialogOpen, setIsCloneDialogOpen] = useState(false);
@@ -86,7 +107,7 @@ const PlanOverviewPage: React.FunctionComponent<Props> = (props) => {
     });
 
     const save = () => {
-        planAPI.updatePlan(plan).then((p) => {
+        planAPI.updatePlan(plan as IHeatingPlan).then((_p) => {
             props.history.push({
                 pathname: `/`,
                 state: false,
@@ -99,7 +120,7 @@ const PlanOverviewPage: React.FunctionComponent<Props> = (props) => {
     };
 
     const removePlan = () => {
-        planAPI.removePlan(plan.id).then((p) => {
+        planAPI.removePlan(plan.id).then((_p) => {
             props.history.push({
                 pathname: `/`,
                 state: false,
@@ -111,10 +132,10 @@ const PlanOverviewPage: React.FunctionComponent<Props> = (props) => {
         });
     };
 
-    const duplicatePlan = (name) => {
-        const newPlan = { ...plan, enabled: false, id: uuidv1(), name };
+    const duplicatePlan = (name: string) => {
+        const newPlan = { ...plan, enabled: false, id: uuidv1(), name } as IHeatingPlan;
 
-        planAPI.updatePlan(newPlan).then((p) => {
+        planAPI.updatePlan(newPlan).then((_p) => {
             props.history.push({
                 pathname: `/plans/${newPlan.id}`,
                 state: false,
@@ -123,7 +144,7 @@ const PlanOverviewPage: React.FunctionComponent<Props> = (props) => {
             props.enqueueSnackbar(translate("plan.duplicated", {
                 name: plan.name,
             }));
-        }).catch((r) => {
+        }).catch((r: any) => {
             throw r;
         });
     };
@@ -146,7 +167,7 @@ const PlanOverviewPage: React.FunctionComponent<Props> = (props) => {
                             {{
                                 title: plan.name || translate("plan.unnamed"),
                                 button: (
-                                    <MenuButton first={true} {...{ to: `/` }} component={Link} icon={isDirty ? <CancelIcon /> : <BackIcon />} />
+                                    <MenuButton first={true} {...{ to: `/` }} component={Link as unknown as "a"} icon={isDirty ? <CancelIcon /> : <BackIcon />} />
                                 ),
                                 actions: (
                                     <Fragment>
@@ -165,98 +186,126 @@ const PlanOverviewPage: React.FunctionComponent<Props> = (props) => {
                                         }
                                     </Fragment>
                                 ),
+                                subBar: (
+                                    <Tabs value={selectedTab} onChange={(_e, v) => selectTab(v)} variant="scrollable" scrollButtons="off" >
+                                        <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("plan.tabs.overview")} />
+                                        <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("plan.tabs.schedule")} />
+                                        <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("plan.tabs.zones", { n: plan.zones.length })} />
+                                        <Tab classes={{ root: props.classes.tab }} disableRipple={true} label={translate("plan.tabs.devices", { n: plan.devices.length })} />
+                                    </Tabs>
+                                ),
                             }}
                         </AppHeader>
 
                     ),
-                    paddingTop: 50,
+                    paddingTop: 100,
                     body: (
                         <ScrollLocky enabled={isCloneDialogOpen || isConfirmRemoveOpen} isolation={false}>
                             <Fragment>
-                                <SubHeader text={translate("plan.overview.section")} />
-                                <BodyText text={translate("plan.overview.text")} />
+                                <TabContainer id={0} activeTab={selectedTab}>
+                                    <SubHeader text={translate("plan.overview.section")} />
+                                    <BodyText text={translate("plan.overview.text")} />
 
-                                <FormTextField
-                                    label={translate("plan.overview.name.label")}
-                                    placeholder={translate("plan.overview.name.placeholder")}
+                                    <FormTextField
+                                        label={translate("plan.overview.name.label")}
+                                        placeholder={translate("plan.overview.name.placeholder")}
 
-                                    value={plan.name}
-                                    onChange={setName}
-                                />
+                                        value={plan.name}
+                                        onChange={setName}
+                                    />
 
-                                <BodyText style={{ paddingTop: 16 }} text={translate("plan.overview.text_enable")} />
-                                <FormControlLabel
-                                    control={
-                                        <Switch
-                                            onChange={toggleState}
-                                            checked={plan.enabled}
-                                        />
+                                    <BodyText style={{ paddingTop: 16 }} text={translate("plan.overview.text_enable")} />
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                onChange={toggleState}
+                                                checked={plan.enabled}
+                                            />
+                                        }
+                                        label={translate("plan.overview.enabled.label")}
+                                        labelPlacement="start"
+                                    />
+
+                                    <BodyText style={{ paddingTop: 16 }} text={translate("plan.overview.text_description")} />
+                                    <FormTextField
+                                        label={translate("plan.overview.description.label")}
+                                        placeholder={translate("plan.overview.description.placeholder")}
+
+                                        multiline={true}
+                                        value={plan.description}
+                                        onChange={setDescription}
+                                    />
+                                </TabContainer>
+
+                                <TabContainer id={1} activeTab={selectedTab}>
+                                    <SubHeader text={translate("plan.schedules.section")} />
+                                    <BodyText text={translate("plan.schedules.text")} />
+
+                                    <div style={{ paddingTop: 16, display: "flex", flexDirection: "row" }}>
+                                        <Link style={{ textDecoration: "none" }} to={{ pathname: `/plans/${plan.id}/schedule`, state: plan }} replace={true}>
+                                            <Button variant="contained" color="primary" className={classes.button}>
+                                                {translate("plan.schedules.edit")}
+                                            </Button>
+                                        </Link>
+
+                                        <Link style={{ textDecoration: "none" }} to={{ pathname: `/plans/${plan.id}/exceptions`, state: plan }} replace={true}>
+                                            <Button variant="contained" color="primary" className={classes.button}>
+                                                {translate("plan.schedules.exceptions")}
+                                            </Button>
+                                        </Link>
+                                    </div>
+
+                                    {plan.schedule.length !== 0 && <SubHeader text={translate("plan.schedules.section_summary")} />}
+                                    {plan.schedule.length !== 0 && <Chart plan={plan as IHeatingPlan} />}
+                                </TabContainer>
+
+                                <TabContainer id={2} activeTab={selectedTab}>
+                                    <SubHeader text={translate("plan.zones.section")} />
+                                    <BodyText text={translate("plan.zones.text")} />
+
+                                    {zones.length === 0
+                                        ? <BodyText style={{ paddingTop: 16 }} text={translate("plan.zones.empty")} />
+                                        : <List>
+                                            {map(zones, (zone) => (
+                                                <ListItem key={zone.id} button={true} onClick={() => toggleZone(zone.id)}>
+                                                    {zone.icon != null &&
+                                                        <ListItemAvatar>
+                                                            <ZoneIcon name={zone.icon} />
+                                                        </ListItemAvatar>
+                                                    }
+                                                    <ListItemText primary={zone.name} />
+                                                    <ListItemSecondaryAction>
+                                                        <Checkbox onChange={() => toggleZone(zone.id)} checked={plan.zones.find((c) => c === zone.id) != null} />
+                                                    </ListItemSecondaryAction>
+                                                </ListItem>
+                                            ))}
+                                        </List>
                                     }
-                                    label={translate("plan.overview.enabled.label")}
-                                    labelPlacement="start"
-                                />
+                                </TabContainer>
 
-                                <BodyText style={{ paddingTop: 16 }} text={translate("plan.overview.text_schedule")} />
-                                <div style={{ display: "flex", flexDirection: "row" }}>
-                                    <Link style={{ textDecoration: "none" }} to={{ pathname: `/plans/${plan.id}/schedule`, state: plan }} replace={true}>
-                                        <Button variant="contained" color="primary" className={classes.button}>
-                                            {translate("plan.overview.edit")}
-                                        </Button>
-                                    </Link>
+                                <TabContainer id={3} activeTab={selectedTab}>
+                                    <SubHeader text={translate("plan.devices.section")} />
+                                    <BodyText text={translate("plan.devices.text")} />
 
-                                    <Link style={{ textDecoration: "none" }} to={{ pathname: `/plans/${plan.id}/exceptions`, state: plan }} replace={true}>
-                                        <Button variant="contained" color="primary" className={classes.button}>
-                                            {translate("plan.overview.exceptions")}
-                                        </Button>
-                                    </Link>
-                                </div>
-
-                                <Divider className={classes.divider} />
-                                <SubHeader text={translate("plan.zones.section")} />
-                                <BodyText text={translate("plan.zones.text")} />
-
-                                {zones.length === 0
-                                    ? <BodyText style={{paddingTop: 16}} text={translate("plan.zones.empty")} />
-                                    : <List>
-                                        {map(zones, (zone) => (
-                                            <ListItem key={zone.id} button={true} onClick={() => toggleZone(zone.id)}>
-                                                {zone.icon != null &&
-                                                    <ListItemAvatar>
-                                                        <ZoneIcon name={zone.icon} />
-                                                    </ListItemAvatar>
-                                                }
-                                                <ListItemText primary={zone.name} />
-                                                <ListItemSecondaryAction>
-                                                    <Checkbox onChange={() => toggleZone(zone.id)} checked={plan.zones.find((c) => c === zone.id) != null} />
-                                                </ListItemSecondaryAction>
-                                            </ListItem>
-                                        ))}
-                                    </List>
-                                }
-
-                                <Divider className={classes.divider} />
-                                <SubHeader text={translate("plan.devices.section")} />
-                                <BodyText text={translate("plan.devices.text")} />
-                                {devices.length === 0
-                                    ? <BodyText style={{paddingTop: 16}} text={translate("plan.devices.empty")} />
-                                    : <List>
-                                        {map(devices, (device) => (
-                                            <ListItem key={device.id} button={true} onClick={() => toggleDevice(device.id)}>
-                                                {device.icon != null &&
-                                                    <ListItemAvatar>
-                                                        <Avatar className={classes.avatar} src={`${PRODUCTION ? "" : HOMEY_DEV_URL}${device.icon}`} />
-                                                    </ListItemAvatar>
-                                                }
-                                                <ListItemText primary={device.name} />
-                                                <ListItemSecondaryAction>
-                                                    <Checkbox onChange={() => toggleDevice(device.id)} checked={plan.devices.find((c) => c === device.id) != null} />
-                                                </ListItemSecondaryAction>
-                                            </ListItem>
-                                        ))}
-                                    </List>
-                                }
-
-                                <Divider className={classes.divider} />
+                                    {devices.length === 0
+                                        ? <BodyText style={{ paddingTop: 16 }} text={translate("plan.devices.empty")} />
+                                        : <List>
+                                            {map(devices, (device) => (
+                                                <ListItem key={device.id} button={true} onClick={() => toggleDevice(device.id)}>
+                                                    {device.icon != null &&
+                                                        <ListItemAvatar>
+                                                            <Avatar className={classes.avatar} src={`${__PRODUCTION__ ? "" : __HOMEY_DEV_URL}${device.icon}`} />
+                                                        </ListItemAvatar>
+                                                    }
+                                                    <ListItemText primary={device.name} />
+                                                    <ListItemSecondaryAction>
+                                                        <Checkbox onChange={() => toggleDevice(device.id)} checked={plan.devices.find((c) => c === device.id) != null} />
+                                                    </ListItemSecondaryAction>
+                                                </ListItem>
+                                            ))}
+                                        </List>
+                                    }
+                                </TabContainer>
                             </Fragment>
                         </ScrollLocky>
                     ),

@@ -2,11 +2,12 @@
 import "reflect-metadata";
 // position must not be changed
 
-import { Actions } from "@app/flows";
-import { asynctrycatchlog, DeviceManagerService, HeatingManagerService, HeatingPlanRepositoryService,
-    HeatingSchedulerService, ILogger, LoggerFactory, LogService, SettingsManagerService } from "@app/services";
+import {
+    asynctrycatchlog, BootStrapper, FlowService, HeatingManagerService,
+    HeatingSchedulerService, ILogger, LoggerFactory, LogService,
+} from "@app/services";
 import { App as HomeyApp } from "homey";
-import { container, injectable } from "tsyringe";
+import { container, inject, injectable } from "tsyringe";
 
 @injectable()
 export class HeatingSchedulerApp {
@@ -14,11 +15,9 @@ export class HeatingSchedulerApp {
 
     constructor(
         private loggerFactory: LoggerFactory,
-        private settingsManager: SettingsManagerService,
-        private repositoryService: HeatingPlanRepositoryService,
         private heatingScheduler: HeatingSchedulerService,
-        private deviceManager: DeviceManagerService,
-        private heatingManager: HeatingManagerService) {
+        private heatingManager: HeatingManagerService,
+        @inject("FlowService") private flowService: FlowService) {
 
         this.logger = this.loggerFactory.createLogger("App");
     }
@@ -26,42 +25,24 @@ export class HeatingSchedulerApp {
     // whatever goes wrong - we log, hide and dump it
     @asynctrycatchlog(true)
     public async run() {
-        this.logger.information("Bootstrapping");
+        this.logger.information(`Bootstrapping App v${__VERSION} (${__BUILD})`);
 
         process.on("uncaughtException", (err) => {
-            this.logger.error(err);
+            this.logger.error(err, "uncought Exception");
         });
 
         process.on("unhandledRejection", (reason, p) => {
-            this.logger.error("Unhandled Rejection at:", p, "reason:", reason);
+            this.logger.error(reason, "Unhandled Rejection at:", p, "reason:", reason);
         });
 
-        // prepare device caches
-        await this.deviceManager.init();
-
-        // load plans
-        this.repositoryService.load();
+        // Flow hooks
+        await this.flowService.init();
 
         // apply what we have
-        await this.heatingManager.applyPlans();
+        await this.heatingManager.init();
 
         // startup scheduler
         await this.heatingScheduler.start();
-
-        // Flow hooks
-        this.runFlowHooks();
-    }
-
-    private runFlowHooks() {
-        const ctx = {
-            logger: this.loggerFactory.createLogger("Flow"),
-            manager: this.heatingManager,
-            repository: this.repositoryService,
-            scheduler: this.heatingScheduler,
-            settings: this.settingsManager,
-        };
-
-        Actions.forEach((action) => action(ctx));
     }
 }
 
@@ -71,8 +52,10 @@ export class HeatingSchedulerApp {
 export default class App extends HomeyApp {
     public async onInit() {
         // tslint:disable-next-line: no-console
-        console.log("Bootstrapping App");
+        console.info(`Bootstrapping App v${__VERSION} (${__BUILD})`);
         LogService.init(this);
+
+        await BootStrapper();
 
         // we let the container do our stuff
         const app = container.resolve(HeatingSchedulerApp);
@@ -81,5 +64,5 @@ export default class App extends HomeyApp {
 }
 
 // // we are a script, but the startup class is still bound to the export
-declare var module;
+declare var module: NodeModule;
 module.exports = App;

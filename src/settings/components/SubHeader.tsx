@@ -11,7 +11,7 @@ const styles: StyleRulesCallback = (theme) => ({
 });
 
 type SubHeaderProps = {
-    text: string,
+    text: string | undefined,
 } & WithStyles<typeof styles> & TypographyProps;
 
 const SubHeader: React.FunctionComponent<SubHeaderProps> = (props) => {

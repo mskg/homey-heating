@@ -1,4 +1,4 @@
-import { Settings } from "../../../app/services/settings-manager";
+import { Settings } from "../../../app/services/settings-manager/types";
 import callAPI from "../callAPI";
 
 export type SettingsHashMap = {
@@ -9,7 +9,7 @@ const fetchSettings = async (): Promise<SettingsHashMap> => {
   return await callAPI<SettingsHashMap>("GET", "/settings");
 };
 
-const updateSettings = async (settings): Promise<void> => {
+const updateSettings = async (settings: {}): Promise<void> => {
   return await callAPI<any>("PUT", `/settings`, settings);
 };
 

@@ -1,4 +1,4 @@
-type AnyArgsFunc<T> = (...args: any[]) => T;
+type AnyArgsFunc<T> = (...args: any[]) => Promise<T>;
 
 /**
  * Throttles the call to the async function to maxCalls per duration.
@@ -7,13 +7,13 @@ type AnyArgsFunc<T> = (...args: any[]) => T;
  * @param duration in ms
  * @param maxCalls per duration
  */
-export function AsyncThrottle<T>(funcToThrottle: AnyArgsFunc<T>, duration: number, maxCalls: number = 1): AnyArgsFunc<Promise<T>> {
+export function AsyncThrottle<T>(funcToThrottle: AnyArgsFunc<T>, duration: number, maxCalls: number = 1): AnyArgsFunc<T> {
     let processCount = 0;
     let ticks = 0;
 
     // throttle function
     return async function(...args: any[]) {
-        return new Promise<T>((resolve, reject) => {
+        return new Promise<T>((resolve, _reject) => {
             const now = Date.now();
 
             if ((now - ticks) > 1) {
@@ -26,6 +26,7 @@ export function AsyncThrottle<T>(funcToThrottle: AnyArgsFunc<T>, duration: numbe
                 processCount = 1;
             }
 
+            // @ts-ignore
             setTimeout(() => { resolve(funcToThrottle.apply(this, args)); }, ticks - now);
         });
     };

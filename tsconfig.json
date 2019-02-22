@@ -1,33 +1,45 @@
 {
-    "compilerOptions": {
-      "target": "es6",
-      "module": "commonjs",
-      "moduleResolution": "node",
-      "sourceMap": false,
-      "experimentalDecorators": true,
-      "emitDecoratorMetadata": true,
-      "allowJs": true,
-      "outDir": "tmp",
-      "baseUrl": "./src",
-      "plugins": [
-        {
-          "name": "typescript-tslint-plugin"
-        }
-      ],
-      "paths": {
-        "@app/*": ["app/*"],
-      },
-      "types": [
-        "node",
-        "lodash",
-      ],
-      "typeRoots": [
-        "node_modules/@types"
-      ]
-    },
-    "include": [
-      "./src/typings.d.ts",
-      "./src/app/app.ts",
-      "./src/api/api.ts"
-    ]
-  }
+	"compilerOptions": {
+		"target": "es6",
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"sourceMap": true,
+		"declaration": false,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"allowJs": true,
+		"jsx": "react",
+		"outDir": "tmp",
+		"baseUrl": "./src",
+		"downlevelIteration": true,
+		"inlineSources": true,
+		"importHelpers": true,
+		"lib": [
+			"es6",
+		],
+		"noEmitHelpers": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitAny": true,
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"pretty": true,
+		"strict": true,
+		"strictBindCallApply": false,
+		"plugins": [
+			{
+				"name": "typescript-tslint-plugin",
+				"alwaysShowRuleFailuresAsWarnings": false,
+				"configFile": "./tslint.json",
+				"ignoreDefinitionFiles": false,
+				"suppressWhileTypeErrorsPresent": false,
+				"mockTypeScriptVersion": false
+			}
+		],
+		"paths": {
+			"@app/*": [ "app/*" ],
+			"*": [ "types/*" ]
+		},
+	},
+}

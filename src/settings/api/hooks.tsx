@@ -1,112 +1,49 @@
-import { sortBy } from "lodash";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { IHeatingDevice, IHeatingPlan, IHeatingZone, IScheduleInformation, NormalOperationMode, OperationMode } from "../../app/model";
+import { IHeatingDevice, IHeatingPlan, IHeatingZone, IScheduleInformation, OperationMode } from "../../app/model";
 import { deviceAPI } from "./devices";
 import { modeAPI, planAPI } from "./heating";
 import { settingsAPI, SettingsHashMap } from "./settings";
+import { HookReturnType, HookSetType, useSuspendableState } from "./suspendableState";
 import { zoneAPI } from "./zones";
 
-/***
- * Call the apiMethod asynchronously.
- *
- * If the method fails, throw the exception inside set SetStateAction of the hook.
- * This allows to catch the error "in the ErrorBoundary."
- */
-async function tryApiMethod<T>(apiMethod: () => Promise<T>, setStateAction: Dispatch<SetStateAction<T>>): Promise<T> {
-    try {
-        setStateAction(await apiMethod());
-    } catch (e) {
-        // required for the error to popup the hierarchy
-        setStateAction ((t) => { throw e; });
-    }
-
-    // not reached
-    return null;
-}
-
-export const usePlans = () => {
-    const [plans, setPlans] = useState<IHeatingPlan[]>([]);
-
-    const loadPlans = async () => {
-        await tryApiMethod(async () => sortBy(await planAPI.fetchPlans(), (p) => p.name), setPlans);
-    };
-
-    useEffect(() => {
-        loadPlans();
-    }, []);
-
-    return { plans, loadPlans };
+type PlansType = {
+    plans: IHeatingPlan[],
+    setPlans: HookSetType<IHeatingPlan[]>,
+    loadPlans: HookReturnType,
 };
 
-export const useDevices = () => {
-    const [devices, setDevices] = useState<ArrayLike<IHeatingDevice>>([]);
-
-    const loadDevices = async () => {
-        await tryApiMethod(deviceAPI.fetchHeatingDevices, setDevices);
-    };
-
-    useEffect(() => {
-        loadDevices();
-    }, []);
-
-    return { devices, loadDevices };
+type DevicesType = {
+    devices: IHeatingDevice[],
+    setDevices: HookSetType<IHeatingDevice[]>,
+    loadDevices: HookReturnType,
 };
 
-export const useZones = () => {
-    const [zones, setZones] = useState<ArrayLike<IHeatingZone>>([]);
-
-    const loadZones = async () => {
-        await tryApiMethod(zoneAPI.fetchHeatingZones, setZones);
-    };
-
-    useEffect(() => {
-        loadZones();
-    }, []);
-
-    return { zones, loadZones };
+type ZonesType = {
+    zones: IHeatingZone[],
+    setZones: HookSetType<IHeatingZone[]>,
+    loadZones: HookReturnType,
 };
 
-export const useScheduleInformation = () => {
-    const [scheduleInformation, setSchedules] = useState<IScheduleInformation>({
-        mode: NormalOperationMode.Automatic,
-        temperatures: [],
-    });
-
-    const loadScheduleInformation = async () => {
-        await tryApiMethod(planAPI.fetchSchedule, setSchedules);
-    };
-
-    useEffect(() => {
-        loadScheduleInformation();
-    }, []);
-
-    return { scheduleInformation, loadScheduleInformation };
+type ScheduleInformationType = {
+    scheduleInformation: IScheduleInformation,
+    setScheduleInformation: HookSetType<IScheduleInformation>,
+    loadScheduleInformation: HookReturnType,
 };
 
-export const useSettings =  () => {
-    const [settings, setSettings] = useState<SettingsHashMap>({});
-
-    const loadSettings = async () => {
-        await tryApiMethod(settingsAPI.fetchSettings, setSettings);
-    };
-
-    useEffect(() => {
-        loadSettings();
-    }, []);
-
-    return { settings, setSettings, loadSettings };
+type SettingsType = {
+    settings: SettingsHashMap,
+    setSettings: HookSetType<SettingsHashMap>,
+    loadSettings: HookReturnType,
 };
 
-export const useMode = () => {
-    const [mode, setMode] = useState<OperationMode>(NormalOperationMode.Automatic);
-
-    const loadMode = async () => {
-        await tryApiMethod(modeAPI.fetchMode, setMode);
-    };
-
-    useEffect(() => {
-        loadMode();
-    }, []);
-
-    return { mode, loadMode };
+type ModeType = {
+    mode: OperationMode,
+    setMode: HookSetType<OperationMode>,
+    loadMode: HookReturnType,
 };
+
+export const usePlans = useSuspendableState<PlansType>("plans", planAPI.fetchPlans);
+export const useDevices = useSuspendableState<DevicesType>("devices", deviceAPI.fetchHeatingDevices);
+export const useZones = useSuspendableState<ZonesType>("zones", zoneAPI.fetchHeatingZones);
+export const useScheduleInformation = useSuspendableState<ScheduleInformationType>("scheduleInformation", planAPI.fetchSchedule);
+export const useSettings = useSuspendableState<SettingsType>("settings", settingsAPI.fetchSettings);
+export const useMode = useSuspendableState<ModeType>("mode", modeAPI.fetchMode);

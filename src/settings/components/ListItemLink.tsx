@@ -23,7 +23,7 @@ function createLink({innerRef, ...props}: Props) {
 
 const ListItemLink: React.FunctionComponent<Props> = (props) => {
     return (
-        <ListItem {...props} component={createLink}>
+        <ListItem {...props} component={createLink as unknown as "a"}>
             {props.children}
         </ListItem>
     );

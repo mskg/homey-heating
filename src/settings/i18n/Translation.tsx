@@ -1,21 +1,18 @@
 import { forEach, reduce } from "lodash";
 
-declare var Homey: any;
-declare var PRODUCTION: boolean;
+let translate: (id: string, param?: any) => string;
 
-let translate: (id: string, param?: any) => string = null;
-
-if (PRODUCTION) {
+if (__PRODUCTION__) {
     translate = Homey.__;
 } else {
     // tslint:disable-next-line: no-var-requires
-    const en = require("../../../locales/en.json");
+    const lang = require(`../../../locales/${__HOMEY_LANG}.json`);
 
     translate = (id: string, param?: any) => {
-        let value = reduce(id.split("."), (r, v, k) => {
+        let value = reduce(id.split("."), (r, v, _k) => {
             if (r == null) { throw new Error(`Resource ${id} not found.`); }
             return r[v];
-        }, en);
+        }, lang);
 
         if (value == null) { throw new Error(`Resource ${id} not found.`); }
 
