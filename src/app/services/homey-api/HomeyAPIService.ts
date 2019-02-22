@@ -1,12 +1,11 @@
 import { HomeyAPI } from "athom-api";
 import { singleton } from "tsyringe";
-import { LoggerFactory } from "../log";
+import { ICategoryLogger, LoggerFactory } from "../log";
 
 @singleton()
-// @injectable()
 export class HomeyAPIService {
-    private logger;
-    private homeyAPI = null;
+    private logger: ICategoryLogger;
+    private homeyAPI: HomeyAPI | null = null;
 
     public constructor(loggerFactory: LoggerFactory) {
         this.logger = loggerFactory.createLogger("APISvc");

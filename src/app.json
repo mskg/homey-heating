@@ -171,6 +171,47 @@
             ]
           }
         ]
+      },
+      {
+        "id": "set_thermostat_override",
+        "title": {
+          "en": "Set thermostat mode",
+          "nl": "Activeer thermostaatmodus"
+        },
+        "args": [
+          {
+            "type": "dropdown",
+            "name": "mode",
+            "values": [
+              {
+                "id": "0",
+                "label": {
+                  "en": "Heating plan (automatic)",
+                  "nl": "Verwarmingsschema (automatisch)"
+                }
+              },
+              {
+                "id": "6",
+                "label": {
+                  "en": "Manual until midnight",
+                  "nl": "Handmatig tot middernacht"
+                }
+              },
+              {
+                "id": "7",
+                "label": {
+                  "en": "Fully manual",
+                  "nl": "Volledig handmatig"
+                }
+              }
+            ]
+          },
+          {
+            "name": "my_device",
+            "type": "device",
+            "filter": "driver_id=virtual-thermostat"
+          }
+        ]
       }
     ],
     "triggers": [

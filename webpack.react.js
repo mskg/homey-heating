@@ -81,7 +81,7 @@ var scriptConfig = (env, argv) => {
     module: {
       rules: [{
         test: /\.tsx?$/,
-        loader: "awesome-typescript-loader?configFileName=tsconfig.react.json"
+        loader: "ts-loader"
       },
       {
         test: /\.css$/,

@@ -7,7 +7,7 @@ import "./suppress-console";
 // tslint:disable: no-empty
 describe("Time slots", () => {
     it("Round 15", async () => {
-        const test = (t) => slotTime(t.getMinutes());
+        const test = (t: Date) => slotTime(t.getMinutes());
 
         const d = new Date();
 
@@ -37,7 +37,7 @@ describe("Time slots", () => {
     });
 
     it("Round 5", async () => {
-        const test = (t) => slotTime(t.getMinutes(), 60 / 5);
+        const test = (t: Date) => slotTime(t.getMinutes(), 60 / 5);
 
         const d = new Date();
 

@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "lib": [
+      "es6",
+      "dom"
+    ]
+  },
+  "include": [
+    "../types/global.d.ts",
+    "setup.ts",
+    "../drivers/types.ts",
+    "../app/model/**/*.ts",
+    "../services/**/*.ts",
+    "../app/helper/**/*.ts",
+    "**/*.spec.ts"
+  ],
+}

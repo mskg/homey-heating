@@ -1,7 +1,7 @@
 import { StyleRulesCallback, withStyles, WithStyles } from "@material-ui/core/styles";
 import React, { ReactChild } from "react";
 
-const styles: StyleRulesCallback = (theme) => ({
+const styles: StyleRulesCallback = (_theme) => ({
     root: {
         webkitOverflowScrolling: "touch",
         display: "flex",

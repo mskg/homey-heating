@@ -1,4 +1,5 @@
 import { DEFAULT_HEATING_PLAN } from "@app/helper";
+import { IHeatingPlan, ISetPoint } from "@app/model";
 import { BootStrapper, HeatingManagerService, setAllowCatchAll } from "@app/services";
 import { expect } from "chai";
 import "mocha";
@@ -9,7 +10,7 @@ import "./suppress-console";
 class FakeDate extends Date {
     public static dateNow = new Date();
 
-    constructor(...args) {
+    constructor(...args: any[]) {
         super();
 
         if (args.length !== 0) { return new (OldDate as any)(...args) as any; }
@@ -46,7 +47,7 @@ describe("HeatingManager", () => {
             step: 0.5,
         };
 
-        const test = (target) => {
+        const test = (target: any) => {
             if (target > cap.max) {
                 target = cap.max;
             } else if (target < cap.min) {
@@ -76,8 +77,8 @@ describe("HeatingManager", () => {
         FakeDate.dateNow.setFullYear(1979, 0, 30);
         FakeDate.dateNow.setHours(9, 0, 0, 0);
 
-        const plan = JSON.parse(JSON.stringify(DEFAULT_HEATING_PLAN)).find((p) => p.id === "1");
-        plan.schedule.forEach((s) => { s.targetTemperature = "" as unknown as number; });
+        const plan = JSON.parse(JSON.stringify(DEFAULT_HEATING_PLAN)).find((p: IHeatingPlan) => p.id === "1");
+        plan.schedule.forEach((s: ISetPoint) => { s.targetTemperature = "" as unknown as number; });
 
         const temps = await scheduler.evaluatePlan(plan);
 
@@ -89,8 +90,8 @@ describe("HeatingManager", () => {
         FakeDate.dateNow.setFullYear(1979, 0, 30);
         FakeDate.dateNow.setHours(9, 0, 0, 0);
 
-        const plan = JSON.parse(JSON.stringify(DEFAULT_HEATING_PLAN)).find((p) => p.id === "1");
-        plan.schedule.forEach((s) => { s.targetTemperature = "16,3" as unknown as number; });
+        const plan = JSON.parse(JSON.stringify(DEFAULT_HEATING_PLAN)).find((p: IHeatingPlan) => p.id === "1");
+        plan.schedule.forEach((s: ISetPoint) => { s.targetTemperature = "16,3" as unknown as number; });
 
         const temps = await scheduler.evaluatePlan(plan);
 
@@ -103,8 +104,8 @@ describe("HeatingManager", () => {
         FakeDate.dateNow.setFullYear(1979, 0, 30);
         FakeDate.dateNow.setHours(9, 0, 0, 0);
 
-        const plan = JSON.parse(JSON.stringify(DEFAULT_HEATING_PLAN)).find((p) => p.id === "1");
-        plan.schedule.forEach((s) => { s.targetTemperature = "16.3" as unknown as number; });
+        const plan = JSON.parse(JSON.stringify(DEFAULT_HEATING_PLAN)).find((p: IHeatingPlan) => p.id === "1");
+        plan.schedule.forEach((s: ISetPoint) => { s.targetTemperature = "16.3" as unknown as number; });
 
         const temps = await scheduler.evaluatePlan(plan);
 

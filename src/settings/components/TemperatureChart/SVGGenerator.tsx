@@ -1,4 +1,3 @@
-
 /**
  * Inspired by https://github.com/dk8996/Gantt-Chart
  */
@@ -12,7 +11,7 @@ export const MIN_DATE = new Date(1979, 1, 29, 0, 0, 0, 0);
 export const MAX_DATE = new Date(1979, 1, 30, 0, 0, 0, 0);
 
 export class SVGGenerator {
-    public tickFormat = "%H:%M";
+    public tickFormat: string = "%H:%M";
     public margin = {
         top: 0,
         right: 16,
@@ -23,24 +22,20 @@ export class SVGGenerator {
     private minTime: Date;
     private maxTime: Date;
 
-    private rootElement: HTMLElement;
-
     private height: number;
     private width: number;
 
-    private xScale: ScaleTime<number, number>;
-    private yScale: ScaleBand<string>;
+    private xScale!: ScaleTime<number, number>;
+    private yScale!: ScaleBand<string>;
 
-    private xAxis: Axis<any>;
-    private yAxis: Axis<string>;
+    private xAxis!: Axis<any>;
+    private yAxis!: Axis<string>;
 
-    private series = [];
-    private showLegend;
+    private series: string[] = [];
 
-    constructor(rootElement: HTMLElement, showLegend = true, width?: number, height?: number) {
-        this.rootElement = rootElement;
-        this.showLegend = showLegend;
-
+    constructor(
+        private rootElement: HTMLElement, private showLegend = true,
+        width?: number, height?: number) {
         this.minTime = MIN_DATE;
         this.maxTime = MAX_DATE;
 
@@ -75,14 +70,15 @@ export class SVGGenerator {
         const chart = svg.select(".chart");
 
         const allData = chart.selectAll("g").data<SeriesElement>(
+            // @ts-ignore
             data, (d: SeriesElement) => d.start + d.taskName + d.end);
 
         const timeslot = allData.enter()
             .insert("g")
-            .attr("fill", (d) => d.color)
-            .attr("transform", (d) => "translate(" + this.xScale(d.start) + "," + this.yScale(d.taskName) + ")");
+            .attr("fill", (d: SeriesElement) => d.color)
+            .attr("transform", (d: SeriesElement) => "translate(" + this.xScale(d.start) + "," + this.yScale(d.taskName) + ")");
 
-        const rect = timeslot.insert("rect")
+        timeslot.insert("rect")
             .attr("height", this.yScale.bandwidth)
             .attr("width", (d: SeriesElement) => {
                 return Math.max(1, (this.xScale(d.end) - this.xScale(d.start)));
@@ -96,7 +92,7 @@ export class SVGGenerator {
                 .attr("width", (d: SeriesElement) => {
                     return Math.max(1, (this.xScale(d.end) - this.xScale(d.start) - 6));
                 })
-                .text((d) => this.fixedDigits(d.temperature, 1));
+                .text((d: SeriesElement) => this.fixedDigits(d.temperature, 1));
 
             this.dotme(text);
         }
@@ -115,6 +111,7 @@ export class SVGGenerator {
             .padding(this.showLegend ? .1 : 0); // some space between
 
         this.xAxis = d3.axisBottom(this.xScale)
+            // @ts-ignore
             .tickFormat(d3.timeFormat(this.tickFormat))
             .tickSize(this.showLegend ? 8 : 0)
             .tickPadding(this.showLegend ? 8 : 0);
@@ -125,8 +122,9 @@ export class SVGGenerator {
             .tickSize(0); // no ticks
     }
 
-    private dotme(textNode) {
+    private dotme(textNode: any) {
         textNode.each(function() {
+            // @ts-ignore
             const text = d3.select(this);
             const width = parseInt(text.attr("width"), 10);
 
@@ -140,11 +138,12 @@ export class SVGGenerator {
         return (Math.round(value * Math.pow(10, digits)) / Math.pow(10, digits)).toFixed(digits);
     }
 
-    private createChart(init) {
+    private createChart(init: boolean) {
         let svg = d3.select(this.rootElement).select("svg");
         if (init) { svg.remove(); }
 
         if (svg.empty()) {
+            // @ts-ignore
             svg = d3.select(this.rootElement)
                 .append("svg")
                 .attr("width", this.width + this.margin.left + this.margin.right)

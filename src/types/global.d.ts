@@ -7,3 +7,5 @@ declare var __BUILD: string;
 
 // JavaScript
 declare var Homey: any;
+
+declare module "uuid/v1";

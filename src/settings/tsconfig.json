@@ -1,0 +1,17 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"target": "es6",
+		"module": "esnext",
+		"suppressImplicitAnyIndexErrors": true,
+		"allowSyntheticDefaultImports": true,
+		"lib": [
+			"es6",
+			"dom"
+		]
+	},
+	"include": [
+		"../types/global.d.ts",
+		"**/*.tsx"
+	]
+}

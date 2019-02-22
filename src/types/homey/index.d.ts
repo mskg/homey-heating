@@ -4,7 +4,7 @@ import { string } from "prop-types";
 declare module "homey" {
     type EventHandler<T> = (param: T) => void;
 
-    export function __(name: string, args?: { [key: string]: string });
+    export function __(name: string, args?: { [key: string]: string | undefined } | undefined): string;
 
     // https://apps.developer.athom.com/tutorial-App%20Store.html
     export const env: {
@@ -12,15 +12,15 @@ declare module "homey" {
     };
 
     export class Notification {
-        constructor({
+        constructor(a: {
             excerpt: string
         });
 
-        public register();
+        public register(): void;
     }
 
     export class FlowArgument {
-        registerAutocompleteListener(func: (query, args) => Promise<Array<{id: string, name: string}>>): FlowArgument;
+        registerAutocompleteListener(func: (query: string, args: any) => Promise<Array<{id: string, name: string}>>): FlowArgument;
     }
 
     export class FlowCard {
@@ -29,11 +29,22 @@ declare module "homey" {
         getArgument(name: string): FlowArgument;
         getArgumentValues<T>(): Promise<T>;
         register<T extends FlowCard>(): T;
-        registerRunListener<T extends FlowCard>(func: (args, state) => Promise<boolean>): T;
-        unregister();
+        registerRunListener<T extends FlowCard>(func: (args: any, state: any) => Promise<boolean>): T;
+        unregister(): void;
 
-        on(s: "update", cb: EventHandler<void>)
+        on(s: "update", cb: EventHandler<void>): void
     }
+
+    export class Image {
+
+    }
+
+    export class FlowToken<T extends string | boolean | number | Image> {
+        constructor(id: string, args: { type: "string" | "boolean" | "number" | "Image", title: string});
+        public register(): Promise<void>;
+        public setValue(arg: T): void;
+    }
+
 
     export class FlowCardTrigger<T, S> extends FlowCard {
         trigger(tokens: T, state: S): Promise<void>;
@@ -64,13 +75,13 @@ declare module "homey" {
 
     export type AllowedSetting = boolean | string | number;
     export module ManagerSettings {
-        export function set(key: string, val: AllowedSetting);
-        export function unset(key: string);
+        export function set(key: string, val: AllowedSetting): void;
+        export function unset(key: string): void;
         export function getKeys(): string[];
-        export function get<T extends AllowedSetting>(key: string): T;
+        export function get<T extends AllowedSetting>(key: string): T | undefined;
 
-        export function on(s: "set", cb: EventHandler<string>);
-        export function on(s: "unset", cb: EventHandler<string>);
+        export function on(s: "set", cb: EventHandler<string>): void;
+        export function on(s: "unset", cb: EventHandler<string>): void;
     }
 
     export class Device {
@@ -93,7 +104,7 @@ declare module "homey" {
 
         protected getCapabilityValue<T>(id: string): T;
         protected setCapabilityValue<T>(id: string, val: T): Promise<void>;
-        protected registerCapabilityListener<V, O = {}>(capability: string, callback: (value: V, opts: O) => Promise<void>);
+        protected registerCapabilityListener<V, O = {}>(capability: string, callback: (value: V, opts: O) => Promise<void>): Promise<void>;
     }
 
     export class App {

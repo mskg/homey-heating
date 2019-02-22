@@ -13,7 +13,8 @@ export class Mutex {
     private locking: Promise<VoidFunction>;
 
     constructor() {
-        this.locking = Promise.resolve(() => null);
+        // tslint:disable-next-line: no-empty
+        this.locking = Promise.resolve((): void => {});
     }
 
     public lock(): Promise<VoidFunction> {

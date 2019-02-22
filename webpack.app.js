@@ -146,6 +146,9 @@ var appConfig = (env, argv) => {
       extensions: ['.tsx', '.ts', '.js'],
     },
     externals: {
+      "bufferutil": "bufferutil",
+      "utf-8-validate": "utf-8-validate",
+      "ws": "ws",
       "athom-api": "athom-api",
       "homey": "homey",
       "reflect-metadata": "reflect-metadata",

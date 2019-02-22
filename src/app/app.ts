@@ -7,7 +7,7 @@ import {
     HeatingSchedulerService, ILogger, LoggerFactory, LogService,
 } from "@app/services";
 import { App as HomeyApp } from "homey";
-import { container, injectable } from "tsyringe";
+import { container, inject, injectable } from "tsyringe";
 
 @injectable()
 export class HeatingSchedulerApp {
@@ -17,7 +17,7 @@ export class HeatingSchedulerApp {
         private loggerFactory: LoggerFactory,
         private heatingScheduler: HeatingSchedulerService,
         private heatingManager: HeatingManagerService,
-        private flowService: FlowService) {
+        @inject("FlowService") private flowService: FlowService) {
 
         this.logger = this.loggerFactory.createLogger("App");
     }
@@ -39,7 +39,7 @@ export class HeatingSchedulerApp {
         await this.flowService.init();
 
         // apply what we have
-        await this.heatingManager.applyPlans();
+        await this.heatingManager.init();
 
         // startup scheduler
         await this.heatingScheduler.start();
@@ -64,5 +64,5 @@ export default class App extends HomeyApp {
 }
 
 // // we are a script, but the startup class is still bound to the export
-declare var module;
+declare var module: NodeModule;
 module.exports = App;

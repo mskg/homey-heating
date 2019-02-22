@@ -1,9 +1,9 @@
 
 import { flowCardActionFactory, IFlowContext } from "./args";
 
-export const ApplyAllAction = ({ logger, manager }: IFlowContext) => {
-    return flowCardActionFactory("apply_all", logger, async (args, state) => {
+export function ApplyAllAction({ logger, manager }: IFlowContext) {
+    return flowCardActionFactory("apply_all", logger, async (_args, _state) => {
         await manager.applyPlans();
         return true;
     });
-};
+}

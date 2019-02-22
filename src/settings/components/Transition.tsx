@@ -1,6 +1,6 @@
 import { Zoom } from "@material-ui/core";
 import React from "react";
 
-export default function Transition(props) {
+export default function Transition(props: any) {
     return <Zoom {...props} />;
 }

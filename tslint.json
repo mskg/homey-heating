@@ -9,7 +9,8 @@
     "max-classes-per-file": false,
     "max-line-length": false,
     "jsx-no-lambda": false,
-    "jsx-no-multiline-js": false
+    "jsx-no-multiline-js": false,
+    "variable-name": [true, "allow-pascal-case", "ban-keywords", "check-format", "allow-leading-underscore"]
   },
   "rulesDirectory": []
 }

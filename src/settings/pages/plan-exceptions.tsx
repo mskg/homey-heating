@@ -12,9 +12,9 @@ import OverrideSetting from "../components/OverrideSetting";
 import SubHeader from "../components/SubHeader";
 import translate from "../i18n/Translation";
 import Page from "../layouts/Page";
-import { useHistory, useModifyExceptions, useModifyPlan, usePlan } from "../state/planHooks";
+import { useHistory, useModifyExceptions, usePlan } from "../state/planHooks";
 
-const styles: StyleRulesCallback = (theme) => ({
+const styles: StyleRulesCallback = (_theme) => ({
     resetPadding: {
         paddingBottom: 100,
         paddingLeft: 0,

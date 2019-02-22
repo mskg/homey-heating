@@ -8,12 +8,11 @@ import { ISetTemperaturePolicy, PolicyType } from "./types";
 
 @injectable()
 @registry([{ token: PolicyType.Throttled_Enforce, useToken: ThrottledEnforce }])
-class ThrottledEnforce implements ISetTemperaturePolicy {
-    private logger;
-    private setMethod;
+export class ThrottledEnforce implements ISetTemperaturePolicy {
+    private setMethod: CallableFunction;
 
     constructor(inner: EnforceTemperaturePolicy, settings: SettingsManagerService) {
-        const throttle = parseInt(settings.get(InternalSettings.SetTemperatureThrottle, "2000"), 10);
+        const throttle = parseInt(settings.get<string>(InternalSettings.SetTemperatureThrottle, "2000"), 10);
         this.setMethod = AsyncThrottle(async (d, n) => await inner.setTargetTemperature(d, n), throttle);
     }
 
@@ -24,12 +23,11 @@ class ThrottledEnforce implements ISetTemperaturePolicy {
 
 @injectable()
 @registry([{ token: PolicyType.Throttled_CheckTemperature, useToken: ThrottledCheck }])
-class ThrottledCheck implements ISetTemperaturePolicy {
-    private logger;
-    private setMethod;
+export class ThrottledCheck implements ISetTemperaturePolicy {
+    private setMethod: CallableFunction;
 
     constructor(inner: CheckTemperaturePolicy, settings: SettingsManagerService) {
-        const throttle = parseInt(settings.get(InternalSettings.SetTemperatureThrottle, "2000"), 10);
+        const throttle = parseInt(settings.get<string>(InternalSettings.SetTemperatureThrottle, "2000"), 10);
         this.setMethod = AsyncThrottle(async (d, n) => await inner.setTargetTemperature(d, n), throttle);
     }
 

@@ -117,7 +117,7 @@ export const usePlan = (id: string, keep: boolean = true) => {
                     zones: [],
                     devices: [],
                     schedule: [],
-                    overrides: null,
+                    overrides: undefined,
                 },
             });
         } else {

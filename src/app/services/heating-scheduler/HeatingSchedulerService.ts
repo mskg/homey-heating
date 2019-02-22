@@ -2,9 +2,10 @@
 import { Mutex, slotTime } from "@app/helper";
 import { IHeatingPlan, NormalOperationMode, OverrideMode, ThermostatMode } from "@app/model";
 import { ManagerCron } from "homey";
-import { first, groupBy, map, sortBy, union } from "lodash";
-import { singleton } from "tsyringe";
+import { first, groupBy, map, sortBy, unionBy } from "lodash";
+import { inject, singleton } from "tsyringe";
 import { HeatingPlanCalculator } from "../calculator";
+import { FlowService } from "../flow-service";
 import { HeatingManagerService } from "../heating-manager";
 import { HeatingPlanRepositoryService } from "../heating-plan-repository";
 import { asynctrycatchlog, ICategoryLogger, LoggerFactory, trycatchlog } from "../log";
@@ -15,13 +16,13 @@ export class HeatingSchedulerService {
 
     // api only, null is ok
     @trycatchlog(true, null)
-    public get nextSchedule(): Date {
+    public get nextSchedule(): Date | null {
         return this.next;
     }
 
     private mutex: Mutex = new Mutex();
     private logger: ICategoryLogger;
-    private next: Date = null;
+    private next: Date | null = null;
     private isRunning = false;
 
     constructor(
@@ -29,6 +30,7 @@ export class HeatingSchedulerService {
         private calculator: HeatingPlanCalculator,
         private repository: HeatingPlanRepositoryService,
         private settings: SettingsManagerService,
+        @inject("FlowService") private flow: FlowService,
 
         loggerFactory: LoggerFactory) {
         this.logger = loggerFactory.createLogger("Scheduler");
@@ -99,7 +101,7 @@ export class HeatingSchedulerService {
             logger.information("Running");
 
             const allPlans = await this.repository.plans;
-            const modifiedPlans = [];
+            const modifiedPlans: IHeatingPlan[] = [];
 
             allPlans.forEach((plan) => {
                 if (plan.thermostatMode === ThermostatMode.OverrideDay) {
@@ -125,7 +127,7 @@ export class HeatingSchedulerService {
                 await this.manager.applyPlans();
             } else {
                 // we only apply those that should have been applied or were modified
-                await Promise.all(union(plans || [], modifiedPlans, (p) => p.id).map(async (p) => {
+                await Promise.all(unionBy(plans || [], modifiedPlans, (p: IHeatingPlan) => p.id).map(async (p: IHeatingPlan) => {
                     await this.manager.applyPlan(p);
                 }));
             }
@@ -157,6 +159,8 @@ export class HeatingSchedulerService {
             this.next = null;
         } else {
             type TempArray = { date: Date, plan: IHeatingPlan };
+            // type GroupedTempArray = { date: Date, plans: IHeatingPlan[] };
+
             const allSchedules: TempArray[] = [];
 
             // 60 / 12 = 5 minutes
@@ -193,6 +197,7 @@ export class HeatingSchedulerService {
             if (this.next == null) {
                 this.logger.debug(`No setpoint execution planned.`);
             } else {
+                // @ts-ignore
                 plansToExecute = lowestDate.plans;
             }
         }
@@ -207,6 +212,10 @@ export class HeatingSchedulerService {
 
         this.logger.information(`Next execution is at ${this.next.toLocaleString()}`, plansToExecute.map((p) => `${p.name} (${p.id})`));
         const task = await ManagerCron.registerTask(taskName, this.next, plansToExecute);
+
+        if (this.flow.nextDate != null) {
+            this.flow.nextDate.setValue(this.next.toLocaleString());
+        }
 
         if (this.next === END_OF_DAY) {
             task.once("run", this.clearOverrides.bind(this));

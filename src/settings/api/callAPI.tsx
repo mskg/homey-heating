@@ -1,7 +1,7 @@
 export default async function callAPI<T>(method: string, path: string, body: any = null): Promise<T> {
     if (__PRODUCTION__) {
         return await new Promise<T>((resolve, reject) => {
-            Homey.api(method, path, body, (err, result) =>  {
+            Homey.api(method, path, body, (err: any, result: any) =>  {
                 if (err) { reject(err); } else { resolve(result); }
             });
         });

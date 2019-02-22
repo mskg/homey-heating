@@ -23,7 +23,7 @@ export class CategoryLogger implements ILogger, ICategoryLogger {
         this.logger.debug(this.category, ...args);
     }
 
-    public error(exception, ...args: any[]) {
+    public error(exception: any, ...args: any[]) {
         this.logger.error(exception, this.category, ...args);
     }
 }

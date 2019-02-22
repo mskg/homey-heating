@@ -18,7 +18,7 @@ export class HeatingPlanCalculator {
      * @param zone The heating zone to look at
      * @param date The point in time to check
      */
-    public getNextSchedule({ schedule }: IHeatingPlan, date: Date = new Date()): Date {
+    public getNextSchedule({ schedule }: IHeatingPlan, date: Date = new Date()): Date | null {
         // tslint:disable-next-line: max-line-length
         this.logger.debug(`Searching next trigger for ${Day[date.getDay()]}@${date.getHours()}:${date.getMinutes()}`);
         if (schedule == null || schedule.length === 0) { return null; }
@@ -68,7 +68,7 @@ export class HeatingPlanCalculator {
      * @param zone The heating zone to look at
      * @param now The point in time to check
      */
-    public getSetPoint({ schedule }: IHeatingPlan, now: Date = new Date()): ISetPoint {
+    public getSetPoint({ schedule }: IHeatingPlan, now: Date = new Date()): ISetPoint | null {
         this.logger.debug(`Investigating ${Day[now.getDay()]}@${now.getHours()}:${now.getMinutes()}`);
         if (schedule == null || schedule.length === 0) { return null; }
 
