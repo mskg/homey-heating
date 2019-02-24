@@ -1,6 +1,6 @@
 import { ICalculatedTemperature } from "@app/model";
 import { maxBy, minBy } from "lodash";
-import { injectable, registry } from "tsyringe";
+import { registry } from "tsyringe";
 
 export enum TemperatureConflictPolicy {
     Min = "use_min",
@@ -11,24 +11,18 @@ export interface ITemperatureConflictPolicy {
     resolve(setPoints: ICalculatedTemperature[] | undefined): ICalculatedTemperature | undefined;
 }
 
-@injectable()
-@registry([{ token: TemperatureConflictPolicy.Max, useToken: MaxTemperatureConflictPolicy }])
-export class MaxTemperatureConflictPolicy implements ITemperatureConflictPolicy {
-    public resolve(setPoints: ICalculatedTemperature[]): ICalculatedTemperature | undefined {
-        if (setPoints == null) { return undefined; }
-        if (setPoints.length === 1) { return setPoints[0]; }
+type ResolveFunc = typeof minBy;
 
-        return maxBy<ICalculatedTemperature>(setPoints, (t) => t.targetTemperature);
+@registry([{ token: TemperatureConflictPolicy.Max, useFactory: (_c) => new TemperatureConflictPolicyImplementation(maxBy) }])
+@registry([{ token: TemperatureConflictPolicy.Min, useFactory: (_c) => new TemperatureConflictPolicyImplementation(minBy) }])
+export class TemperatureConflictPolicyImplementation implements ITemperatureConflictPolicy {
+    constructor(private resolver: ResolveFunc) {
     }
-}
 
-@injectable()
-@registry([{ token: TemperatureConflictPolicy.Min, useToken: MinTemperatureConflictPolicy }])
-export class MinTemperatureConflictPolicy implements ITemperatureConflictPolicy {
     public resolve(setPoints: ICalculatedTemperature[]): ICalculatedTemperature | undefined {
         if (setPoints == null) { return undefined; }
         if (setPoints.length === 1) { return setPoints[0]; }
 
-        return minBy<ICalculatedTemperature>(setPoints, (t) => t.targetTemperature);
+        return this.resolver(setPoints, (t) => t.targetTemperature);
     }
 }

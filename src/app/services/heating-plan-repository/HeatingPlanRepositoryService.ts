@@ -3,7 +3,7 @@ import { IHeatingPlan } from "@app/model";
 import { filter, find, remove } from "lodash";
 import { EventDispatcher } from "strongly-typed-events";
 import { singleton } from "tsyringe";
-import { asynctrycatchlog, ILogger, LoggerFactory } from "../log";
+import { ILogger, LoggerFactory, trycatchlog } from "../log";
 import { Settings, SettingsManagerService } from "../settings-manager";
 
 export enum PlanChangeEventType {
@@ -83,7 +83,7 @@ export class HeatingPlanRepositoryService {
     }
 
     // we don't kill the app if plans might be invalid
-    @asynctrycatchlog(true, [])
+    @trycatchlog(true, [])
     public get plans(): Promise<IHeatingPlan[]> {
         const unlockPromise = this.mutex.lock();
 
@@ -95,7 +95,7 @@ export class HeatingPlanRepositoryService {
     }
 
     // we don't kill the app if plans might be invalid
-    @asynctrycatchlog(true, [])
+    @trycatchlog(true, [])
     public get activePlans(): Promise<IHeatingPlan[]> {
         const unlockPromise = this.mutex.lock();
 

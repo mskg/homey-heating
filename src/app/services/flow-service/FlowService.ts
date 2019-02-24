@@ -3,7 +3,7 @@ import { container, registry, singleton } from "tsyringe";
 import { HeatingManagerService } from "../heating-manager";
 import { HeatingPlanRepositoryService } from "../heating-plan-repository";
 import { HeatingSchedulerService } from "../heating-scheduler";
-import { asynctrycatchlog, ILogger, LoggerFactory } from "../log";
+import { ILogger, LoggerFactory, trycatchlog } from "../log";
 import { SettingsManagerService } from "../settings-manager";
 import { ApplyAllAction } from "./ApplyAll";
 import { ApplyPlanAction } from "./ApplyPlan";
@@ -48,7 +48,7 @@ export class FlowService {
     }
 
     // whatever goes wrong - we log, hide and dump it
-    @asynctrycatchlog(true)
+    @trycatchlog(true)
     public async init() {
         // must be lazy as we would have circular dependencies
         const ctx = {

@@ -5,10 +5,10 @@ import "reflect-metadata";
 import { AsyncDebounce } from "@app/helper";
 import { ICalculatedTemperature, IHeatingPlan, NormalOperationMode, ThermostatMode } from "@app/model";
 import {
-    asynctrycatchlog, AuditedDevice, BootStrapper, CapabilityChangedEventArgs, CapabilityType,
-    DeviceManagerService, FlowService, HeatingManagerService,
-    HeatingPlanRepositoryService, HeatingSchedulerService, ILogger, InternalSettings, LoggerFactory,
-    PlanChangeEventType, PlansAppliedEventArgs, PlansChangedEventArgs, SettingsManagerService,
+    AuditedDevice, BootStrapper, CapabilityChangedEventArgs, CapabilityType, DeviceManagerService,
+    FlowService, HeatingManagerService, HeatingPlanRepositoryService,
+    HeatingSchedulerService, ILogger, InternalSettings, LoggerFactory, PlanChangeEventType,
+    PlansAppliedEventArgs, PlansChangedEventArgs, SettingsManagerService, trycatchlog,
 } from "@app/services";
 import { __, Device } from "homey";
 import { filter, find } from "lodash";
@@ -35,7 +35,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
     private capabilitiesChanged!: IEventHandler<DeviceManagerService, CapabilityChangedEventArgs>;
     private plansApplied!: IEventHandler<HeatingManagerService, PlansAppliedEventArgs>;
 
-    @asynctrycatchlog(true)
+    @trycatchlog(true)
     public async onInit() {
         await BootStrapper();
         this.id = this.getData<Data>().id; // handback from initialization
@@ -74,7 +74,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
         await this.updateTemperature();
     }
 
-    @asynctrycatchlog(true)
+    @trycatchlog(true)
     public async onDeleted() {
         this.repository.onChanged.unsubscribe(this.repositoryChanged);
         this.devices.onCapabilityChanged.unsubscribe(this.capabilitiesChanged);
@@ -96,7 +96,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
     /**
      * Plans in the repository changed
      */
-    @asynctrycatchlog(true)
+    @trycatchlog(true)
     private async plansChanged(_rep: HeatingPlanRepositoryService, plans: PlansChangedEventArgs) {
         await Promise.all(plans.filter((pc) => pc.plan.id === this.id).map(async (change) => {
             // if the plan was removed => we are null
@@ -112,7 +112,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
     /**
      * Plan was applied
      */
-    @asynctrycatchlog(true)
+    @trycatchlog(true)
     private async scheduleChanged(_scheduler: HeatingSchedulerService, evt: PlansAppliedEventArgs) {
         // we are removed
         if (this.plan == null) { return; }
@@ -135,7 +135,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
     /**
      * A device's capability changed
      */
-    @asynctrycatchlog(true)
+    @trycatchlog(true)
     private async capabilititesChanged(_devices: DeviceManagerService, evt: CapabilityChangedEventArgs) {
         // we are removed
         if (this.plan == null) { return; }
@@ -162,7 +162,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
      * @param capability The one
      * @param callback The for the capability
      */
-    @asynctrycatchlog(true)
+    @trycatchlog(true)
     private async tryRegisterCapability(capability: CapabilityType, callback: (val: any, opts: CallableFunction) => Promise<void>) {
         if (!find(this.getCapabilities(), (c) => c === capability)) {
             this.logger.information(`does not have ${capability} - cannot register listener`);
@@ -234,7 +234,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
     /**
      * Update all capabilities that depend on the plan.
      */
-    @asynctrycatchlog(true)
+    @trycatchlog(true)
     private async updateCapabilitiesFromPlan() {
         this.logger.debug(`Updating ${CapabilityType.ThermostatOverride} and ${CapabilityType.TargetTemperature}`);
 
@@ -275,7 +275,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
      * @param value The mode
      * @param opts unused
      */
-    @asynctrycatchlog(true)
+    @trycatchlog(true)
     private async onThermostatModeChanged(value: string, _opts: any) {
         if (this.plan == null) { return; } // should not happen unavailable
         this.logger.information(`${CapabilityType.ThermostatOverride} ${value}`);
@@ -293,7 +293,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
      * @param value The temperature
      * @param opts unsused
      */
-    @asynctrycatchlog(true)
+    @trycatchlog(true)
     private async onTargetTemperatureChanged(value: number, _opts: any) {
         if (this.plan == null) { return; } // should not happen unavailable
 

@@ -32,7 +32,7 @@ beforeEach(async () => {
 
 afterEach(() => {
     (Date as any) = OldDate;
-    setAllowCatchAll(false);
+    setAllowCatchAll(true);
 });
 
 // tslint:disable: only-arrow-functions

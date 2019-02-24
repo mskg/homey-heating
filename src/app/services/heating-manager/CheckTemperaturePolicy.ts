@@ -1,7 +1,7 @@
 import { Retry } from "@app/helper";
 import { injectable, registry } from "tsyringe";
 import { AuditedDevice, DeviceManagerService } from "../device-manager";
-import { asynctrycatchlog, ICategoryLogger, LoggerFactory } from "../log";
+import { ICategoryLogger, LoggerFactory, trycatchlog } from "../log";
 import { ISetTemperaturePolicy, PolicyType } from "./types";
 
 @injectable()
@@ -16,7 +16,7 @@ export class CheckTemperaturePolicy implements ISetTemperaturePolicy {
     }
 
     // we mask, because everything is masked anyway
-    @asynctrycatchlog(true, { success: false, error: "unhandeled" })
+    @trycatchlog(true, { success: false, error: "unhandeled" })
     public async setTargetTemperature(device: AuditedDevice, targetTemperature: number) {
         const logger = this.logger.createSubLogger(__PRODUCTION__ ? device.id : device.name);
 

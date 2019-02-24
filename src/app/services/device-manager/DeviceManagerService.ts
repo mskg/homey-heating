@@ -2,7 +2,7 @@ import { filter } from "lodash";
 import { EventDispatcher, IEvent } from "ste-events";
 import { singleton } from "tsyringe";
 import { CapabilityType, HomeyAPI, HomeyAPIService, ICapabilityInstance, IDevice, IZone, StringHashMap } from "../homey-api";
-import { asynctrycatchlog, ILogger, LoggerFactory, trycatchlog } from "../log";
+import { ILogger, LoggerFactory, trycatchlog } from "../log";
 
 export type AuditedDevice = {
     watchedCapabilities?: {
@@ -209,7 +209,7 @@ export class DeviceManagerService {
     }
 
     // mask all errors
-    @asynctrycatchlog(true)
+    @trycatchlog(true)
     private async attachWatchers(device: AuditedDevice) {
         if (device.watchedCapabilities == null) {
             device.watchedCapabilities = {};
@@ -245,7 +245,7 @@ export class DeviceManagerService {
     }
 
     // mask all errors
-    @asynctrycatchlog(true)
+    @trycatchlog(true)
     private async destroyWatchers(device: AuditedDevice) {
         if (device != null && device.watchedCapabilities != null) {
             if (device.watchedCapabilities.targetTemperature != null) {
