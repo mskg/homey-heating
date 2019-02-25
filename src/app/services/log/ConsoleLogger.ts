@@ -1,12 +1,12 @@
 import { ILogger } from "./types";
 
-const ansiForeGroundColor = (c: string) => "\u001b[" + c + "m";
-const RESET_FG = ansiForeGroundColor("39");
+const ansiFGColor = (c: string) => "\u001b[" + c + "m";
+const RESET_FG = ansiFGColor("39");
 
 // 2bit colors
-const RED = ansiForeGroundColor("31");
-const GRAY = ansiForeGroundColor("90");
-const YELLOW = ansiForeGroundColor("33");
+const RED = ansiFGColor("31");
+const GRAY = ansiFGColor("90");
+const YELLOW = ansiFGColor("33");
 
 // tslint:disable: no-console
 export class ConsoleLogger implements ILogger {

@@ -18,7 +18,7 @@ export class SentryLogger implements ILogger, INeedsCleanup {
             Sentry.init({
                 dsn: env.SENTRY_DSN,
                 debug: !__PRODUCTION__,
-                integrations: (i) => i.filter((i) => i.name !== "Console" && i.name !== "Http"),
+                integrations: (integrations) => integrations.filter((i) => i.name !== "Console" && i.name !== "Http"),
                 release: `homey-heating@${__VERSION}`,
             });
         }

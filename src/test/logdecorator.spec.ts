@@ -1,4 +1,4 @@
-import { asynctrycatchlog, trycatchlog } from "@app/services";
+import { setAllowCatchAll, trycatchlog } from "@app/services";
 import { fail } from "assert";
 import { expect } from "chai";
 import "mocha";
@@ -20,13 +20,13 @@ class Test {
         return true;
     }
 
-    @asynctrycatchlog(true)
+    @trycatchlog(true)
     public async testAsyncCatchAll() {
         if (this.mustFail === true) { throw new Error("async function"); }
         return true;
     }
 
-    @asynctrycatchlog(true)
+    @trycatchlog(true)
     public get testGetAsyncCatchAll(): Promise<any> {
         if (this.mustFail === true) { throw new Error("async get"); }
         return Promise.resolve(true);
@@ -44,18 +44,22 @@ class Test {
         return true;
     }
 
-    @asynctrycatchlog()
+    @trycatchlog()
     public async testAsyncThrow() {
         if (this.mustFail === true) { throw new Error("async function"); }
         return true;
     }
 
-    @asynctrycatchlog()
+    @trycatchlog()
     public get testGetAsync(): Promise<any> {
         if (this.mustFail === true) { throw new Error("async get"); }
         return Promise.resolve(true);
     }
 }
+
+beforeEach(async () => {
+    setAllowCatchAll(true);
+});
 
 // tslint:disable: no-unused-expression
 // tslint:disable: only-arrow-functions
@@ -64,14 +68,14 @@ describe("Log Decorator", () => {
     describe("#async", () => {
         it("Method must fail and throw", async () => {
             try {
-                await new Test(true).testAsyncThrow();
-                // fail("Should not be reached");
+                expect(null).to.equal(await new Test(true).testAsyncThrow());
+                fail("Should not be reached");
             } catch (e) {}
         });
 
         it("Method must fail and throw", async () => {
             try {
-                await new Test(true).testGetAsync;
+                expect(null).to.equal(await new Test(true).testGetAsync);
                 fail("Should not be reached");
             } catch (e) {}
         });
@@ -88,14 +92,14 @@ describe("Log Decorator", () => {
     describe("#sync", () => {
         it("Method must fail and throw", () => {
             try {
-                new Test(true).testThrow();
+                expect(true).to.equal(new Test(true).testThrow());
                 fail("Should not be reached");
             } catch (e) {}
         });
 
         it("Method must fail and throw", () => {
             try {
-                new Test(true).testGet;
+                expect(null).to.equal(new Test(true).testGet);
                 fail("Should not be reached");
             } catch (e) {}
         });

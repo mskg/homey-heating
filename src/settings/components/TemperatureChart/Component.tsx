@@ -99,7 +99,7 @@ const TemperatureChart: React.FunctionComponent<Props> = (props) => {
 
                 schedules.forEach((current) => {
                     if (previous == null) {
-                        tasks.push(SeriesElement.firstHalf(last, current));
+                        tasks.push(SeriesElement.firstHalf(last as IndexedSetPoint, current));
                     } else {
                         tasks.push(new SeriesElement(previous, current));
                     }

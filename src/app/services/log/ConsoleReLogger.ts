@@ -49,56 +49,46 @@ export class ConsoleReLogger implements ILogger, INeedsCleanup {
     }
 
     public information(category: string, message: string, ...args: any[]) {
-        if (this.socket.connected) {
-            this.buffer.add((async () =>
-                await this.sendLog("info", `${category} ${message}`, ...args))())
-                .catch((e) => {
-                    LogService.transportLog.error(e, "ConsoleRe could not send log: ", category, message, args);
-                });
-        }
+        this.sendLog("info", `${category} ${message}`, ...args);
     }
 
     public debug(category: string, message: string, ...args: any[]) {
-        if (this.socket.connected) {
-            this.buffer.add((async () =>
-                await this.sendLog("debug", `${category} ${message}`, ...args))())
-                .catch((e) => {
-                    LogService.transportLog.error(e, "ConsoleRe could not send log: ", category, message, args);
-                });
-        }
+        this.sendLog("debug", `${category} ${message}`, ...args);
     }
 
     public error(exception: any, ...args: any[]) {
-        if (this.socket.connected) {
-            this.buffer.add((async () =>
-                await this.sendLog("error", ...args, exception))())
-                .catch((e) => {
-                    LogService.transportLog.error(e, "ConsoleRe could not send log: ", ...args, exception);
-                });
-        }
+        this.sendLog("error", ...args, exception);
     }
 
     private sendLog(level: "info" | "debug" | "error", ...args: any[]) {
-        if (!this.socket.connected) { return; }
+        this.buffer.add(
+            new Promise((resolve) => {
+                if (this.socket.connected) {
+                    this.socket.emit("toServerRe", {
+                        // command: null,
+                        channel: this.channel,
+                        level,
+                        args,
+                        caller: { /* that's true */
+                            file: "ConsoleReLogger.ts",
+                            line: 75,
+                            column: 9,
+                        },
+                        browser: {
+                            browser: {
+                                f: "homey-heating",
+                                s: "H",
+                            },
+                            version: __VERSION,
+                            OS: "Homey",
+                        },
+                    });
+                }
 
-        this.socket.emit("toServerRe", {
-            // command: null,
-            channel: this.channel,
-            level,
-            args,
-            caller: { /* that's true */
-                file: "ConsoleReLogger.ts",
-                line: 75,
-                column: 9,
-            },
-            browser: {
-                browser: {
-                    f: "homey-heating",
-                    s: "H",
-                },
-                version: __VERSION,
-                OS: "Homey",
-            },
+                resolve();
+            }),
+        ).catch((e) => {
+            LogService.transportLog.error(e, "ConsoleRe could not send log: ", ...args, e);
         });
     }
 }

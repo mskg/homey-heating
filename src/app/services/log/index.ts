@@ -1,4 +1,4 @@
 export * from "./types";
 export * from "./LogService";
-export * from "./Wrapper";
+export * from "./trycatchlog";
 export * from "./LoggerFactory";

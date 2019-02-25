@@ -8,7 +8,7 @@ import { HeatingPlanCalculator } from "../calculator";
 import { FlowService } from "../flow-service";
 import { HeatingManagerService } from "../heating-manager";
 import { HeatingPlanRepositoryService } from "../heating-plan-repository";
-import { asynctrycatchlog, ICategoryLogger, LoggerFactory, trycatchlog } from "../log";
+import { ICategoryLogger, LoggerFactory, trycatchlog } from "../log";
 import { InternalSettings, SettingsManagerService } from "../settings-manager";
 
 @singleton()
@@ -40,7 +40,7 @@ export class HeatingSchedulerService {
     }
 
     // we live on our own, ok to kill
-    @asynctrycatchlog(true)
+    @trycatchlog(true)
     public async stop() {
         const unlock = await this.mutex.lock();
 
@@ -53,7 +53,7 @@ export class HeatingSchedulerService {
     }
 
     // we live on our own, ok to kill
-    @asynctrycatchlog(true)
+    @trycatchlog(true)
     public async start() {
         const unlock = await this.mutex.lock();
 
@@ -66,7 +66,7 @@ export class HeatingSchedulerService {
     }
 
     // we live on our own, ok to kill
-    @asynctrycatchlog(true)
+    @trycatchlog(true)
     private async handleOnChanged() {
         if (!this.isRunning) {
             await this.start();
@@ -76,7 +76,7 @@ export class HeatingSchedulerService {
     }
 
     // we live on our own, ok to kill
-    @asynctrycatchlog(true)
+    @trycatchlog(true)
     private async applyPlans(plans: IHeatingPlan[]) {
         try {
             this.isRunning = true;
@@ -93,7 +93,7 @@ export class HeatingSchedulerService {
     }
 
     // we live on our own, ok to kill
-    @asynctrycatchlog(true)
+    @trycatchlog(true)
     private async clearOverrides(plans: IHeatingPlan[]) {
         try {
             this.isRunning = true;

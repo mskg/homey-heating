@@ -3,8 +3,8 @@ import "reflect-metadata";
 // position must not be changed
 
 import {
-    asynctrycatchlog, BootStrapper, FlowService, HeatingManagerService,
-    HeatingSchedulerService, ILogger, LoggerFactory, LogService,
+    BootStrapper, FlowService, HeatingManagerService, HeatingSchedulerService,
+    ILogger, LoggerFactory, LogService, trycatchlog,
 } from "@app/services";
 import { App as HomeyApp } from "homey";
 import { container, inject, injectable } from "tsyringe";
@@ -23,7 +23,7 @@ export class HeatingSchedulerApp {
     }
 
     // whatever goes wrong - we log, hide and dump it
-    @asynctrycatchlog(true)
+    @trycatchlog(true)
     public async run() {
         this.logger.information(`Bootstrapping App v${__VERSION} (${__BUILD})`);
 
