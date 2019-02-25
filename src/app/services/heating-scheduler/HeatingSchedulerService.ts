@@ -210,6 +210,15 @@ export class HeatingSchedulerService {
             taskName = "cleanup";
         }
 
+        if (this.next <= new Date(Date.now())) {
+            this.logger.error(new Error("Schedule is calculated wrong, earlier than today!"), new Date(Date.now()), await this.repository.activePlans);
+
+            // check again one hour later
+            this.next = new Date();
+            this.next.setHours(this.next.getHours() + 1);
+            plansToExecute = [];
+        }
+
         this.logger.information(`Next execution is at ${this.next.toLocaleString()}`, plansToExecute.map((p) => `${p.name} (${p.id})`));
         const task = await ManagerCron.registerTask(taskName, this.next, plansToExecute);
 

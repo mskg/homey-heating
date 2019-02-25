@@ -1,5 +1,6 @@
 import { EventEmitter } from "events";
 import { string } from "prop-types";
+import "./test";
 
 declare module "homey" {
     type EventHandler<T> = (param: T) => void;
