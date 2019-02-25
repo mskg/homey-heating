@@ -4,35 +4,21 @@ import { BootStrapper, HeatingManagerService, setAllowCatchAll } from "@app/serv
 import { expect } from "chai";
 import "mocha";
 import { container } from "tsyringe";
-import "./mocks";
+import { FakeDate, patchDate, revertDate } from "./mocks/date";
+import "./mocks/homey";
 import "./suppress-console";
 
-class FakeDate extends Date {
-    public static dateNow = new Date();
-
-    constructor(...args: any[]) {
-        super();
-
-        if (args.length !== 0) { return new (OldDate as any)(...args) as any; }
-        return new OldDate(FakeDate.dateNow) as any;
-    }
-
-    public now(): number { return FakeDate.dateNow.valueOf(); }
-}
-
-let OldDate = Date;
 before(async () => {
-    OldDate = Date;
     await BootStrapper(true);
 });
 
 beforeEach(async () => {
-    (Date as any) = FakeDate;
+    patchDate();
     setAllowCatchAll(false);
 });
 
 afterEach(() => {
-    (Date as any) = OldDate;
+    revertDate();
     setAllowCatchAll(true);
 });
 

@@ -1,5 +1,4 @@
 // tslint:disable: variable-name
-
 declare module "homey" {
     export class MockCronTask extends CronTask implements IMockEventHandler {
         public _args: any[];
@@ -23,8 +22,8 @@ declare module "homey" {
         };
     }
 
-    export namespace ManagerCron {
-        export let _tasks: {
+    export module ManagerCron {
+        export const _tasks: {
             schedule: MockCronTask,
             cleanup: MockCronTask,
         };
