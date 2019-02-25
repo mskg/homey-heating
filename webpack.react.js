@@ -34,7 +34,7 @@ var scriptConfig = (env, argv) => {
   else {
     plugins.push(new webpack.SourceMapDevToolPlugin({
       filename: '[file].map',
-      publicPath: `https://raw.githubusercontent.com/mskg/homey-heating/release/v${version}/`
+      publicPath: `https://raw.githubusercontent.com/mskg/homey-heating/release/v${version}/settings/`
     }));
 
     plugins.push(

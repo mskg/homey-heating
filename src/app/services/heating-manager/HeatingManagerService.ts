@@ -77,8 +77,16 @@ export class HeatingManagerService {
 
         // mode was ticked
         this.onModeChanged.subscribe(async () => {
-            await this.applyPlans();
+            if (this.flow.mode != null) { this.flow.mode.setValue(__(`Modes.${this.mode}`)); }
             await this.flow.modeChanged.trigger({ mode: __(`Modes.${this.mode}`) });
+
+            if (this.settings.get(Settings.NotifyModeChange, true)) {
+                this.sendNotification("set_operation_mode", {
+                    mode: __(`Modes.${this.mode}`),
+                });
+            }
+
+            await this.applyPlans();
         });
     }
 
@@ -94,18 +102,11 @@ export class HeatingManagerService {
         this.mode = mode;
         this.settings.set<number>(InternalSettings.OperationMode, mode);
 
-        if (this.flow.mode != null) { this.flow.mode.setValue(__(`Modes.${mode}`)); }
         this.onModeDispatcher.dispatch(this, mode);
-
-        if (this.settings.get(Settings.NotifyModeChange, true)) {
-            this.sendNotification("set_operation_mode", {
-                mode: __(`Modes.${mode}`),
-            });
-        }
     }
 
     public async init() {
-        this.flow.mode.setValue(__(`Modes.${this.mode}`));
+        if (this.flow.mode != null) { this.flow.mode.setValue(__(`Modes.${this.mode}`)); }
         await this.applyPlans();
     }
 
@@ -259,13 +260,13 @@ export class HeatingManagerService {
 
         if (plan.zones) {
             forEach(plan.zones, (zoneId) => {
-                // planLogger.debug(`Evaluating zone ${zoneId}`);
-
                 const zone = this.deviceManager.findZone(zoneId);
                 if (zone == null) {
                     planLogger.information(`Zone ${zoneId} not found`);
                     return;
                 }
+
+                planLogger.debug(`Looking at zone ${zoneId}`);
 
                 const devices = this.deviceManager.getDevicesForZone(zone.id);
                 if (isEmpty(devices)) {
@@ -281,19 +282,18 @@ export class HeatingManagerService {
 
         if (plan.devices) {
             forEach(plan.devices, (deviceID) => {
-                // planLogger.debug(`Evaluating device ${deviceID})`);
-
                 const device = this.deviceManager.findDevice(deviceID);
                 if (device == null) {
                     planLogger.information(`Device ${deviceID} not found`);
                     return;
                 }
 
+                planLogger.debug(`Add device ${deviceID})`);
                 result.push(device);
             });
         }
 
-        planLogger.debug(`expanded to ${result.length} devices`);
+        planLogger.debug(`Expanded to ${result.length} devices`);
         return result;
     }
 
