@@ -1,6 +1,5 @@
 // force dependency import
-import "./CheckTemperaturePolicy";
-import "./EnforceTemperaturePolicy";
+import "./DefaultTemperaturePolicy";
 import "./Throttled";
 
 export * from "./HeatingManagerService";
