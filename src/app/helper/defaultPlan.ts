@@ -187,7 +187,6 @@ export const DEFAULT_HEATING_PLAN: IHeatingPlan[] = [
         },
 
     },
-
     {
         id: "4",
         name: "Bedroom",

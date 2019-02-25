@@ -3,36 +3,23 @@ import { expect } from "chai";
 import { ManagerCron } from "homey";
 import "mocha";
 import { container } from "tsyringe";
-import "./mocks";
+import { FakeDate, patchDate, revertDate } from "./mocks/date";
 import "./suppress-console";
 
-class FakeDate extends Date {
-    public static dateNow = new Date();
-
-    constructor(...args: any[]) {
-        super();
-
-        if (args.length !== 0) { return new (OldDate as any)(...args) as any; }
-        return new OldDate(FakeDate.dateNow) as any;
-    }
-
-    public now(): number { return FakeDate.dateNow.valueOf(); }
-}
-
-let OldDate = Date;
 before(async () => {
-    OldDate = Date;
     await BootStrapper(true);
 });
 
 beforeEach(async () => {
-    (Date as any) = FakeDate;
+    patchDate();
+    FakeDate.dateNow.setMinutes(0, 0, 0);
+
     setAllowCatchAll(false);
 });
 
 afterEach(() => {
-    (Date as any) = OldDate;
-    setAllowCatchAll(false);
+    revertDate();
+    setAllowCatchAll(true);
 });
 
 // tslint:disable: only-arrow-functions
@@ -51,6 +38,7 @@ describe("HeatingSchedulerService", () => {
 
         expect(ManagerCron._tasks[task], "Task").to.not.be.null;
         expect(ManagerCron._tasks[task]._args, "Task args").to.not.be.null;
+        expect(ManagerCron._tasks[task].date, "Task date").to.not.be.null;
 
         const nextRun = ManagerCron._tasks[task].date;
         expect(day, "Task Date").to.equal(nextRun.getDate());
