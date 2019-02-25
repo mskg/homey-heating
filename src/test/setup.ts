@@ -58,7 +58,6 @@ mock("athom-api", {
 mock("homey", {
     ManagerSettings: {
         get: () => {
-            console.log("Called.");
             return null;
         },
 

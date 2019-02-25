@@ -101,6 +101,14 @@ describe("HeatingSchedulerService", () => {
         checkSchedule(6, 0, "schedule", FakeDate.dateNow.getDate());
     });
 
+    it("07:30", async () => {
+        FakeDate.dateNow.setFullYear(1979, 0, 29); // TUESDAY
+        FakeDate.dateNow.setHours(7, 30, 0, 0);
+        await scheduler.start();
+
+        checkSchedule(9, 0);
+    });
+
     it("run clenaup", async () => {
         FakeDate.dateNow.setFullYear(1979, 0, 30); // TUESDAY
         FakeDate.dateNow.setHours(23, 30, 0, 0);
