@@ -1,4 +1,4 @@
-import { DEFAULT_HEATING_PLAN, Mutex } from "@app/helper";
+import { DEFAULT_HEATING_PLAN, Mutex, synchronize } from "@app/helper";
 import { IHeatingPlan } from "@app/model";
 import { filter, find, remove } from "lodash";
 import { EventDispatcher } from "strongly-typed-events";
@@ -18,9 +18,10 @@ export type PlansChangedEventArgs = Array<{
 
 @singleton()
 export class HeatingPlanRepositoryService {
+    private static Lock = new Mutex();
+
     private planList: IHeatingPlan[] = [];
     private logger: ILogger;
-    private mutex: Mutex = new Mutex();
     private changed = false;
 
     private onChangedDispatcher = new EventDispatcher<HeatingPlanRepositoryService, PlansChangedEventArgs>();
@@ -36,6 +37,7 @@ export class HeatingPlanRepositoryService {
                 this.changed = false;
                 return;
             }
+
             if (e.setting === Settings.Plans) {
                 this.logger.information("Reload due to settings change.");
 
@@ -44,10 +46,12 @@ export class HeatingPlanRepositoryService {
                     // need to make a diff in plans.
                     this.load();
 
-                    this.onChangedDispatcher.dispatch(this, this.planList.map((p: IHeatingPlan) => { return {
-                        plan: p,
-                        event: PlanChangeEventType.Changed,
-                    }; }));
+                    this.onChangedDispatcher.dispatch(this, this.planList.map((p: IHeatingPlan) => {
+                        return {
+                            plan: p,
+                            event: PlanChangeEventType.Changed,
+                        };
+                    }));
                 } catch (e) {
                     this.logger.information("Reload of plans failed", e);
                     // TOOD: is this ok to kill?
@@ -84,27 +88,16 @@ export class HeatingPlanRepositoryService {
 
     // we don't kill the app if plans might be invalid
     @trycatchlog(true, [])
+    @synchronize(HeatingPlanRepositoryService.Lock)
     public get plans(): Promise<IHeatingPlan[]> {
-        const unlockPromise = this.mutex.lock();
-
-        return unlockPromise.then((unlock) => {
-            const list = this.planList;
-            unlock();
-            return list;
-        });
+        return Promise.resolve(this.planList);
     }
 
     // we don't kill the app if plans might be invalid
     @trycatchlog(true, [])
+    @synchronize(HeatingPlanRepositoryService.Lock)
     public get activePlans(): Promise<IHeatingPlan[]> {
-        const unlockPromise = this.mutex.lock();
-
-        return unlockPromise.then((umlock) => {
-
-            const list = filter(this.planList, (p: IHeatingPlan) => p.enabled);
-            umlock();
-            return list;
-        });
+        return Promise.resolve(filter(this.planList, (p: IHeatingPlan) => p.enabled));
     }
 
     public get onChanged() {
@@ -112,70 +105,64 @@ export class HeatingPlanRepositoryService {
     }
 
     // caller needs to know
-    public async find(id: string): Promise<IHeatingPlan | undefined> {
-        const unlockPromise = this.mutex.lock();
-
-        return unlockPromise.then((umlock) => {
-            const result = find(this.planList, (p) => p.id === id);
-            umlock();
-            return result;
-        });
+    @synchronize(HeatingPlanRepositoryService.Lock)
+    public find(id: string): Promise<IHeatingPlan | undefined> {
+        return Promise.resolve(find(this.planList, (p) => p.id === id));
     }
 
     // caller needs to know
-    public async update(plansToUpdate: IHeatingPlan | IHeatingPlan[], notify = true) {
+    @synchronize(HeatingPlanRepositoryService.Lock)
+    public update(plansToUpdate: IHeatingPlan | IHeatingPlan[], notify = true): Promise<void> {
         const plans = (Array.isArray(plansToUpdate) ? plansToUpdate : [plansToUpdate]);
 
-        const unlock = await this.mutex.lock();
-        {
-            plans.forEach((plan) => {
-                this.logger.debug(`Updating plan ${plan.id}`);
+        plans.forEach((plan) => {
+            this.logger.debug(`Updating plan ${plan.id}`);
 
-                remove(this.planList, (p) => p.id === plan.id);
-                this.planList.push(plan);
-            });
+            remove(this.planList, (p) => p.id === plan.id);
+            this.planList.push(plan);
+        });
 
-            this.save();
-        }
-        unlock();
+        this.save();
 
         if (notify) {
-            this.onChangedDispatcher.dispatch(this,
-                plans.map((plan) => ({plan, event: PlanChangeEventType.Changed})));
+            return Promise.resolve().then(() => {
+                this.onChangedDispatcher.dispatch(this,
+                    plans.map((plan) => ({ plan, event: PlanChangeEventType.Changed })));
+            });
         }
+
+        return Promise.resolve();
     }
 
     // caller needs to know
-    public async add(plan: IHeatingPlan) {
-        const unlock = await this.mutex.lock();
-        {
-            this.logger.debug(`Adding plan ${plan.id}`);
-            this.planList.push(plan);
+    @synchronize(HeatingPlanRepositoryService.Lock)
+    public add(plan: IHeatingPlan): Promise<void> {
+        this.logger.debug(`Adding plan ${plan.id}`);
+        this.planList.push(plan);
+        this.save();
 
-            this.save();
-        }
-        unlock();
-
-        this.onChangedDispatcher.dispatch(this, [{plan, event: PlanChangeEventType.Changed}]);
+        return Promise.resolve().then(
+            () => this.onChangedDispatcher.dispatch(this, [{ plan, event: PlanChangeEventType.Changed }]));
     }
 
     // caller needs to know
-    public async remove(id: string) {
+    @synchronize(HeatingPlanRepositoryService.Lock)
+    public remove(id: string): Promise<void> {
         let plan: IHeatingPlan | undefined;
 
-        const unlock = await this.mutex.lock();
-        {
-            this.logger.debug(`Removing plan ${id}`);
+        this.logger.debug(`Removing plan ${id}`);
 
-            plan = find(this.planList, (p) => p.id === id);
-            remove(this.planList, (p) => p.id === id);
+        plan = find(this.planList, (p) => p.id === id);
+        remove(this.planList, (p) => p.id === id);
 
-            this.save();
-        }
-        unlock();
+        this.save();
 
         if (plan != null) {
-            this.onChangedDispatcher.dispatch(this, [{plan, event: PlanChangeEventType.Removed}]);
+            return Promise.resolve().then(
+                // @ts-ignore
+                () => this.onChangedDispatcher.dispatch(this, [{ plan, event: PlanChangeEventType.Removed }]));
         }
+
+        return Promise.resolve();
     }
 }
