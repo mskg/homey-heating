@@ -1,6 +1,6 @@
 
 import { Day, IHeatingPlan, ISetPoint } from "@app/model";
-import { findLastIndex, sortBy } from "lodash";
+import { findLastIndex as loadashFindLastIndex, sortBy } from "lodash";
 import { injectable } from "tsyringe";
 import { ILogger, LoggerFactory } from "../log";
 
@@ -37,8 +37,17 @@ export class HeatingPlanCalculator {
         }
 
         this.logger.debug(`> set point is ${Day[point.day]}@${point.hour}:${point.minute}`);
-
         const returnValue: Date = date;
+
+        // if we found something that is earlier than today, this means one week later
+        // this can be the case for only one setpoint on the same day before now
+        if (point.day === date.getDay()
+            && (point.hour < date.getHours() ||
+                // we include now to be next week, too
+                (point.hour === date.getHours() && point.minute <= date.getMinutes())
+            )) {
+            returnValue.setDate(returnValue.getDate() + 7);
+        }
 
         // set time
         returnValue.setHours(point.hour, point.minute, 0, 0);
@@ -48,10 +57,10 @@ export class HeatingPlanCalculator {
         // today
         if (point.day === date.getDay()) {
             diff = 0;
-        // later this week
+            // later this week
         } else if (this.transposeDay(point.day) > this.transposeDay(date.getDay())) {
             diff = this.transposeDay(point.day) - this.transposeDay(date.getDay());
-        // the week after
+            // the week after
         } else {
             diff = 7 - this.transposeDay(date.getDay()) + this.transposeDay(point.day);
         }
@@ -100,8 +109,7 @@ export class HeatingPlanCalculator {
         // |-------|--------|-------|
         //            ^ now
         //         ^ result
-
-        return findLastIndex(points, (sp) => {
+        return loadashFindLastIndex(points, (sp) => {
             if (this.transposeDay(date.getDay()) > this.transposeDay(sp.day)) {
                 return true;
             }
@@ -111,6 +119,7 @@ export class HeatingPlanCalculator {
                     return true;
                 }
 
+                // if we are on that time, we must take the next schedule
                 if (date.getHours() === sp.hour && date.getMinutes() >= sp.minute) {
                     return true;
                 }

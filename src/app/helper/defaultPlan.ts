@@ -144,7 +144,7 @@ function utilitySchedule(): ISetPoint[] {
 //     return setPoints;
 // }
 
-const bedSchedule = [1, 2, 3, 4, 5, 6, 0].map((e) => ({ day: e, hour: 0, minute: 0, targetTemperature: 16 }));
+const bedSchedule = [1/*, 2, 3, 4, 5, 6, 0*/].map((e) => ({ day: e, hour: 0, minute: 0, targetTemperature: 16 }));
 
 export const DEFAULT_HEATING_PLAN: IHeatingPlan[] = [
     {
@@ -200,6 +200,7 @@ export const DEFAULT_HEATING_PLAN: IHeatingPlan[] = [
             },
         },
     },
+
     // {
     //     id: "5",
     //     name: "Chart",
