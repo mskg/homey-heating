@@ -15,7 +15,7 @@ How to configure these things? Make plans for all of them? I thought that's too 
 
 I called these setpoints exceptions, and the events `mode` for the heating scheduler. The *modes* than can be set either
 - using Flow: The action is called `Set heating mode`
-- or using the settings page: Drop-down on `Overview` | `Change heating mode`
+- or using the settings page: Drop-down on `Overview` / `Change heating mode`
 
 No automation here, as this can all be done easily with Flow and better as anything I might have thought about. 
 
