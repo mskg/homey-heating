@@ -113,7 +113,10 @@ export class HeatingManagerService {
     // erors handled by all callers
     public async applyPlans() {
         // scheduler vs normal run
-        if (this.isRunning) { return; }
+        if (this.isRunning) {
+            this.logger.debug("Ignoring event, running");
+            return;
+        }
 
         try {
             this.isRunning = true;

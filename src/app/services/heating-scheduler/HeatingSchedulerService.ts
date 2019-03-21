@@ -1,5 +1,5 @@
 
-import { Mutex, slotTime } from "@app/helper";
+import { Mutex, slotTime, synchronize } from "@app/helper";
 import { IHeatingPlan, NormalOperationMode, OverrideMode, ThermostatMode } from "@app/model";
 import { ManagerCron } from "homey";
 import { first, groupBy, map, sortBy, unionBy } from "lodash";
@@ -11,8 +11,11 @@ import { HeatingPlanRepositoryService } from "../heating-plan-repository";
 import { ICategoryLogger, LoggerFactory, trycatchlog } from "../log";
 import { InternalSettings, SettingsManagerService } from "../settings-manager";
 
+declare type TaskNames = "schedule" | "cleanup";
+
 @singleton()
 export class HeatingSchedulerService {
+    private static Lock = new Mutex();
 
     // api only, null is ok
     @trycatchlog(true, null)
@@ -20,7 +23,6 @@ export class HeatingSchedulerService {
         return this.next;
     }
 
-    private mutex: Mutex = new Mutex();
     private logger: ICategoryLogger;
     private next: Date | null = null;
     private isRunning = false;
@@ -41,28 +43,17 @@ export class HeatingSchedulerService {
 
     // we live on our own, ok to kill
     @trycatchlog(true)
+    @synchronize(HeatingSchedulerService.Lock)
     public async stop() {
-        const unlock = await this.mutex.lock();
-
-        try {
-            this.logger.information("Stop");
-            await ManagerCron.unregisterAllTasks();
-        } finally {
-            unlock();
-        }
+        this.logger.information("Stop");
+        await ManagerCron.unregisterAllTasks();
     }
 
     // we live on our own, ok to kill
     @trycatchlog(true)
     public async start() {
-        const unlock = await this.mutex.lock();
-
-        try {
-            this.logger.information("Start");
-            await this.registerTasks();
-        } finally {
-            unlock();
-        }
+        this.logger.information("Start");
+        await this.registerTasks();
     }
 
     // we live on our own, ok to kill
@@ -77,7 +68,7 @@ export class HeatingSchedulerService {
 
     // we live on our own, ok to kill
     @trycatchlog(true)
-    private async applyPlans(plans: IHeatingPlan[]) {
+    private async scheduleTask(plans: IHeatingPlan[]) {
         try {
             this.isRunning = true;
             const logger = this.logger.createSubLogger("Plans");
@@ -94,7 +85,7 @@ export class HeatingSchedulerService {
 
     // we live on our own, ok to kill
     @trycatchlog(true)
-    private async clearOverrides(plans: IHeatingPlan[]) {
+    private async cleanupTask(plans: IHeatingPlan[]) {
         try {
             this.isRunning = true;
             const logger = this.logger.createSubLogger("Overrides");
@@ -138,29 +129,20 @@ export class HeatingSchedulerService {
         }
     }
 
-    private async registerTasks() {
-        /**
-         * There is a bug in the SDK 2.0 that prevents registring more than one task a time.
-         * This is why workarrounds are implemented here.
-         */
-        await ManagerCron.unregisterAllTasks();
-
-        // check again tomorrow
-        const END_OF_DAY = new Date();
-        END_OF_DAY.setHours(0, 0, 0, 0);
-        END_OF_DAY.setDate(END_OF_DAY.getDate() + 1);
-
+    private async determineNextSchedule() {
+        let nextExecution: Date | null = null;
         let plansToExecute: IHeatingPlan[] = [];
 
         if (this.manager.operationMode === OverrideMode.Holiday
             || this.manager.operationMode === OverrideMode.OutOfSeason) {
-            this.logger.information(`Mode is ${OverrideMode[this.manager.operationMode]}, no check required.`);
-
-            this.next = null;
+            this.logger.information(`Mode is ${OverrideMode[this.manager.operationMode]}, no schedule required`);
         } else {
-            type TempArray = { date: Date, plan: IHeatingPlan };
-            // type GroupedTempArray = { date: Date, plans: IHeatingPlan[] };
+            type TempArray = {
+                date: Date;
+                plan: IHeatingPlan;
+            };
 
+            // type GroupedTempArray = { date: Date, plans: IHeatingPlan[] };
             const allSchedules: TempArray[] = [];
 
             // 60 / 12 = 5 minutes
@@ -170,31 +152,29 @@ export class HeatingSchedulerService {
             const activePlans = await this.repository.activePlans;
             activePlans.forEach((plan) => {
                 this.logger.debug(`Checking plan ${plan.id}`);
+                const nextSchedule = this.calculator.getNextSchedule(plan);
 
-                const next = this.calculator.getNextSchedule(plan);
-                if (next != null) {
-                    // There is a flaw here: If the execution of the next slot is too close
-                    // (difference vs. runtime), we would miss the execution. Such we slot the time
-                    // to a runtime of 5 minutes.
-                    next.setMinutes(slotTime(next.getMinutes(), slots), 0, 0);
-                    allSchedules.push({ date: next, plan });
+                if (nextSchedule != null) {
+                    // If the execution of the next slot is too close (difference vs. runtime),
+                    // we would miss the execution. Such we slot the time to a runtime of 5 minutes.
+                    nextSchedule.setMinutes(slotTime(nextSchedule.getMinutes(), slots), 0, 0);
+                    allSchedules.push({ date: nextSchedule, plan });
                 }
             });
 
             // group by slotted date, join all plans together
-            const grouped = map(
-                groupBy(allSchedules, (d: TempArray) => d.date),
-                (gPlans, date) => ({
-                    date: new Date(date),
-                    plans: gPlans.map((gp) => gp.plan),
-                }));
+            const grouped = map(groupBy(allSchedules, (d: TempArray) => d.date), (gPlans, date) => ({
+                date: new Date(date),
+                plans: gPlans.map((gp) => gp.plan),
+            }));
 
             // we sort and lowest
             const lowestDate = first(sortBy(grouped, (g) => g.date));
 
             // if there is one -> this is all plans to look at
-            this.next = lowestDate != null ? lowestDate.date : null;
-            if (this.next == null) {
+            nextExecution = lowestDate != null ? lowestDate.date : null;
+
+            if (nextExecution == null) {
                 this.logger.debug(`No setpoint execution planned.`);
             } else {
                 // @ts-ignore
@@ -202,34 +182,58 @@ export class HeatingSchedulerService {
             }
         }
 
-        let taskName = "schedule";
+        return {
+            date: nextExecution,
+            plans: plansToExecute,
+        };
+    }
+
+    private getEndOfDay() {
+        const eod = new Date();
+        eod.setHours(0, 0, 0, 0);
+        eod.setDate(eod.getDate() + 1);
+
+        return eod;
+    }
+
+    @synchronize(HeatingSchedulerService.Lock)
+    private async registerTasks() {
+        /**
+         * There is a bug in the SDK 2.0 that prevents registring more than one task a time.
+         * We switch between two types of tasks.
+         */
+        await ManagerCron.unregisterAllTasks();
+
+        const END_OF_DAY = this.getEndOfDay();
+
+        let taskName: TaskNames = "schedule";
+        let taskFunc = this.scheduleTask.bind(this);
+        let { date: nextDate, plans: plansToExecute } = await this.determineNextSchedule();
 
         // If we have a setpoint neat EOD, we still have to cleanup
-        if (this.next == null || this.next >= END_OF_DAY) {
-            this.next = END_OF_DAY;
+        if (nextDate == null || nextDate >= END_OF_DAY) {
+            nextDate = END_OF_DAY;
             taskName = "cleanup";
+            taskFunc = this.cleanupTask.bind(this);
         }
 
-        if (this.next <= new Date(Date.now())) {
+        if (nextDate <= new Date(Date.now())) {
             this.logger.error(new Error("Schedule is calculated wrong, earlier than today!"), new Date(Date.now()), await this.repository.activePlans);
 
             // check again one hour later
-            this.next = new Date();
-            this.next.setHours(this.next.getHours() + 1);
+            nextDate = new Date();
+            nextDate.setHours(nextDate.getHours() + 1);
             plansToExecute = [];
         }
 
-        this.logger.information(`Next execution is at ${this.next.toLocaleString()}`, plansToExecute.map((p) => `${p.name} (${p.id})`));
-        const task = await ManagerCron.registerTask(taskName, this.next, plansToExecute);
+        this.next = nextDate;
+        this.logger.information(`Next execution is at ${nextDate.toLocaleString()}`, plansToExecute.map((p) => `${p.name} (${p.id})`));
+
+        const task = await ManagerCron.registerTask(taskName, nextDate, plansToExecute);
+        task.once("run", taskFunc);
 
         if (this.flow.nextDate != null) {
-            this.flow.nextDate.setValue(this.next.toLocaleString());
-        }
-
-        if (this.next === END_OF_DAY) {
-            task.once("run", this.clearOverrides.bind(this));
-        } else {
-            task.once("run", this.applyPlans.bind(this));
+            this.flow.nextDate.setValue(nextDate.toLocaleString());
         }
     }
 }

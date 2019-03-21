@@ -1,18 +1,30 @@
 import { Retry } from "@app/helper";
-import { injectable, registry } from "tsyringe";
+import { registry } from "tsyringe";
 import { AuditedDevice, DeviceManagerService } from "../device-manager";
 import { ICategoryLogger, LoggerFactory, trycatchlog } from "../log";
 import { ISetTemperaturePolicy, PolicyType } from "./types";
 
-@injectable()
-@registry([{ token: PolicyType.CheckTemperature, useToken: CheckTemperaturePolicy }])
-export class CheckTemperaturePolicy implements ISetTemperaturePolicy {
+@registry([{
+    token: PolicyType.CheckTemperature, useFactory: (r) => new DefaultTemperaturePolicy(
+        false,
+        r.resolve(LoggerFactory),
+        r.resolve(DeviceManagerService)),
+}])
+@registry([{
+    token: PolicyType.Enforce, useFactory: (r) => new DefaultTemperaturePolicy(
+        true,
+        r.resolve(LoggerFactory),
+        r.resolve(DeviceManagerService)),
+}])
+export class DefaultTemperaturePolicy implements ISetTemperaturePolicy {
     private logger: ICategoryLogger;
 
-    constructor(factory: LoggerFactory,
-                private deviceManager: DeviceManagerService,
+    constructor(
+        private enforce: boolean,
+        factory: LoggerFactory,
+        private deviceManager: DeviceManagerService,
     ) {
-        this.logger = factory.createLogger("ST/Check");
+        this.logger = factory.createLogger(enforce ? "ST:Enforce" : "ST:Check");
     }
 
     // we mask, because everything is masked anyway
@@ -32,7 +44,7 @@ export class CheckTemperaturePolicy implements ISetTemperaturePolicy {
 
         try {
             const value = this.deviceManager.getTargetTemperature(device);
-            if (value !== targetTemperature) {
+            if (this.enforce || value !== targetTemperature) {
                 if (__PRODUCTION__) {
                     await Retry(async () => {
                         logger.information(`Set temperature to ${targetTemperature}`);
