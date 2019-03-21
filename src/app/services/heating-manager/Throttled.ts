@@ -2,12 +2,18 @@ import { AsyncThrottle } from "@app/helper";
 import { registry } from "tsyringe";
 import { AuditedDevice } from "../device-manager";
 import { InternalSettings, SettingsManagerService } from "../settings-manager";
-import { CheckTemperaturePolicy } from "./CheckTemperaturePolicy";
-import { EnforceTemperaturePolicy } from "./EnforceTemperaturePolicy";
 import { ISetTemperaturePolicy, PolicyType } from "./types";
 
-@registry([{ token: PolicyType.Throttled_Enforce, useFactory: (c) => new ThrottledTemperaturePolicy(c.resolve(EnforceTemperaturePolicy), c.resolve(SettingsManagerService)) }])
-@registry([{ token: PolicyType.Throttled_CheckTemperature, useFactory: (c) => new ThrottledTemperaturePolicy(c.resolve(CheckTemperaturePolicy), c.resolve(SettingsManagerService)) }])
+@registry([{
+    token: PolicyType.Throttled_Enforce, useFactory: (c) => new ThrottledTemperaturePolicy(
+        c.resolve(PolicyType.Enforce),
+        c.resolve(SettingsManagerService)),
+}])
+@registry([{
+    token: PolicyType.Throttled_CheckTemperature, useFactory: (c) => new ThrottledTemperaturePolicy(
+        c.resolve(PolicyType.CheckTemperature),
+        c.resolve(SettingsManagerService)),
+}])
 export class ThrottledTemperaturePolicy implements ISetTemperaturePolicy {
     private setMethod: CallableFunction;
 
