@@ -3,19 +3,22 @@ const fs = require('fs');
 
 var promises = [];
 
+const sourceLang = "en";
+const targetLang = "de";
+
 /* Resources */
-var en = require("../locales/en.json");
-var nl = require("../locales/nl.json");
+var sourceFile = require(`../locales/${sourceLang}.json`);
+var targetFile = require(`../locales/${targetLang}.json`);
 
 function translateWeb(source, target, path) {
     Object.keys(source).forEach(key => {
         if (typeof source[key] === "string") {
             if (target[key] == null) {
                 promises.push(
-                    translate(source[key], { from: 'en', to: 'nl' }).then(res => {
+                    translate(source[key], { from: sourceLang, to: targetLang }).then(res => {
                         console.log("Translating", path, key, source[key], "=>", res.text);
                         target[key] = res.text
-                    }));    
+                    }));
             }
             else {
                 console.log("Skipping", path, key)
@@ -27,29 +30,29 @@ function translateWeb(source, target, path) {
         }
     });
 }
-translateWeb(en, nl);
+translateWeb(sourceFile, targetFile);
 
 Promise.all(promises).then(() => {
-    fs.writeFileSync(__dirname + "/../locales/nl.json", JSON.stringify(nl, null, 2));
+    fs.writeFileSync(__dirname + `/../locales/${targetLang}.json`, JSON.stringify(targetFile, null, 2));
 });
 
 
 promises=[];
 
 /* App.json localization */
-var en = require("../src/app.json");
+var sourceFile = require("../src/app.json");
 function translateApp(source, path) {
     Object.keys(source).forEach(key => {
-        if (key === "nl") return;
+        if (key === targetLang) return;
 
-        if (key === "en") {
-            if (source["nl"] == null) {
+        if (key === sourceLang) {
+            if (source[targetLang] == null) {
                 console.log("Translate", path);
 
                 promises.push(
-                    translate(source[key], { from: 'en', to: 'nl' }).then(res => {
+                    translate(source[key], { from: sourceLang, to: targetLang }).then(res => {
                         console.log(path, source[key], "=>", res.text);
-                        source["nl"] = res.text
+                        source[targetLang] = res.text
                     }));
             } else {
                 console.log("Skipped", path)
@@ -61,8 +64,8 @@ function translateApp(source, path) {
     });
 }
 
-translateApp(en);
+translateApp(sourceFile);
 
 Promise.all(promises).then(() => {
-    fs.writeFileSync(__dirname + "/../src/app.json", JSON.stringify(en, null, 2));
+    fs.writeFileSync(__dirname + "/../src/app.json", JSON.stringify(sourceFile, null, 2));
 });

@@ -5,13 +5,15 @@
   "sdk": 2,
   "name": {
     "en": "Homey Heating Scheduler",
-    "nl": "Homey Verwarmingsregelaar"
+    "nl": "Homey Verwarmingsregelaar",
+    "de": "Homey Heizungsplaner"
   },
   "tags": {},
   "brandColor": "#2196f3",
   "description": {
     "en": "Create and manage heating schedules",
-    "nl": "Creëer en beheer verwarmingsschema's"
+    "nl": "Creëer en beheer verwarmingsschema's",
+    "de": "Heizungspläne erstellen und verwalten"
   },
   "category": [
     "tools"
@@ -29,14 +31,16 @@
         "id": "apply_all",
         "title": {
           "en": "Apply all active heating plans",
-          "nl": "Pas alle actieve verwarmingsschema's toe"
+          "nl": "Pas alle actieve verwarmingsschema's toe",
+          "de": "Wenden Sie alle aktiven Heizpläne an"
         }
       },
       {
         "id": "apply_plan",
         "title": {
           "en": "Apply heating plan",
-          "nl": "Verwarmingsschema toepassen"
+          "nl": "Verwarmingsschema toepassen",
+          "de": "Heizplan anwenden"
         },
         "args": [
           {
@@ -44,7 +48,8 @@
             "name": "plan",
             "placeholder": {
               "en": "Search for a plan...",
-              "nl": "Zoek naar een schema..."
+              "nl": "Zoek naar een schema...",
+              "de": "Einen Plan suchen ..."
             }
           }
         ]
@@ -53,7 +58,8 @@
         "id": "set_mode",
         "title": {
           "en": "Set heating mode",
-          "nl": "Stel de verwarmingsmodus in"
+          "nl": "Stel de verwarmingsmodus in",
+          "de": "Heizmodus einstellen"
         },
         "args": [
           {
@@ -64,42 +70,48 @@
                 "id": "0",
                 "label": {
                   "en": "Automatic",
-                  "nl": "Automatisch"
+                  "nl": "Automatisch",
+                  "de": "Automatik"
                 }
               },
               {
                 "id": "1",
                 "label": {
                   "en": "1 day at home",
-                  "nl": "1 dag thuis"
+                  "nl": "1 dag thuis",
+                  "de": "1 tag zu Hause"
                 }
               },
               {
                 "id": "2",
                 "label": {
                   "en": "1 day away from home",
-                  "nl": "1 dag weg van huis"
+                  "nl": "1 dag weg van huis",
+                  "de": "1 Tag unterwegs"
                 }
               },
               {
                 "id": "3",
                 "label": {
                   "en": "Sleeping",
-                  "nl": "Slapen"
+                  "nl": "Slapen",
+                  "de": "Schlafen"
                 }
               },
               {
                 "id": "4",
                 "label": {
                   "en": "Holiday",
-                  "nl": "Vrije dag"
+                  "nl": "Vrije dag",
+                  "de": "Urlaub"
                 }
               },
               {
                 "id": "5",
                 "label": {
                   "en": "Out of season",
-                  "nl": "Buiten het seizoen"
+                  "nl": "Buiten het seizoen",
+                  "de": "Außerhalb der Saison"
                 }
               }
             ]
@@ -110,7 +122,8 @@
         "id": "set_log_state",
         "title": {
           "en": "Set remote logging",
-          "nl": "Stel loggen op afstand in"
+          "nl": "Stel loggen op afstand in",
+          "de": "Remote-Protokollierung"
         },
         "args": [
           {
@@ -121,14 +134,16 @@
                 "id": "true",
                 "label": {
                   "en": "to enabled",
-                  "nl": "naar ingeschakeld"
+                  "nl": "naar ingeschakeld",
+                  "de": "aktivieren"
                 }
               },
               {
                 "id": "false",
                 "label": {
                   "en": "to disabled",
-                  "nl": "naar uitgeschakeld"
+                  "nl": "naar uitgeschakeld",
+                  "de": "deaktivieren"
                 }
               }
             ]
@@ -139,7 +154,8 @@
         "id": "set_plan_state",
         "title": {
           "en": "Set heating plan",
-          "nl": "Activeer verwarmingsschema"
+          "nl": "Activeer verwarmingsschema",
+          "de": "Heizplan"
         },
         "args": [
           {
@@ -147,7 +163,8 @@
             "name": "plan",
             "placeholder": {
               "en": "Search for a plan...",
-              "nl": "Zoek naar een schema..."
+              "nl": "Zoek naar een schema...",
+              "de": "Einen Plan suchen ..."
             }
           },
           {
@@ -158,14 +175,16 @@
                 "id": "true",
                 "label": {
                   "en": "to enabled",
-                  "nl": "naar ingeschakeld"
+                  "nl": "naar ingeschakeld",
+                  "de": "aktivieren"
                 }
               },
               {
                 "id": "false",
                 "label": {
                   "en": "to disabled",
-                  "nl": "naar uitgeschakeld"
+                  "nl": "naar uitgeschakeld",
+                  "de": "deaktivieren"
                 }
               }
             ]
@@ -176,7 +195,8 @@
         "id": "set_thermostat_override",
         "title": {
           "en": "Set thermostat mode",
-          "nl": "Activeer thermostaatmodus"
+          "nl": "Activeer thermostaatmodus",
+          "de": "Thermostatmodus"
         },
         "args": [
           {
@@ -187,21 +207,24 @@
                 "id": "0",
                 "label": {
                   "en": "Heating plan (automatic)",
-                  "nl": "Verwarmingsschema (automatisch)"
+                  "nl": "Verwarmingsschema (automatisch)",
+                  "de": "Heizplan (automatisch)"
                 }
               },
               {
                 "id": "6",
                 "label": {
                   "en": "Manual until midnight",
-                  "nl": "Handmatig tot middernacht"
+                  "nl": "Handmatig tot middernacht",
+                  "de": "Manuell bis Mitternacht"
                 }
               },
               {
                 "id": "7",
                 "label": {
                   "en": "Fully manual",
-                  "nl": "Volledig handmatig"
+                  "nl": "Volledig handmatig",
+                  "de": "Vollständig manuell"
                 }
               }
             ]
@@ -219,7 +242,8 @@
         "id": "thermostat_override_changed",
         "title": {
           "en": "Thermostat mode changed",
-          "nl": "De thermostaatmodus is gewijzigd"
+          "nl": "De thermostaatmodus is gewijzigd",
+          "de": "Thermostatmodus geändert"
         },
         "tokens": [
           {
@@ -227,7 +251,8 @@
             "type": "string",
             "title": {
               "en": "Mode",
-              "nl": "Modus"
+              "nl": "Modus",
+              "de": "Modus"
             },
             "example": "Automatic"
           }
@@ -244,7 +269,8 @@
         "id": "mode_changed",
         "title": {
           "en": "Heating mode changed",
-          "nl": "Verwarmingsmodus gewijzigd"
+          "nl": "Verwarmingsmodus gewijzigd",
+          "de": "Heizmodus geändert"
         },
         "tokens": [
           {
@@ -252,7 +278,8 @@
             "type": "string",
             "title": {
               "en": "Mode",
-              "nl": "Modus"
+              "nl": "Modus",
+              "de": "Modus"
             },
             "example": "Automatic"
           }
@@ -287,7 +314,8 @@
       "type": "enum",
       "title": {
         "en": "Thermostat mode",
-        "nl": "Thermostaatmodus"
+        "nl": "Thermostaatmodus",
+        "de": "Thermostatmodus"
       },
       "getable": true,
       "setable": true,
@@ -297,21 +325,24 @@
           "id": "0",
           "title": {
             "en": "Heating plan (automatic)",
-            "nl": "Verwarmingsschema (automatisch)"
+            "nl": "Verwarmingsschema (automatisch)",
+            "de": "Heizplan (automatisch)"
           }
         },
         {
           "id": "6",
           "title": {
             "en": "Manual until midnight",
-            "nl": "Handmatig tot middernacht"
+            "nl": "Handmatig tot middernacht",
+            "de": "Manuell bis Mitternacht"
           }
         },
         {
           "id": "7",
           "title": {
             "en": "Fully manual",
-            "nl": "Volledig handmatig"
+            "nl": "Volledig handmatig",
+            "de": "Vollständig manuell"
           }
         }
       ]
@@ -322,7 +353,8 @@
       "id": "virtual-thermostat",
       "name": {
         "en": "Virtual Thermostat",
-        "nl": "Virtuele thermostaat"
+        "nl": "Virtuele thermostaat",
+        "de": "Virtueller Thermostat"
       },
       "class": "thermostat",
       "capabilities": [
