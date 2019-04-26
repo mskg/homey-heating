@@ -3,7 +3,7 @@ import "reflect-metadata";
 // position must not be changed
 
 import { IHeatingPlan } from "@app/model";
-import { BootStrapper, CapabilityType, HeatingPlanRepositoryService, ICategoryLogger, LoggerFactory } from "@app/services";
+import { BootStrapper, CapabilityType, HeatingPlanRepositoryService, LoggerFactory } from "@app/services";
 import { __, Driver } from "homey";
 import { container } from "tsyringe";
 
