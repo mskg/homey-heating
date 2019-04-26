@@ -36,7 +36,7 @@ const SchedulesPage: React.FunctionComponent<Props> = (_props) => {
                         {plans.length === 0
                             ? <BodyText style={{ paddingTop: 16 }} text={translate("plans.plans.empty")} />
                             : plans.map((plan) => (
-                                <React.Fragment>
+                                <React.Fragment key={plan.id}>
                                     <SubHeader text={plan.name} />
                                     <Chart plan={plan} />
                                 </React.Fragment>
