@@ -15,7 +15,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import RemoveIcon from "@material-ui/icons/Delete";
 import CopyIcon from "@material-ui/icons/FileCopy";
 import { map } from "lodash";
-import { withSnackbarProps, withSnackbar } from "notistack";
+import { withSnackbar, withSnackbarProps } from "notistack";
 import React, { Fragment, ReactNode, useEffect, useState } from "react";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { ScrollLocky } from "react-scroll-locky";
