@@ -8,24 +8,24 @@ import { __, Driver } from "homey";
 import { container } from "tsyringe";
 
 class VirtualThermostatsDriver extends Driver {
-    private logger!: ICategoryLogger;
-    private repository!: HeatingPlanRepositoryService;
-
     public async onInit() {
-        await BootStrapper();
-
         // tslint:disable-next-line: no-console
         console.info(`Bootstrapping Driver v${__VERSION} (${__BUILD})`);
 
-        const factory = container.resolve<LoggerFactory>(LoggerFactory);
-        this.logger = factory.createLogger("Driver");
-
-        this.repository = container.resolve<HeatingPlanRepositoryService>(HeatingPlanRepositoryService);
+        await BootStrapper();
     }
 
     public async onPairListDevices(_data: any, callback: (err: Error | null, result: Array<{}>) => void) {
-        this.logger.information("Preparing available devices");
-        const plans: IHeatingPlan[] = await this.repository.plans;
+        // moved code down due to #94, HOMEY-HEATING-1A
+        await BootStrapper();
+
+        const factory = container.resolve<LoggerFactory>(LoggerFactory);
+        const logger = factory.createLogger("Driver");
+
+        const repository = container.resolve<HeatingPlanRepositoryService>(HeatingPlanRepositoryService);
+
+        logger.information("Preparing available devices");
+        const plans: IHeatingPlan[] = await repository.plans;
 
         callback(null,
             plans.map((p) => {
