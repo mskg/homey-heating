@@ -112,6 +112,7 @@ var appConfig = (env, argv) => {
           "options@0.0.6": { licenseName: "MIT" },
           "utf8@2.0.0": { licenseName: "MIT" },
           "ws@0.4.31": { licenseName: "MIT" },
+          "create-react-context@0.2.3": { licenseName: "MIT" },
         }
       }));
   }
