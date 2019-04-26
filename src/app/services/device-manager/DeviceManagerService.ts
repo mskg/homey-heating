@@ -169,6 +169,11 @@ export class DeviceManagerService {
     public async setTargetTemperature(d: AuditedDevice, targetTemperature: number) {
         let target = targetTemperature;
 
+        if (!d.available || !d.ready) {
+            this.logger.information(`Device ${d.id} is ready: ${d.ready}, available: ${d.available}, skipping setTargetTemperature`);
+            return;
+        }
+
         try {
             const cap = d.watchedCapabilities != null ? d.watchedCapabilities.targetTemperature : null;
             if (cap != null) {
