@@ -8,7 +8,7 @@ This is a collection of things that have been asked.
 ## Maybe I am blind but I can’t find the way how to create the mentioned virtual device
 This device is only available since version 1.2.0.
 
-## I wish tha set values for temperature were open to change. I wish in the bathroom a temperature over 23 degrees but that's impossible now
+## I wish that set values for temperature were open to change. I wish in the bathroom a temperature over 23 degrees but that's impossible now
 You can, just type the value in the input field below the drop-down.
 
 ## How will the app realize whether I am on holiday or not? Where to define? Maybe I missed it but I can‘t see a holiday mode in Homey
