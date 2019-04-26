@@ -3,10 +3,13 @@ layout: page
 title:  FAQ
 ---
 
-This is a collection of things that have been asked. 
+This is a collection of things that have been asked.
 
 ## Maybe I am blind but I can’t find the way how to create the mentioned virtual device
 This device is only available since version 1.2.0.
+
+## I wish tha set values for temperature were open to change. I wish in the bathroom a temperature over 23 degrees but that's impossible now
+You can, just type the value in the input field below the drop-down.
 
 ## How will the app realize whether I am on holiday or not? Where to define? Maybe I missed it but I can‘t see a holiday mode in Homey
 A plan is the normal schedule, but than what happens if I'm at home unplanned? I leave home unplanned? I go to sleep earlier? We're on holiday for a couple of days?
@@ -17,13 +20,13 @@ I called these setpoints exceptions, and the events `mode` for the heating sched
 - using Flow: The action is called `Set heating mode`
 - or using the settings page: Drop-down on `Overview` / `Change heating mode`
 
-No automation here, as this can all be done easily with Flow and better as anything I might have thought about. 
+No automation here, as this can all be done easily with Flow and better as anything I might have thought about.
 
 The modes **One day at home**, **One day away from home**, and **Sleeping** are reset every day at 00:00 to `Automatic`.
 The other modes (**On holiday**, **Out of season (it's summer)**) stay until you set the scheduler back to any other mode.
 
 ## To many alerts/notifications when using multiple heating plans
-In the settings page, you can toggle notifications for 
+In the settings page, you can toggle notifications for
 * mode change
 * temperature set
 * temperature set error
