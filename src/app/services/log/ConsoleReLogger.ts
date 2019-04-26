@@ -1,4 +1,4 @@
-import { PromiseBuffer } from "@sentry/core/dist/promisebuffer";
+import { PromiseBuffer } from "@sentry/utils";
 import { connect } from "socket.io-client";
 import { LogService } from "./LogService";
 import { ILogger, INeedsCleanup } from "./types";
@@ -61,6 +61,11 @@ export class ConsoleReLogger implements ILogger, INeedsCleanup {
     }
 
     private sendLog(level: "info" | "debug" | "error", ...args: any[]) {
+        if (!this.buffer.isReady()) {
+            LogService.transportLog.error("ConsoleReLogger buffer full", level, ...args);
+            return;
+        }
+
         this.buffer.add(
             new Promise((resolve) => {
                 if (this.socket.connected) {
