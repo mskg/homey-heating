@@ -50,6 +50,9 @@ var scriptConfig = (env, argv) => {
         allow: "(GPL-3.0 OR Apache-2.0 OR BSD-2-Clause OR BSD-3-Clause OR MIT)",
         outputFilename: "ThirdPartyNotices.txt",
         emitError: true,
+        override: {
+          "create-react-context@0.2.3": { licenseName: "MIT" },
+        }
       }));
   }
 
