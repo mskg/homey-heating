@@ -1,5 +1,5 @@
 import { StyleRulesCallback, withStyles, WithStyles } from "@material-ui/core/styles";
-import { InjectedNotistackProps, withSnackbar } from "notistack";
+import { withSnackbar, withSnackbarProps } from "notistack";
 import React from "react";
 import { RouteComponentProps } from "react-router";
 import { withRouter } from "react-router-dom";
@@ -19,7 +19,7 @@ const styles: StyleRulesCallback = (theme) => ({
     },
 });
 
-type Props = WithStyles<typeof styles> & RouteComponentProps & InjectedNotistackProps;
+type Props = WithStyles<typeof styles> & RouteComponentProps & withSnackbarProps;
 
 const SchedulesPage: React.FunctionComponent<Props> = (_props) => {
     const { plans } = usePlans();
@@ -49,4 +49,5 @@ const SchedulesPage: React.FunctionComponent<Props> = (_props) => {
     );
 };
 
+// @ts-ignore
 export default withSnackbar(withRouter(withStyles(styles)(SchedulesPage)));

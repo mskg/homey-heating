@@ -3,7 +3,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { StyleRulesCallback, withStyles, WithStyles } from "@material-ui/core/styles";
 import Switch from "@material-ui/core/Switch";
 import CancelIcon from "@material-ui/icons/Cancel";
-import { InjectedNotistackProps, withSnackbar } from "notistack";
+import { withSnackbar, withSnackbarProps } from "notistack";
 import React, { ChangeEvent } from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { Settings } from "../../app/services/settings-manager/types";
@@ -26,7 +26,7 @@ type Params = {
 };
 
 type SettingsName = keyof typeof Settings;
-type Props = WithStyles<typeof styles> & RouteComponentProps<Params> & InjectedNotistackProps;
+type Props = WithStyles<typeof styles> & RouteComponentProps<Params> & withSnackbarProps;
 
 const SettingsPage: React.FunctionComponent<Props> = (props) => {
     const { settings, setSettings, loadSettings } = useSettings(true);
@@ -190,4 +190,5 @@ const SettingsPage: React.FunctionComponent<Props> = (props) => {
     );
 };
 
+// @ts-ignore
 export default withSnackbar(withRouter(withStyles(styles)(SettingsPage)));
