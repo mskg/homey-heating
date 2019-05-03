@@ -34,7 +34,7 @@
     "@types/lodash": "^4.14.123",
     "@types/mocha": "^5.2.6",
     "@types/mock-require": "^2.0.0",
-    "@types/node": "^11.11.4",
+    "@types/node": "^12.0.0",
     "@types/react": "^16.8.8",
     "@types/react-dom": "^16.8.3",
     "@types/react-router": "^4.4.5",
