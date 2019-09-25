@@ -38,7 +38,7 @@
     "@types/react": "^16.8.8",
     "@types/react-dom": "^16.8.3",
     "@types/react-router": "^4.4.5",
-    "@types/react-router-dom": "^4.3.1",
+    "@types/react-router-dom": "^5.1.0",
     "@types/socket.io-client": "^1.4.32",
     "@vitalets/google-translate-api": "^2.8.0",
     "athom-cli": "^2.1.78",
