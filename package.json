@@ -24,7 +24,7 @@
     "socket.io-client": "^2.2.0",
     "strongly-typed-events": "^1.4.10",
     "tslint-react": "^3.6.0",
-    "tsyringe": "^3.0.1",
+    "tsyringe": "^4.0.0",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
