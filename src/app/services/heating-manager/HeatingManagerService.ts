@@ -301,8 +301,10 @@ export class HeatingManagerService {
     }
 
     private async applySettings(settings: IGroupedCalculatedTemperature[]) {
-        // filter out thermostat overrides, those don't need to be applied
-        const groups = settings.filter((f) => f.thermostatMode === NormalOperationMode.Automatic);
+// Commented to avoid conflict with workaround to issue #114 and #120, even overrides must be applied every 5 minutes!
+//        // filter out thermostat overrides, those don't need to be applied
+//        const groups = settings.filter((f) => f.thermostatMode === NormalOperationMode.Automatic);
+        const groups = settings;
 
         // debug
         this.logger.information(`Applying ${groups.length} settings`, groups.map((s) => ({
