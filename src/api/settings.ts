@@ -34,7 +34,8 @@ class PutSettings extends ApiBase {
     protected async execute(args: IAPIParams<Body>) {
         const settings = args.body;
 
-        forEach([...Object.keys(Settings), ...Object.keys(InternalSettings)], (publicKey: any) => {
+        forEach([...Object.keys(Settings), ...Object.keys(InternalSettings)], (publicKey: string) => {
+            // @ts-ignore
             const privateKey: string = Settings[publicKey];
 
             if (settings.hasOwnProperty(publicKey)) {

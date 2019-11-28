@@ -7,7 +7,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import { StyleRulesCallback, withStyles, WithStyles } from "@material-ui/core/styles";
 import Switch from "@material-ui/core/Switch";
 import { forEach, sortBy } from "lodash";
-import { withSnackbar, withSnackbarProps } from "notistack";
+import { withSnackbar, WithSnackbarProps } from "notistack";
 import React from "react";
 import { RouteComponentProps } from "react-router";
 import { Link, withRouter } from "react-router-dom";
@@ -30,7 +30,7 @@ const styles: StyleRulesCallback = (theme) => ({
     },
 });
 
-type Props = WithStyles<typeof styles> & RouteComponentProps & withSnackbarProps;
+type Props = WithStyles<typeof styles> & RouteComponentProps & WithSnackbarProps;
 
 const OverviewPage: React.FunctionComponent<Props> = (props: Props) => {
     const { classes } = props;

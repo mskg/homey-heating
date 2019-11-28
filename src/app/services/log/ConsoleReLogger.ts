@@ -45,7 +45,7 @@ export class ConsoleReLogger implements ILogger, INeedsCleanup {
 
             LogService.transportLog.information("ConsoleRe cleaned up");
             return true;
-        });
+        }) as Promise<boolean>;
     }
 
     public information(category: string, message: string, ...args: any[]) {
@@ -92,6 +92,7 @@ export class ConsoleReLogger implements ILogger, INeedsCleanup {
 
                 resolve();
             }),
+        // @ts-ignore
         ).catch((e) => {
             LogService.transportLog.error(e, "ConsoleRe could not send log: ", ...args, e);
         });
