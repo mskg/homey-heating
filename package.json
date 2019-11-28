@@ -59,7 +59,7 @@
     "mock-require": "^3.0.3",
     "rimraf": "^2.6.3",
     "source-map-loader": "^0.2.4",
-    "style-loader": "^0.23.1",
+    "style-loader": "^1.0.1",
     "supports-color": "^6.1.0",
     "ts-loader": "^5.3.3",
     "tslint": "^5.14.0",
