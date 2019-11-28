@@ -5,7 +5,7 @@
       "text": "Als je live logboeken van de toepassing wilt weergeven, schakel je onderstaande schakelaar in en voer je een unieke logcategorie in. Je kan de logboeken bekijken door console.re/<je-categorie> te bezoeken. Vergeet niet, wanneer je klaar bent, om het uit te schakelen!"
     },
     "enabled": {
-      "label": "Ingeschakeld?"
+      "label": "Inschakelen?"
     },
     "category": {
       "label": "Logcategorie",
@@ -14,7 +14,7 @@
     "backup": {
       "placeholder": "Configuratie van het verwarmingsschema",
       "label": "Configuratie van het verwarmingsschema",
-      "title": "Back-up en herstel je verwarmingsschema's",
+      "title": "Back-up en herstel van verwarmingsschema's",
       "text": "Kopieer de hele tekst uit het tekstveld en sla deze op in een normaal tekstbestand. Let op: het wijzigen van de inhoud heeft overschrijft alle bestaande schema's."
     },
     "title": "Instellingen",
@@ -27,8 +27,8 @@
       "text": "Zijn we bezig met het spammen van je tijdlijn? Geen probleem, zet de meldingen gewoon uit."
     },
     "sentry": {
-      "category": "Sentry error tracking",
-      "text": "Sentry.io is een externe service die inzicht geeft in fouten die zich hebben voorgedaan met deze app op uw Homey. Om deze reden worden foutdetails automatisch naar deze externe service verzonden. Als u deze gegevens niet wilt delen, schakelt u deze instelling uit."
+      "category": "Sentry foutmeldingen",
+      "text": "Sentry.io is een externe dienst die inzicht geeft in fouten die zich hebben voorgedaan met deze app op uw Homey. Om deze reden worden foutdetails automatisch naar deze externe service verzonden. Als u deze gegevens niet wilt delen, schakelt u dit uit."
     }
   },
 
@@ -59,13 +59,13 @@
 
   "overrides": {
     "title": "Bewerk schema-uitzonderingen",
-    "section": "Onderbreek schema wanner",
-    "text": "Pauzeer het geconfigureerde schema wanneer er iets bijzonders gebeurt, bijvoorbeeld als ongepland ongepland niet thuis bent of juist eerder terug bent. Om het speciale gedrag te activeren, moet je de planner instellen op de juiste modus met behulp van de schemaoverzichtspagina.",
+    "section": "Onderbreek schema",
+    "text": "Pauzeer het geconfigureerde schema wanneer er iets bijzonders gebeurt, bijvoorbeeld als je ongepland niet thuis bent of juist eerder thuis bent. Om afwijkende situaties te activeren, moet je de planner instellen op de juiste modus met behulp van de schemaoverzichtspagina.",
     "holiday": "...je op vakantie bent?",
-    "away": "... als je een dagje weg bent van huis?",
+    "away": "...aje een dagje weg bent van huis?",
     "sleeping": "...je slaapt?",
-    "athome": "... je een dag niet thuis bent?",
-    "outofseason": "... het zomer is?"
+    "athome": "...heel de dag thuis bent?",
+    "outofseason": "...het zomer is?"
   },
 
   "plan": {
@@ -81,7 +81,7 @@
     },
 
     "confirm": {
-      "title": "Wilt je echt het verwarmingsschema verwijderen?",
+      "title": "Wil je echt het verwarmingsschema verwijderen?",
       "content": "Druk op OK om het verwarmingsschema definitief te verwijderen. Deze actie kan niet ongedaan gemaakt worden."
     },
 
@@ -91,7 +91,7 @@
         "label": "Geef de naam van het schema weer"
       },
       "enabled": {
-        "label": "Ingeschakeld?"
+        "label": "Inschakelen?"
       },
       "description": {
         "label": "Omschrijving",
@@ -100,7 +100,7 @@
       "text": "Geef je schema een heldere naam.",
       "section": "Overzicht",
       "text_description": "Is er iets belangrijks dat je moet onthouden?",
-      "text_enable": "Als je het schema uitschakelt, wordt het niet langer automatisch toegepast. Je kunt het echter nog steeds handmatig toepassen via Flows."
+      "text_enable": "Als je het schema uitschakelt, wordt het niet langer automatisch toegepast. Je kunt het echter nog steeds handmatig aanpassen via Flows."
     },
 
     "schedules": {
@@ -108,7 +108,7 @@
       "section": "Planning",
       "exceptions": "Uitzonderingen",
       "section_summary": "Snel overzicht",
-      "text": "Configureer de schema's wanneer de temperatuur van uw verwarmingsapparaten moet worden aangepast. Er kunnen extra uitzonderingen worden geconfigureerd, voor als je ongepland het huis verlaat of juist eerder terug bent."
+      "text": "Configureer de schema's wanneer de temperatuur van uw verwarmingsapparaten moet worden aangepast. Er kunnen extra uitzonderingen worden geconfigureerd bijvoorbeeld als je ongepland het huis verlaat of juist eerder terug bent."
     },
 
     "zones": {
@@ -161,7 +161,7 @@
     "list": {
       "title": "Overzicht van instelpunten",
       "empty": "- geen thermostaten gevonden -",
-      "text": "De lijst hieronder laat zien, wat de applicatie aan het configureert. Aan de linkerkant staan de huidige instelpunten, versus de huidig gemeten temperatuur aan de rechterkant. Als een apparaat niet wordt weergegeven, is dit niet geconfigureerd door een actief verwarmingsschema."
+      "text": "De lijst hieronder laat zien, wat de applicatie heeft ingesteld. Aan de linkerkant staan de huidige instelpunten, de rechterkant de huidig gemeten temperatuur. Als een apparaat niet wordt weergegeven wordt deze niet geconfigureerd door een actief verwarmingsschema."
     },
     "mode": "Huidige modus",
     "title": "Huidige temperaturen",
@@ -186,10 +186,10 @@
     "title": "Oepsie! Er is iets fout gegaan."
   },
   "menu": {
-    "plans": "Overzicht",
+    "plans": "Schema's",
     "help": "Hulp",
     "temperatures": "Huidige temperaturen",
-    "schedules": "Bewerk schema's",
+    "schedules": "Schema overzicht",
     "about": "Over",
     "settings": "Instellingen",
     "title": "Homey Verwarmingsregelaar"
@@ -200,7 +200,7 @@
     "title": "Bevestig je actie"
   },
   "Modes": {
-    "0": "Automamaat",
+    "0": "Automatisch",
     "1": "Een dag thuis",
     "2": "Een dag weg van huis",
     "3": "Slapen",
