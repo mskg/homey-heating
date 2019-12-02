@@ -47,7 +47,7 @@
     "clean-webpack-plugin": "^1.0.1",
     "copy-webpack-plugin": "^5.0.1",
     "copyfiles": "^2.1.0",
-    "css-loader": "^2.1.1",
+    "css-loader": "^3.2.1",
     "file-loader": "^3.0.1",
     "fstream": "^1.0.11",
     "glob": "^7.1.3",
