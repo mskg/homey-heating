@@ -127,7 +127,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
         await this.updateTemperature(calculation);
 
         if (calculation.length > 0) {
-            await this.doSetCapbilityValue(CapabilityType.TargetTemperature,
+            await this.doSetCapabilityValue(CapabilityType.TargetTemperature,
                 this.adjustTemperatureValue(calculation[0].targetTemperature));
         }
     }
@@ -180,8 +180,8 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
      * @param type The one
      * @param val The value to set/check
      */
-    private async doSetCapbilityValue<T extends string | number | boolean>(type: CapabilityType, val: T): Promise<boolean> {
-        if (await this.getCapabilityValue(type) !== val) {
+    private async doSetCapabilityValue<T extends string | number | boolean>(type: CapabilityType, val: T): Promise<boolean> {
+        if (this.getCapabilityValue(type) !== val) {
             this.logger.information(`Set ${type} = ${val}`);
             await this.setCapabilityValue(type, val);
 
@@ -228,7 +228,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
         sum = this.adjustTemperatureValue(calculation.length === 0 ? 0 : sum / calculation.length);
         this.logger.debug(`Calculated temperature`, sum);
 
-        await this.doSetCapbilityValue(CapabilityType.MeasureTemperature, sum);
+        await this.doSetCapabilityValue(CapabilityType.MeasureTemperature, sum);
     }
 
     /**
@@ -254,7 +254,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
                 thermostatMode = this.plan.thermostatMode;
             }
 
-            if (await this.doSetCapbilityValue(CapabilityType.ThermostatOverride, thermostatMode.toString())) {
+            if (await this.doSetCapabilityValue(CapabilityType.ThermostatOverride, thermostatMode.toString())) {
                 await this.flow.thermostatModeChanged.trigger(this, {mode: __(`ThermostatMode.${thermostatMode}`)});
             }
 
@@ -264,7 +264,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
                 .filter((t) => t.thermostatMode === NormalOperationMode.Automatic);
 
             if (dev.length > 0) {
-                await this.doSetCapbilityValue(CapabilityType.TargetTemperature, this.adjustTemperatureValue(dev[0].targetTemperature));
+                await this.doSetCapabilityValue(CapabilityType.TargetTemperature, this.adjustTemperatureValue(dev[0].targetTemperature));
             }
         }
     }
@@ -309,7 +309,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
             }
 
             // ok, will only change if not like that
-            if (await this.doSetCapbilityValue(CapabilityType.ThermostatOverride, ThermostatMode.OverrideDay.toString())) {
+            if (await this.doSetCapabilityValue(CapabilityType.ThermostatOverride, ThermostatMode.OverrideDay.toString())) {
                 await this.flow.thermostatModeChanged.trigger(this, {mode: __(`ThermostatMode.${ThermostatMode.OverrideDay}`)});
             }
         }
