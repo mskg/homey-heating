@@ -1,6 +1,6 @@
 const https = require('https');
 const fs = require('fs');
-const unzip = require("unzip");
+const unzipper = require("unzipper");
 const rimraf = require("rimraf");
 const cli = require("athom-cli");
 const _ = require("lodash");
@@ -61,7 +61,7 @@ function run() {
 
                 const readStream = fs.createReadStream(downLoadFile);
                 readStream
-                    .pipe(unzip.Parse())
+                    .pipe(unzipper.Parse())
                     .on('entry', function (entry) {
                         var entryName = entry.path;
                         entryName = entryName.substring(entryName.indexOf("/") + 1);
