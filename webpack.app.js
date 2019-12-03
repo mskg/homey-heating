@@ -53,7 +53,7 @@ var appConfig = (env, argv) => {
         to: distPath
       },
       {
-        from: './APPSTORE.md',
+        from: './APPSTORE.txt',
         to: distPath
       },
       {
