@@ -94,10 +94,15 @@ var scriptConfig = (env, argv) => {
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
-        loader: 'file-loader',
-        options: {
-          name: '[name].[ext]?[hash]'
-        }
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[ext]?[hash]',
+              esModule: false,
+            },
+          },
+        ],
       }
       ]
     },
