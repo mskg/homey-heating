@@ -45,6 +45,10 @@ var appConfig = (env, argv) => {
         to: distPath
       },
       {
+        from: "./tmp/.homeychangelog.json",
+        to: distPath
+      },
+      {
         from: './scripts/CI.md',
         to: distPath + "/README.md"
       },

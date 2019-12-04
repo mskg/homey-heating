@@ -93,7 +93,7 @@ function run() {
                                 console.log("done.");
                             })
                             .catch((e) => {
-                                console.error("done.");
+                                console.error("error:", e);
                             });
                         } else {
                             new cli.App(tempDir).install({ debug: false, skipBuild: true })
@@ -101,7 +101,7 @@ function run() {
                                     console.log("done.");
                                 })
                                 .catch((e) => {
-                                    console.error("done.");
+                                    console.error("error:", e);
                                 });
                         }
                     })
