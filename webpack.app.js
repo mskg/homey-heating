@@ -58,7 +58,7 @@ var appConfig = (env, argv) => {
       },
       {
         from: './APPSTORE.txt',
-        to: distPath
+        to: distPath + "/README.txt"
       },
       {
         from: 'assets/**/*.png',
