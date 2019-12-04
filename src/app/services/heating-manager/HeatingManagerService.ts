@@ -81,7 +81,7 @@ export class HeatingManagerService {
             await this.flow.modeChanged.trigger({ mode: __(`Modes.${this.mode}`) });
 
             if (this.settings.get(Settings.NotifyModeChange, true)) {
-                this.sendNotification("set_operation_mode", {
+                await this.sendNotification("set_operation_mode", {
                     mode: __(`Modes.${this.mode}`),
                 });
             }
@@ -221,7 +221,7 @@ export class HeatingManagerService {
 
         if (!result.success) {
             if (this.settings.get(Settings.NotifySetError, true)) {
-                this.sendNotification("failed_set_target_temperature", {
+                await this.sendNotification("failed_set_target_temperature", {
                     name: device.name,
                     value: targetTemperature,
                     error: result.error,
@@ -229,7 +229,7 @@ export class HeatingManagerService {
             }
         } else if (!result.skipped) {
             if (this.settings.get(Settings.NotifySetSuccess, true)) {
-                this.sendNotification("set_target_temperature", {
+                await this.sendNotification("set_target_temperature", {
                     name: device.name,
                     value: targetTemperature,
                     plan: planName,
@@ -321,10 +321,11 @@ export class HeatingManagerService {
         );
     }
 
-    private sendNotification(name: string, args?: {}) {
+    private async sendNotification(name: string, args?: {}) {
         const notification = new Notification({
             excerpt: __(`Notification.${name}`, args),
         });
-        notification.register();
+
+        await notification.register();
     }
 }

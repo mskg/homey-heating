@@ -17,7 +17,7 @@ declare module "homey" {
             excerpt: string
         });
 
-        public register(): void;
+        public register(): Promise<void>;
     }
 
     export class FlowArgument {

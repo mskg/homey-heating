@@ -15,7 +15,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import RemoveIcon from "@material-ui/icons/Delete";
 import CopyIcon from "@material-ui/icons/FileCopy";
 import { map } from "lodash";
-import { InjectedNotistackProps, withSnackbar } from "notistack";
+import { withSnackbar, WithSnackbarProps } from "notistack";
 import React, { Fragment, ReactNode, useEffect, useState } from "react";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { ScrollLocky } from "react-scroll-locky";
@@ -60,7 +60,7 @@ type Params = {
 
 type Props = WithStyles<typeof styles>
     & RouteComponentProps<Params, any, boolean>
-    & InjectedNotistackProps;
+    & WithSnackbarProps;
 
 type TabProps = {
     id: number,
@@ -78,7 +78,7 @@ const TabContainer: React.FunctionComponent<TabProps> = (props) => {
     );
 };
 
-const PlanOverviewPage: React.FunctionComponent<Props> = (props) => {
+const PlanOverviewPage: React.FunctionComponent<Props> = (props: Props) => {
     const { classes } = props;
     const [selectedTab, selectTab] = React.useState(0);
 
@@ -315,4 +315,5 @@ const PlanOverviewPage: React.FunctionComponent<Props> = (props) => {
     );
 };
 
+// @ts-ignore
 export default withSnackbar(withRouter(withStyles(styles)(PlanOverviewPage)));

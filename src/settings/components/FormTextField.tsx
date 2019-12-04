@@ -10,7 +10,8 @@ const FormTextField = ({ classes, ...otherProps }: TextFieldProps) => {
                 margin="normal"
                 {...otherProps}
             />
-        </InputContainer>);
+        </InputContainer>
+    );
 };
 
 export default FormTextField;

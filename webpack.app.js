@@ -1,4 +1,4 @@
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin').CleanWebpackPlugin;
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
 const fs = require('fs');
@@ -38,7 +38,7 @@ var appConfig = (env, argv) => {
       publicPath: `https://raw.githubusercontent.com/mskg/homey-heating/release/v${package.version}/`
     }) : null,
 
-    new CleanWebpackPlugin(distPath),
+    new CleanWebpackPlugin(/*distPath*/),
     new CopyWebpackPlugin([
       {
         from: "./tmp/app.json",
@@ -53,7 +53,7 @@ var appConfig = (env, argv) => {
         to: distPath
       },
       {
-        from: './APPSTORE.md',
+        from: './APPSTORE.txt',
         to: distPath
       },
       {

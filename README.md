@@ -9,6 +9,7 @@ See [Issue Tracker](https://github.com/mskg/homey-heating/issues)
 
 * English
 * Dutch
+* Deutsch
 
 ## Notes
 * Build
@@ -33,6 +34,7 @@ See [Issue Tracker](https://github.com/mskg/homey-heating/issues)
 * **1.1.2** [Release notes](docs/releasenotes/v01-01-02.md)
 * **1.2.0** [Release notes](docs/releasenotes/v01-02-00.md)
 * **1.2.1** [Release notes](docs/releasenotes/v01-02-01.md)
+* **1.2.2** [Release notes](docs/releasenotes/v01-02-02.md)
 
 ## Feedback
 

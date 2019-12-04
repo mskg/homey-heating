@@ -1,11 +1,17 @@
 const https = require('https');
 const fs = require('fs');
-const unzip = require("unzip");
+const unzipper = require("unzipper");
 const rimraf = require("rimraf");
 const cli = require("athom-cli");
 const _ = require("lodash");
 
-var branchName = process.argv.length >= 3 ? process.argv[2] : null;
+var branchName = process.argv.length >= 4 ? process.argv[3] : null;
+var action = process.argv.length >= 4 ? process.argv[2] : null;
+
+if (action !== 'install' && action !== 'publish') {
+    console.error("Unkown action", action);
+    process.abort();
+}
 
 const options = {
     hostname: 'api.github.com',
@@ -16,12 +22,12 @@ const options = {
 https.get(options, (res) => {
     var body = '';
 
-    res.on('data', function(chunk){
+    res.on('data', function (chunk) {
         body += chunk;
     });
 
-    res.on('end', function(){
-        var branches  = JSON.parse(body);
+    res.on('end', function () {
+        var branches = JSON.parse(body);
         var f = _.find(branches, b => b.name == "release/" + branchName);
 
         if (f == null) {
@@ -61,7 +67,7 @@ function run() {
 
                 const readStream = fs.createReadStream(downLoadFile);
                 readStream
-                    .pipe(unzip.Parse())
+                    .pipe(unzipper.Parse())
                     .on('entry', function (entry) {
                         var entryName = entry.path;
                         entryName = entryName.substring(entryName.indexOf("/") + 1);
@@ -81,13 +87,23 @@ function run() {
                         fs.unlinkSync(downLoadFile);
                         console.log("Installing");
 
-                        new cli.App(tempDir).install({ debug: false, skipBuild: true })
+                        if (action == 'publish') {
+                            new cli.App(tempDir).publish()
                             .then(() => {
                                 console.log("done.");
                             })
                             .catch((e) => {
                                 console.error("done.");
                             });
+                        } else {
+                            new cli.App(tempDir).install({ debug: false, skipBuild: true })
+                                .then(() => {
+                                    console.log("done.");
+                                })
+                                .catch((e) => {
+                                    console.error("done.");
+                                });
+                        }
                     })
             });
         })

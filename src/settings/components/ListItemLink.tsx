@@ -18,6 +18,7 @@ function createLink({innerRef, ...props}: Props) {
         return <a onClick={() => Homey.openURL(props.to.toString())} {...props}>{props.children}</a>;
     }
 
+    // @ts-ignore
     return <Link {...props} />;
 }
 

@@ -69,8 +69,8 @@ export class SVGGenerator {
         const svg = this.createChart(false);
         const chart = svg.select(".chart");
 
+        // @ts-ignore
         const allData = chart.selectAll("g").data<SeriesElement>(
-            // @ts-ignore
             data, (d: SeriesElement) => d.start + d.taskName + d.end);
 
         const timeslot = allData.enter()

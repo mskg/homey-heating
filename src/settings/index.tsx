@@ -18,12 +18,14 @@ const theme = createMuiTheme({
 });
 
 ReactDOM.render(
-  <ErrorBoundary>
-    <MuiThemeProvider theme={theme}>
-      <CssBaseline />
-      <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: "bottom", horizontal: "left" }} style={{ maxWidth: 280 }}>
-        <AppRouter />
-      </SnackbarProvider>
-    </MuiThemeProvider>
-  </ErrorBoundary>
+  (
+    <ErrorBoundary>
+      <MuiThemeProvider theme={theme}>
+        <CssBaseline />
+        <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: "bottom", horizontal: "left" }} style={{ maxWidth: 280 }}>
+          <AppRouter />
+        </SnackbarProvider>
+      </MuiThemeProvider>
+    </ErrorBoundary>
+  )
   , document.querySelector("#root"));

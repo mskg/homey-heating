@@ -47,9 +47,15 @@ export class DefaultTemperaturePolicy implements ISetTemperaturePolicy {
             if (this.enforce || value !== targetTemperature) {
                 if (__PRODUCTION__) {
                     await Retry(async () => {
-                        logger.information(`Set temperature to ${targetTemperature}`);
-                        await this.deviceManager.setTargetTemperature(device, targetTemperature);
-                        logger.debug(`Done.`);
+                        // double check value before setting #68
+                        const checkedValue = this.deviceManager.getTargetTemperature(device);
+                        if (checkedValue !== targetTemperature) {
+                            logger.information(`Set temperature to ${targetTemperature}`);
+                            await this.deviceManager.setTargetTemperature(device, targetTemperature);
+                            logger.debug(`Done.`);
+                        } else {
+                            logger.information(`Target temperature already set. (2)`);
+                        }
                     }, logger, 5, 1000, true, 20000);
                 } else {
                     logger.debug(`***** Would set to ${targetTemperature}`);
@@ -57,7 +63,7 @@ export class DefaultTemperaturePolicy implements ISetTemperaturePolicy {
 
                 return { success: true, skipped: false };
             } else {
-                logger.information(`Target temperature already set.`);
+                logger.information(`Target temperature already set. (1)`);
                 return { success: true, skipped: true };
             }
         } catch (e) {

@@ -7,7 +7,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import { StyleRulesCallback, withStyles, WithStyles } from "@material-ui/core/styles";
 import Switch from "@material-ui/core/Switch";
 import { forEach, sortBy } from "lodash";
-import { InjectedNotistackProps, withSnackbar } from "notistack";
+import { withSnackbar, WithSnackbarProps } from "notistack";
 import React from "react";
 import { RouteComponentProps } from "react-router";
 import { Link, withRouter } from "react-router-dom";
@@ -30,9 +30,9 @@ const styles: StyleRulesCallback = (theme) => ({
     },
 });
 
-type Props = WithStyles<typeof styles> & RouteComponentProps & InjectedNotistackProps;
+type Props = WithStyles<typeof styles> & RouteComponentProps & WithSnackbarProps;
 
-const OverviewPage: React.FunctionComponent<Props> = (props) => {
+const OverviewPage: React.FunctionComponent<Props> = (props: Props) => {
     const { classes } = props;
     const { plans, loadPlans } = usePlans();
     const { zones } = useZones();
@@ -43,14 +43,14 @@ const OverviewPage: React.FunctionComponent<Props> = (props) => {
     function formatAttachments(plan: IHeatingPlan): string {
         const elements: string[] = [];
 
-        forEach(plan.devices, (d) => {
+        forEach(plan.devices, (d: string) => {
             const device = devices[d];
             if (device != null) {
                 elements.push(device.name);
             }
         });
 
-        forEach(plan.zones, (d) => {
+        forEach(plan.zones, (d: string) => {
             const zone = zones[d];
             if (zone != null) {
                 elements.push(zone.name);
@@ -156,4 +156,5 @@ const OverviewPage: React.FunctionComponent<Props> = (props) => {
     );
 };
 
+// @ts-ignore
 export default withSnackbar(withRouter(withStyles(styles)(OverviewPage)));

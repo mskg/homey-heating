@@ -1,4 +1,4 @@
-import { PromiseBuffer } from "@sentry/core/dist/promisebuffer";
+import { PromiseBuffer } from "@sentry/utils";
 import { connect } from "socket.io-client";
 import { LogService } from "./LogService";
 import { ILogger, INeedsCleanup } from "./types";
@@ -45,7 +45,7 @@ export class ConsoleReLogger implements ILogger, INeedsCleanup {
 
             LogService.transportLog.information("ConsoleRe cleaned up");
             return true;
-        });
+        }) as Promise<boolean>;
     }
 
     public information(category: string, message: string, ...args: any[]) {
@@ -61,6 +61,11 @@ export class ConsoleReLogger implements ILogger, INeedsCleanup {
     }
 
     private sendLog(level: "info" | "debug" | "error", ...args: any[]) {
+        if (!this.buffer.isReady()) {
+            LogService.transportLog.error("ConsoleReLogger buffer full", level, ...args);
+            return;
+        }
+
         this.buffer.add(
             new Promise((resolve) => {
                 if (this.socket.connected) {
@@ -87,6 +92,7 @@ export class ConsoleReLogger implements ILogger, INeedsCleanup {
 
                 resolve();
             }),
+        // @ts-ignore
         ).catch((e) => {
             LogService.transportLog.error(e, "ConsoleRe could not send log: ", ...args, e);
         });
