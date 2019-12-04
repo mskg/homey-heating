@@ -4,6 +4,8 @@ dist/
 app.js
 app.js.map
 
+env.json
+
 # Generated docs
 docs/_site
 docs/.jekyll-metadata
