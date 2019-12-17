@@ -210,7 +210,7 @@
   },
   "Notification": {
     "set_operation_mode": "Heizmodus wurde in '__mode__' geändert",
-    "failed_set_target_temperature": "Thermostat '__name__' konnte nicht auf __Wert__ ° (__error__) gesetzt werden",
-    "set_target_temperature": "Thermostat '__name__' wurde auf __Wert__ ° eingestellt (__PLAN__)"
+    "set_target_temperature": "Thermostat '__name__' wurde auf __value__° eingestellt (__plan__)",
+    "failed_set_target_temperature": "Thermostat '__name__' konnte nicht auf __value__° (__error__) gesetzt werden"
   }
 }
