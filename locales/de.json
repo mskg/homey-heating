@@ -1,7 +1,7 @@
 {
   "settings": {
     "log": {
-      "text": "Wenn Sie Live-Protokolle der Anwendung anzeigen möchten, aktivieren Sie den Schalter und geben Sie eine eindeutige Kategorie ein. Sie können das Protokoll anzeigen, indem Sie die Website console.re/<IhreKategorie> besuchen. Vergessen Sie nicht, das Protokoll wieder abzuschalten, sobald Sie fertig sind.",
+      "text": "Wenn du Live-Protokolle der Anwendung anzeigen möchtest, aktiviere den Schalter und gib eine eindeutige Protokollkategorie ein. Du kannst das Protokoll anzeigen, indem du die Website console.re/<DeineKategorie> besuchst. Vergesse nicht, das Protokoll wieder abzuschalten, sobald du fertig bist.",
       "category": "console.re Protokollierung"
     },
     "enabled": {
@@ -13,13 +13,13 @@
     },
     "sentry": {
       "category": "Sentry-Fehlerverfolgung",
-      "text": "Sentry.io ist ein externer Dienst, der Einblick in Fehler ermöglicht, die mit dieser App auf Ihrem Homey aufgetreten sind. Fehlerdetailswerden  automatisch an diesen externen Dienst gesendet. Wenn Sie diese Details nicht weitergeben möchten, deaktivieren Sie diese Einstellung."
+      "text": "Sentry.io ist ein externer Dienst, der Einblick in Fehler ermöglicht, die mit dieser App auf Ihrem Homey aufgetreten sind. Fehlerdetailswerden  automatisch an diesen externen Dienst gesendet. Wenn du diese Details nicht weitergeben möchtest, deaktiviere diese Einstellung."
     },
     "backup": {
-      "title": "Sichern und Wiederherstellen Ihrer Heizpläne",
+      "title": "Sichern und Wiederherstellen deiner Heizpläne",
       "label": "Konfiguration",
       "placeholder": "Konfiguration",
-      "text": "Kopieren Sie einfach den gesamten Text aus dem Textfeld und speichern Sie ihn in einer normalen Textdatei. Vorsicht: Durch das Ändern des Inhalts werden alle vorhandenen Pläne überschrieben."
+      "text": "Kopiere einfach den gesamten Text aus dem Textfeld und speichere ihn in einer normalen Textdatei. Vorsicht: Durch das Ändern des Inhalts werden alle vorhandenen Pläne überschrieben."
     },
     "notifications": {
       "category": "Benachrichtigungen",
@@ -33,10 +33,10 @@
   },
   "clone": {
     "name": {
-      "placeholder": "Neuer Name Ihres Plans",
+      "placeholder": "Neuer Name deines Plans",
       "label": "Name"
     },
-    "text": "Geben Sie einen neuen Namen ein und drücken Sie OK, um eine Kopie des Heizplans '__name__' zu erstellen.",
+    "text": "Gebe einen neuen Namen ein und drücke OK, um eine Kopie des Heizplans '__name__' zu erstellen.",
     "cancel": "Abbrechen",
     "title": "Heizplan kopieren",
     "ok": "OK"
@@ -52,17 +52,17 @@
     "Saturday": "Samstag",
     "Sunday": "Sonntag",
     "Friday": "Freitag",
-    "text": "Wählen Sie die Tage aus, auf die der aktuelle Zeitplan angewendet werden soll."
+    "text": "Wähle die Tage aus, auf die der aktuelle Zeitplan angewendet werden soll."
   },
   "overrides": {
     "section": "Plan anhalten, wenn",
     "outofseason": "... es Sommer ist?",
-    "title": "Bearbeiten Sie Zeitplanausnahmen",
-    "athome": "... Sie einenTag zu Hause sind?",
-    "text": "Halten Sie den konfigurierten Zeitplan an, wenn etwas Besonderes passiert, z. Sie gehen ungeplant aus dem Haus, oder Sie kehren früher zurück. Um das spezielle Verhalten zu aktivieren, müssen Sie den Scheduler auf der Plan-Übersichtsseite auf den entsprechenden Modus einstellen.",
-    "holiday": "... Sie im Urlaub sind?",
-    "sleeping": "... Sie schalfen?",
-    "away": "... wenn Sie einen Tag unterwegs sind?"
+    "title": "Bearbeite Zeitplanausnahmen",
+    "athome": "... du ein Tag zu Hause bist?",
+    "text": "Halten den konfigurierten Zeitplan an, wenn etwas Besonderes passiert, z.B du gehst ungeplant aus dem Haus, oder du kehrst früher zurück. Um das spezielle Verhalten zu aktivieren, musst du den Heizplan auf der Plan-Übersichtsseite auf den entsprechenden Modus einstellen.",
+    "holiday": "... du im Urlaub bist?",
+    "sleeping": "... du schläfst?",
+    "away": "... wenn du einen Tag unterwegs bist?"
   },
   "plan": {
     "tabs": {
@@ -76,12 +76,12 @@
       "label": "Zieltemperatur"
     },
     "confirm": {
-      "content": "Drücken Sie OK, um den Heizplan dauerhaft zu entfernen. Diese Aktion kann nicht rückgängig gemacht werden.",
-      "title": "Möchten Sie den Heizplan wirklich entfernen?"
+      "content": "Drücke OK, um den Heizplan dauerhaft zu entfernen. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "title": "Möchtest du den Heizplan wirklich entfernen?"
     },
     "overview": {
       "name": {
-        "label": "Der Name Ihres Plans",
+        "label": "Der Name deines Plans",
         "placeholder": "Name"
       },
       "enabled": {
@@ -91,29 +91,29 @@
         "label": "Beschreibung",
         "placeholder": "Eine kurze Beschreibung"
       },
-      "text_description": "Etwas Wichtiges, an das Sie sich erinnern müssen?",
-      "text": "Geben Sie Ihrem Plan einen sprechenden Namen.",
-      "text_enable": "Wenn Sie den Plan deaktivieren, wird er nicht automatisch angewendet. Sie können es weiterhin manuell über Flow anwenden.",
+      "text_description": "Etwas Wichtiges, an das du dich erinnern musst?",
+      "text": "Gebe deinem Plan einen aussagekräftigen Namen.",
+      "text_enable": "Wenn du den Plan deaktivierst, wird er nicht automatisch angewendet. Du kannst ihn weiterhin manuell über Flows anwenden.",
       "section": "Allgemein"
     },
     "schedules": {
       "section": "Zeitplan",
       "edit": "Normaler Zeitplan",
       "section_summary": "Zusammenfassung",
-      "text": "Konfigurieren Sie die Zeitpläne, zu denen die Temperatur Ihrer Heizgeräte angepasst werden muss. Zusätzliche Ausnahmen können konfiguriert werden: Sie verlassen die Wohnung ungeplant oder kehren früher zurück.",
+      "text": "Konfiguriere die Zeitpläne, zu denen die Temperatur deiner Heizgeräte angepasst werden muss. Zusätzliche Ausnahmen können konfiguriert werden: Du verlässt das Heim ungeplant oder kehrst früher zurück.",
       "exceptions": "Ausnahmen"
     },
     "zones": {
-      "text": "Kreuzen Sie die Zonen an, auf die Sie diesen Plan anwenden möchten. Alle Geräte, die das Einstellen einer Zieltemperatur in solchen Zonen unterstützen, sind enthalten.",
+      "text": "Kreuze die Zonen an, auf die du diesen Plan anwenden möchtest. Alle Geräte, die das Einstellen einer Zieltemperatur in solchen Zonen unterstützen, sind enthalten.",
       "section": "Zugehörige Zonen",
       "empty": "- keine Zonen gefunden -"
     },
     "devices": {
       "empty": "- keine Geräte gefunden -",
       "section": "Geräte zuordnen",
-      "text": "Kreuzen Sie die Geräte an, auf die dieser Plan angewendet werden soll. Sie können Zonen und einzelne Geräte mischen, kein Problem."
+      "text": "Kreuze die Geräte an, auf die dieser Plan angewendet werden soll. Du kannst Zonen und einzelne Geräte mischen, kein Problem."
     },
-    "save": "sparen",
+    "save": "Speichern",
     "saved": "Plan __name__ wurde gespeichert.",
     "duplicated": "Plan __name__ wurde dupliziert.",
     "unnamed": "Unbenannter Plan",
@@ -122,12 +122,12 @@
   "schedule": {
     "Saturday": "SA",
     "Monday": "MO",
-    "save": "sparen",
-    "Wednesday": "WIR",
+    "save": "Speichern",
+    "Wednesday": "MI",
     "title": "Zeitpläne bearbeiten",
-    "Tuesday": "TU",
-    "Sunday": "SU",
-    "Thursday": "TH",
+    "Tuesday": "DI",
+    "Sunday": "SO",
+    "Thursday": "DO",
     "Friday": "FR"
   },
   "setpoint": {
@@ -139,7 +139,7 @@
       "low": "Nacht",
       "warmer": "Komfort plus",
       "warm": "Komfort",
-      "middle": "Wirtschaft",
+      "middle": "Economy",
       "label": "Temperatur"
     },
     "target": {
@@ -147,18 +147,18 @@
       "label": "Zieltemperatur"
     },
     "title": "Sollwert bearbeiten",
-    "save": "sparen"
+    "save": "Speichern"
   },
   "temperatures": {
     "list": {
       "empty": "- keine Thermostate gefunden -",
       "title": "Sollwerte Übersicht",
-      "text": "Die Liste zeigt, was die Anwendung konfiguriert. Auf der linken Seite befinden sich die aktuellen Sollwerte und die Ablesetemperatur auf der rechten Seite. Wenn ein Gerät nicht angezeigt wird, wird es von keinem aktiven Plan konfiguriert."
+      "text": "Die Liste zeigt, was die Anwendung konfiguriert. Links sind die aktuellen Sollwerte gegenüber der Isttemperatur rechts dargestellt. Wenn ein Gerät nicht angezeigt wird, wird es von keinem aktiven Plan konfiguriert."
     },
     "title": "Aktuelle Temperaturen",
     "mode": "Aktuelle Betriebsart",
     "schedule": "Planungsübersicht",
-    "next": "Nächste Temperaturänderung ein"
+    "next": "Nächste Temperaturänderung"
   },
   "plans": {
     "heatingmode": {
@@ -180,20 +180,20 @@
   "menu": {
     "help": "Hilfe",
     "schedules": "Alle Zeitpläne",
-    "settings": "die Einstellungen",
+    "settings": "Einstellungen",
     "about": "Über",
     "plans": "Übersicht",
     "temperatures": "Aktuelle Temperaturen",
-    "title": "Homey Heizungsplaner"
+    "title": "Homey Heizplaner"
   },
   "confirm": {
-    "title": "Bitte bestätigen Sie Ihre Aktion",
+    "title": "Bitte bestätige deine Aktion",
     "cancel": "Abbrechen",
     "ok": "OK"
   },
   "Modes": {
     "0": "Automatik",
-    "1": "Eine Tage zu Hause",
+    "1": "Ein Tage zuhause",
     "2": "Ein Tag unterwegs",
     "3": "Schlafen",
     "4": "In den Ferien",
@@ -206,7 +206,7 @@
   },
   "Device": {
     "pair": "Plan __name__",
-    "plan_removed": "Der zugehörige Heizplan existiert nicht mehr. Stellen Sie den Plan aus dem Backup wieder her oder entfernen Sie das Gerät."
+    "plan_removed": "Der zugehörige Heizplan existiert nicht mehr. Stellen den Plan aus dem Backup wieder her oder entfernen das Gerät."
   },
   "Notification": {
     "set_operation_mode": "Heizmodus wurde in '__mode__' geändert",
