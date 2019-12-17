@@ -232,7 +232,7 @@ export class HeatingSchedulerService {
         const task = await ManagerCron.registerTask(taskName, nextDate, plansToExecute);
         task.once("run", taskFunc);
 
-        if (this.flow.nextDate != null) {
+        if (nextDate != null) {
             this.flow.nextDate.setValue(nextDate.toLocaleString());
         }
     }

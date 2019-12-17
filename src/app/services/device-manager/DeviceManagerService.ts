@@ -1,8 +1,10 @@
-import { filter } from "lodash";
+import { Mutex, synchronize } from "@app/helper";
+import { filter, keys } from "lodash";
 import { EventDispatcher, IEvent } from "ste-events";
 import { singleton } from "tsyringe";
 import { CapabilityType, HomeyAPI, HomeyAPIService, ICapabilityInstance, IDevice, IZone, StringHashMap } from "../homey-api";
 import { ILogger, LoggerFactory, trycatchlog } from "../log";
+import { InternalSettings, SettingsManagerService } from "../settings-manager";
 
 export type AuditedDevice = {
     watchedCapabilities?: {
@@ -34,6 +36,7 @@ export type CapabilityChangedEventArgs =
 
 @singleton()
 export class DeviceManagerService {
+    private static Lock = new Mutex();
 
     public get zones(): StringHashMap<IZone> {
         return this.zoneList || {};
@@ -57,6 +60,7 @@ export class DeviceManagerService {
 
     constructor(
         private apiService: HomeyAPIService,
+        private settings: SettingsManagerService,
         loggerFactory: LoggerFactory) {
 
         this.logger = loggerFactory.createLogger("AthomAPI");
@@ -67,20 +71,155 @@ export class DeviceManagerService {
         this.logger.information(`Init`);
         this.homeyApi = await this.apiService.getInstance();
 
+        this.deviceList = {};
+
+        const result = await Promise.all([
+            this.initDeviceHooks(false),
+            this.initGlobalHooks(),
+        ]);
+
+        // retry init again after 2 minutes
+        if (!result[0]) {
+            const rebind = setTimeout(this.backgroundTimer.bind(this), 60 * 2 * 1000);
+            rebind.unref();
+        }
+
+        const timer = setInterval(
+            this.backgroundTimer.bind(this),
+            this.settings.get<number>(InternalSettings.DeviceUpdateInterval, 60 * 60 * 1000),
+        );
+
+        // don't block main thread
+        timer.unref();
+    }
+
+    public findZone(zoneId: string): IZone {
+        return this.zoneList[zoneId];
+    }
+
+    // mask, default is 0 - no change in logic
+    @trycatchlog(true, 0)
+    @synchronize(DeviceManagerService.Lock)
+    public async getTargetTemperature(d: AuditedDevice): Promise<number> {
+        const capability = d.watchedCapabilities != null
+            ? d.watchedCapabilities.targetTemperature
+            : null;
+
+        return capability != null ? capability.value : 0;
+    }
+
+    // mask, default is 0 - no change in logic
+    @trycatchlog(true, 0)
+    @synchronize(DeviceManagerService.Lock)
+    public async getMeasuredTemperature(d: AuditedDevice): Promise<number> {
+        const capability = d.watchedCapabilities != null
+            ? (d.watchedCapabilities.temperature || d.watchedCapabilities.targetTemperature)
+            : null;
+
+        return capability != null ? capability.value : 0;
+    }
+
+    // catched by all calling parties, no need to double
+    @synchronize(DeviceManagerService.Lock)
+    public async setTargetTemperature(d: AuditedDevice, targetTemperature: number) {
+        let target = targetTemperature;
+
+        if (!d.available || !d.ready) {
+            this.logger.information(`Device ${d.id} is ready: ${d.ready}, available: ${d.available}, skipping setTargetTemperature`);
+            return;
+        }
+
+        try {
+            const cap = d.watchedCapabilities != null ? d.watchedCapabilities.targetTemperature : null;
+            if (cap != null) {
+                if (target > cap.max) {
+                    target = cap.max;
+                } else if (target < cap.min) {
+                    target = cap.min;
+                } else {
+                    if (cap.step != null && typeof cap.step === "number") {
+                        // adjust fraction
+                        // tslint:disable: one-line
+                        if (cap.step === 0) { target = Math.round(target); }
+                        else { target = Math.round(target / cap.step) * cap.step; }
+                    }
+                }
+
+                if (targetTemperature !== target) {
+                    this.logger.information(`Target adjusted ${d.name} (${d.name}) was ${targetTemperature} -> ${target} (min: ${cap.min}, max: ${cap.max}, step: ${cap.step})`);
+                }
+            }
+        } catch (e) {
+            this.logger.error(e, `Failed to adust temperature from ${targetTemperature}`);
+        }
+
+        await this.homeyApi.devices.setCapabilityValue({
+            deviceId: d.id,
+            capabilityId: CapabilityType.TargetTemperature,
+            value: target,
+        });
+    }
+
+    public findDevice(deviceId: string): AuditedDevice {
+        return (this.deviceList || {})[deviceId];
+    }
+
+    public getDevicesForZone(zoneId: string): AuditedDevice[] {
+        return filter(this.deviceList || [], (d: AuditedDevice) => d.zone === zoneId) as AuditedDevice[];
+    }
+
+    @trycatchlog(true)
+    private async backgroundTimer() {
+        this.logger.information(`backgroundTimer`);
+        this.initDeviceHooks(true);
+
+        // should we now push updates for all devices?
+    }
+
+    /**
+     * Attach watchers for device activities
+     * @returns true if all devic listeners could be bound
+     */
+    @synchronize(DeviceManagerService.Lock)
+    private async initDeviceHooks(reset: boolean): Promise<boolean> {
+        this.logger.information(`INIT device hooks`);
+
         const filteredDevices = filter(await this.homeyApi.devices.getDevices(),
             (d) => !VirtualDevice(d) && CanSetTargetTemperature(d));
 
         this.logger.information(`Found ${filteredDevices.length} devices`);
-        this.deviceList = {};
 
         // register listeners
-        await Promise.all(filteredDevices.map(async (d) => {
-            await this.attachWatchers(d);
+        const allOk = await Promise.all(filteredDevices.map(async (d) => {
+            if (reset && this.deviceList[d.id] != null) {
+                await this.destroyWatchers(this.deviceList[d.id]);
+            }
+
+            const result = await this.attachWatchers(d);
             this.deviceList[d.id] = d;
+
+            return result;
+        }));
+
+        const removals = keys(this.deviceList).filter((id) => filteredDevices.find((d) => id === d.id) == null);
+        this.logger.debug(`Found ${removals.length} removals`);
+
+        await Promise.all(removals.map(async (id) => {
+            await this.destroyWatchers(this.deviceList[id]);
+            delete this.deviceList[id];
         }));
 
         this.zoneList = await this.homeyApi.zones.getZones();
         this.logger.information(`Found ${Object.keys(this.zoneList).length} zones`);
+
+        return allOk.find((ok) => !ok) == null;
+    }
+
+    /**
+     * Init global hooks
+     */
+    private initGlobalHooks() {
+        this.logger.information(`INIT global hooks`);
 
         this.homeyApi.devices.on("device.create", async (device: IDevice) => {
             if (VirtualDevice(device) || !CanSetTargetTemperature(device)) {
@@ -141,81 +280,9 @@ export class DeviceManagerService {
         });
     }
 
-    public findZone(zoneId: string): IZone {
-        return this.zoneList[zoneId];
-    }
-
-    // mask, default is 0 - no change in logic
-    @trycatchlog(true, 0)
-    public getTargetTemperature(d: AuditedDevice): number {
-        const capability = d.watchedCapabilities != null
-            ? d.watchedCapabilities.targetTemperature
-            : null;
-
-        return capability != null ? capability.value : 0;
-    }
-
-    // mask, default is 0 - no change in logic
-    @trycatchlog(true, 0)
-    public getMeasuredTemperature(d: AuditedDevice): number {
-        const capability = d.watchedCapabilities != null
-            ? (d.watchedCapabilities.temperature || d.watchedCapabilities.targetTemperature)
-            : null;
-
-        return capability != null ? capability.value : 0;
-    }
-
-    // catched by all calling parties, no need to double
-    public async setTargetTemperature(d: AuditedDevice, targetTemperature: number) {
-        let target = targetTemperature;
-
-        if (!d.available || !d.ready) {
-            this.logger.information(`Device ${d.id} is ready: ${d.ready}, available: ${d.available}, skipping setTargetTemperature`);
-            return;
-        }
-
-        try {
-            const cap = d.watchedCapabilities != null ? d.watchedCapabilities.targetTemperature : null;
-            if (cap != null) {
-                if (target > cap.max) {
-                    target = cap.max;
-                } else if (target < cap.min) {
-                    target = cap.min;
-                } else {
-                    if (cap.step != null && typeof cap.step === "number") {
-                        // adjust fraction
-                        // tslint:disable: one-line
-                        if (cap.step === 0) { target = Math.round(target); }
-                        else { target = Math.round(target / cap.step) * cap.step; }
-                    }
-                }
-
-                if (targetTemperature !== target) {
-                    this.logger.information(`Target adjusted ${d.name} (${d.name}) was ${targetTemperature} -> ${target} (min: ${cap.min}, max: ${cap.max}, step: ${cap.step})`);
-                }
-            }
-        } catch (e) {
-            this.logger.error(e, `Failed to adust temperature from ${targetTemperature}`);
-        }
-
-        await this.homeyApi.devices.setCapabilityValue({
-            deviceId: d.id,
-            capabilityId: CapabilityType.TargetTemperature,
-            value: target,
-        });
-    }
-
-    public findDevice(deviceId: string): AuditedDevice {
-        return (this.deviceList || [])[deviceId];
-    }
-
-    public getDevicesForZone(zoneId: string): AuditedDevice[] {
-        return filter(this.deviceList || [], (d: AuditedDevice) => d.zone === zoneId) as AuditedDevice[];
-    }
-
     // mask all errors
-    @trycatchlog(true)
-    private async attachWatchers(device: AuditedDevice) {
+    @trycatchlog(true, false)
+    private async attachWatchers(device: AuditedDevice): Promise<boolean> {
         if (device.watchedCapabilities == null) {
             device.watchedCapabilities = {};
         }
@@ -247,19 +314,39 @@ export class DeviceManagerService {
                 });
             });
         }
+
+        return true;
     }
 
     // mask all errors
-    @trycatchlog(true)
+    @trycatchlog(true, false)
     private async destroyWatchers(device: AuditedDevice) {
+        let result = true;
+
         if (device != null && device.watchedCapabilities != null) {
             if (device.watchedCapabilities.targetTemperature != null) {
-                device.watchedCapabilities.targetTemperature.destroy();
+                this.logger.debug(`Cleaning watch on ${device.id} (${device.name}) ${CapabilityType.TargetTemperature}`);
+
+                try {
+                    device.watchedCapabilities.targetTemperature.destroy();
+                }
+                catch { result = false; }
+
+                device.watchedCapabilities.targetTemperature = undefined;
             }
 
             if (device.watchedCapabilities.temperature != null) {
-                device.watchedCapabilities.temperature.destroy();
+                this.logger.debug(`Cleaning watch on ${device.id} (${device.name}) ${CapabilityType.MeasureTemperature}`);
+
+                try {
+                    device.watchedCapabilities.temperature.destroy();
+                }
+                catch { result = false; }
+
+                device.watchedCapabilities.temperature = undefined;
             }
         }
+
+        return result;
     }
 }

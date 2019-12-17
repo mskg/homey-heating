@@ -22,6 +22,8 @@ export enum InternalSettings {
     SetTemperatureThrottle = "temperatureThrottle",
     SchedulerTimeSlots = "schedulerTimeslots",
     DriverDebounce = "driverdebounce",
+
+    DeviceUpdateInterval = "deviceupdateinterval",
 }
 
 export type AllSettings = Settings | InternalSettings;
