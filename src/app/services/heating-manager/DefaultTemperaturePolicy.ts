@@ -43,12 +43,12 @@ export class DefaultTemperaturePolicy implements ISetTemperaturePolicy {
         }
 
         try {
-            const value = this.deviceManager.getTargetTemperature(device);
+            const value = await this.deviceManager.getTargetTemperature(device);
             if (this.enforce || value !== targetTemperature) {
                 if (__PRODUCTION__) {
                     await Retry(async () => {
                         // double check value before setting #68
-                        const checkedValue = this.deviceManager.getTargetTemperature(device);
+                        const checkedValue = await this.deviceManager.getTargetTemperature(device);
                         if (checkedValue !== targetTemperature) {
                             logger.information(`Set temperature to ${targetTemperature}`);
                             await this.deviceManager.setTargetTemperature(device, targetTemperature);

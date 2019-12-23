@@ -45,10 +45,8 @@ export function useSuspendableState<T extends MapType>(name: string, method: Asy
 
         const [failed, setFailed] = React.useState(false);
 
-        loadValue();
-
-        function loadValue() {
-            if (cache.get(name) == null) {
+        function loadValue(force: boolean = false) {
+            if (cache.get(name) == null || force) {
                 cache.set(name, LOADING);
 
                 // this unloads the component and waits for the promise to resolve
@@ -69,6 +67,8 @@ export function useSuspendableState<T extends MapType>(name: string, method: Asy
                 });
             }
         }
+
+        loadValue();
 
         useEffect(() => {
             // console.log("killed value");

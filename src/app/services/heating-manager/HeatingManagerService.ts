@@ -1,6 +1,6 @@
 import { ICalculatedTemperature, IGroupedCalculatedTemperature, IHeatingPlan, NormalOperationMode, OperationMode, OverrideMode, ThermostatMode } from "@app/model";
 import { __, Notification } from "homey";
-import { forEach, groupBy, isEmpty, map } from "lodash";
+import { flatten, forEach, groupBy, isEmpty, map } from "lodash";
 import { EventDispatcher, IEvent } from "ste-events";
 import { container, inject, singleton } from "tsyringe";
 import { HeatingPlanCalculator } from "../calculator";
@@ -140,7 +140,7 @@ export class HeatingManagerService {
     public async applyPlan(plan: IHeatingPlan) {
         const schedule = await this.evaluatePlan(plan);
         // one plan can not conflict itself
-        await this.applySettings(schedule.map((p) => ({...p, conflictingPlans: [p.plan]})));
+        await this.applySettings(schedule.map((p) => ({ ...p, conflictingPlans: [p.plan] })));
 
         this.onPlansAppliedDispatcher.dispatch(this, {
             plans: [plan],
@@ -150,16 +150,18 @@ export class HeatingManagerService {
 
     // erors handled by all callers
     public async evaluateActivePlans(): Promise<IGroupedCalculatedTemperature[]> {
-        const settings: ICalculatedTemperature[] = [];
-
-        forEach(await this.plans.activePlans, (plan) => {
-            settings.push(...this.evaluatePlan(plan));
-        });
+        const settings: ICalculatedTemperature[] = flatten(
+            await Promise.all(
+                (await this.plans.activePlans).map(
+                    (plan) => this.evaluatePlan(plan),
+                ),
+            ),
+        );
 
         return this.resolveConflicts(settings);
     }
 
-    public evaluatePlan(plan: IHeatingPlan): ICalculatedTemperature[] {
+    public async evaluatePlan(plan: IHeatingPlan): Promise<ICalculatedTemperature[]> {
         const planLogger = this.logger.createSubLogger(__PRODUCTION__ ? plan.id : (plan.name || ""));
         planLogger.debug("Evaluating");
 
@@ -178,7 +180,7 @@ export class HeatingManagerService {
             planLogger.debug(`Thermostat overrides ${ThermostatMode[thermostatMode]}`);
 
             // we look at any of our devices ... which should be ok anyhow
-            targetTemperature = this.deviceManager.getTargetTemperature(devices[0]);
+            targetTemperature = await this.deviceManager.getTargetTemperature(devices[0]);
         } else if (planOverrides != null) {
             planLogger.debug(`Plan override for ${OverrideMode[this.mode]}`);
             targetTemperature = planOverrides.targetTemperature;
@@ -204,16 +206,18 @@ export class HeatingManagerService {
 
         planLogger.debug(`Calculated target temperature is ${targetTemperature}`);
 
-        return devices.map((device) => ({
-            device: { id: device.id, name: device.name },
-            plan: {
-                id: plan.id,
-                name: plan.name,
-            },
-            temperature: this.deviceManager.getMeasuredTemperature(device),
-            targetTemperature,
-            thermostatMode,
-        }));
+        return Promise.all(
+            devices.map(async (device) => ({
+                device: { id: device.id, name: device.name },
+                plan: {
+                    id: plan.id,
+                    name: plan.name,
+                },
+                temperature: await this.deviceManager.getMeasuredTemperature(device),
+                targetTemperature,
+                thermostatMode,
+            })),
+        );
     }
 
     public async setTemperature(planName: string, device: AuditedDevice, targetTemperature: number): Promise<void> {

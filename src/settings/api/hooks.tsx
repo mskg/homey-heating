@@ -8,7 +8,7 @@ import { zoneAPI } from "./zones";
 type PlansType = {
     plans: IHeatingPlan[],
     setPlans: HookSetType<IHeatingPlan[]>,
-    loadPlans: HookReturnType,
+    loadPlans(force?: boolean): HookReturnType,
 };
 
 type DevicesType = {

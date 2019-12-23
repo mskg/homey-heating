@@ -13,3 +13,4 @@ The software is still work in progress, and all releases are currently beta. Ple
 * [Version 1.2.0](/releasenotes/v01-02-00)
 * [Version 1.2.1](/releasenotes/v01-02-01)
 * [Version 1.2.2](/releasenotes/v01-02-02)
+* [Version 1.2.3](/releasenotes/v01-02-03)

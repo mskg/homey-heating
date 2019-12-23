@@ -32,7 +32,7 @@
         "title": {
           "en": "Apply all active heating plans",
           "nl": "Pas alle actieve verwarmingsschema's toe",
-          "de": "Wenden Sie alle aktiven Heizpläne an"
+          "de": "Wende alle aktiven Heizpläne an"
         }
       },
       {
@@ -296,6 +296,10 @@
       {
         "name": "Lennard Warnaar",
         "email": "lennard@renlen.nl"
+      },
+      {
+        "name": "mapulu",
+        "email": "46723804+mapulu@users.noreply.github.com"
       }
     ]
   },

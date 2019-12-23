@@ -210,7 +210,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
         if (this.plan == null) { return; }
 
         this.logger.debug(`Updating ${CapabilityType.MeasureTemperature}`);
-        if (calculation == null) { calculation = this.manager.evaluatePlan(this.plan); }
+        if (calculation == null) { calculation = await this.manager.evaluatePlan(this.plan); }
 
         // nothing to do
         if (calculation.length === 0) {
@@ -259,8 +259,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
             }
 
             // need to filter out our own overrides
-            const dev = this.manager
-                .evaluatePlan(this.plan)
+            const dev = (await this.manager.evaluatePlan(this.plan))
                 .filter((t) => t.thermostatMode === NormalOperationMode.Automatic);
 
             if (dev.length > 0) {
