@@ -54,8 +54,6 @@ export function useSuspendableState<T extends MapType>(name: string, method: Asy
                     if (typeof r === "function") {
                         cache.set(name, (r as any)(cache.get(name)));
                     } else {
-                        // tslint:disable-next-line: no-console
-                        console.log("Cache updated", name, r);
                         cache.set(name, r);
                     }
                 }).catch((e) => {
