@@ -11,7 +11,7 @@ import { withSnackbar, WithSnackbarProps } from "notistack";
 import React from "react";
 import { RouteComponentProps } from "react-router";
 import { Link, withRouter } from "react-router-dom";
-import { IHeatingPlan } from "../../app/model";
+import { IHeatingPlan, OperationMode } from "../../app/model";
 import { modeAPI, planAPI } from "../api/heating";
 import { useDevices, useMode, usePlans, useZones } from "../api/hooks";
 import AddFab from "../components/AddFab";
@@ -37,8 +37,8 @@ const OverviewPage: React.FunctionComponent<Props> = (props: Props) => {
     const { plans, loadPlans } = usePlans();
     const { zones } = useZones();
     const { devices } = useDevices();
-    const { mode, loadMode } = useMode();
-    const [ modeChange, setModeChange ] = React.useState(false);
+    const { mode, setMode } = useMode(true);
+    const [ updateUI, setUpdateUI ] = React.useState(false);
 
     function formatAttachments(plan: IHeatingPlan): string {
         const elements: string[] = [];
@@ -62,29 +62,36 @@ const OverviewPage: React.FunctionComponent<Props> = (props: Props) => {
 
     const setHeatingMode = (newMode: string) => {
         (async () => {
-            setModeChange(true);
-            // props.enqueueSnackbar(translate("plans.changemode", {
-            //     name: translate(`Modes.${newMode}`),
-            // }));
+            const newModeInt: OperationMode = parseInt(newMode, 10);
 
-            await modeAPI.setMode(parseInt(newMode, 10));
+            setUpdateUI(true);
+
+            await modeAPI.setMode(newModeInt);
+            // change is async, we don't waitfor it as reloading does not
+            // provide the current value
+            setMode(newModeInt);
 
             props.enqueueSnackbar(translate("plans.modechanged", {
                 name: translate(`Modes.${newMode}`),
             }));
 
-            await loadMode();
-            setModeChange(false);
+            setUpdateUI(false);
         })();
     };
 
     const toggleState = (thePlan: IHeatingPlan) => {
         (async () => {
+            // we need to trigger updates
+            setUpdateUI(true);
+
             await planAPI.togglePlanState(thePlan);
+            await loadPlans();
+
             props.enqueueSnackbar(translate("plans.toggled", {
                 name: thePlan.name,
             }));
-            await loadPlans();
+
+            setUpdateUI(false);
         })();
     };
 
@@ -105,7 +112,7 @@ const OverviewPage: React.FunctionComponent<Props> = (props: Props) => {
                         <InputContainer>
                             <Select
                                 fullWidth={true}
-                                disabled={modeChange}
+                                disabled={updateUI}
                                 onChange={(evt) => setHeatingMode(evt.target.value)}
                                 value={mode}
                             >
