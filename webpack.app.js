@@ -45,6 +45,10 @@ var appConfig = (env, argv) => {
         to: distPath
       },
       {
+        from: "./tmp/.homeychangelog.json",
+        to: distPath
+      },
+      {
         from: './scripts/CI.md',
         to: distPath + "/README.md"
       },
@@ -54,7 +58,7 @@ var appConfig = (env, argv) => {
       },
       {
         from: './APPSTORE.txt',
-        to: distPath
+        to: distPath + "/README.txt"
       },
       {
         from: 'assets/**/*.png',
