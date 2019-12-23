@@ -29,12 +29,13 @@ See [Issue Tracker](https://github.com/mskg/homey-heating/issues)
 * Install a *released build onto your Homey* `npm run release:install <tag>`. If you omit the tag, all available version will be printed.
 
 ## Change Log
-* **1.0** Initial release
-* **1.1.1** [Release notes](docs/releasenotes/v01-01.md)
-* **1.1.2** [Release notes](docs/releasenotes/v01-01-02.md)
-* **1.2.0** [Release notes](docs/releasenotes/v01-02-00.md)
-* **1.2.1** [Release notes](docs/releasenotes/v01-02-01.md)
+* **1.2.3** [Release notes](docs/releasenotes/v01-02-03.md)
 * **1.2.2** [Release notes](docs/releasenotes/v01-02-02.md)
+* **1.2.1** [Release notes](docs/releasenotes/v01-02-01.md)
+* **1.2.0** [Release notes](docs/releasenotes/v01-02-00.md)
+* **1.1.2** [Release notes](docs/releasenotes/v01-01-02.md)
+* **1.1.1** [Release notes](docs/releasenotes/v01-01.md)
+* **1.0** Initial release
 
 ## Feedback
 
