@@ -1,4 +1,4 @@
-# [Heating scheduler for Athom Homey](https://homey-heating.mskg.app) &middot; [![Build Status](https://travis-ci.com/mskg/homey-heating.svg?branch=master)](https://travis-ci.com/mskg/homey-heating) [![Coverage Status](https://coveralls.io/repos/github/mskg/homey-heating/badge.svg?branch=master)](https://coveralls.io/github/mskg/homey-heating?branch=master) [![Greenkeeper badge](https://badges.greenkeeper.io/mskg/homey-heating.svg)](https://greenkeeper.io/)
+# [Heating scheduler for Athom Homey](https://homey-heating.mskg.app) &middot; [![Build Status](https://travis-ci.com/mskg/homey-heating.svg?branch=master)](https://travis-ci.com/mskg/homey-heating) [![Coverage Status](https://coveralls.io/repos/github/mskg/homey-heating/badge.svg?branch=master)](https://coveralls.io/github/mskg/homey-heating?branch=master) 
 
 Easily control the temperature of your thermostats.
 
