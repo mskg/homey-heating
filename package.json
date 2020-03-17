@@ -11,7 +11,7 @@
     "athom-api": "^3.1.8",
     "body-scroll-lock": "^2.6.1",
     "d3": "^5.9.2",
-    "date-fns": "^2.0.0-alpha.21",
+    "date-fns": "^2.11.0",
     "graceful-fs": "^4.2.3",
     "lodash": "^4.17.11",
     "material-ui-pickers": "^2.2.4",
