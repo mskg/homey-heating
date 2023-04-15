@@ -45,4 +45,3 @@ jobs:
 
     # - run: npm run travis:sentry -- releases set-commits homey-heating@${TRAVIS_TAG:1} --auto
     #   if: "${{ github.event_name == 'push' && ${{ github.ref }} }}"
-g
