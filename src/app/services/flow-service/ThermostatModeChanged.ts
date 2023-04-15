@@ -6,6 +6,6 @@ export type ThermostatModeChangedTriggerTokens = {
     mode: string,
 };
 
-export function ThermostatModeChangedTrigger({ logger }: IFlowContext): FlowCardTriggerDevice<ThermostatModeChangedTriggerTokens, void> {
-    return flowCardTriggerDeviceFactory("thermostat_override_changed", logger);
+export function ThermostatModeChangedTrigger({ flow, logger }: IFlowContext): FlowCardTriggerDevice {
+    return flowCardTriggerDeviceFactory(flow, "thermostat_override_changed", logger);
 }

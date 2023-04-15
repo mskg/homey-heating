@@ -21,6 +21,7 @@ export class Mutex {
         let unlockNext: VoidFunction;
 
         const willLock = new Promise<VoidFunction>((resolve) => unlockNext = () => {
+            // @ts-ignore
             resolve();
         });
 

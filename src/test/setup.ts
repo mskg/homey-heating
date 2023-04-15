@@ -5,7 +5,6 @@ import "reflect-metadata";
 mock("@app/model", require("../app/model"));
 mock("@app/helper", require("../app/helper"));
 
-import "./mocks/atom";
 import "./mocks/date";
 import "./mocks/homey";
 

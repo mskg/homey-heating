@@ -5,6 +5,7 @@
 		"module": "esnext",
 		"suppressImplicitAnyIndexErrors": true,
 		"allowSyntheticDefaultImports": true,
+		"ignoreDeprecations": "5.0",
 		"lib": [
 			"es6",
 			"dom"

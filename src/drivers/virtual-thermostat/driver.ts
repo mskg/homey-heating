@@ -4,7 +4,7 @@ import "reflect-metadata";
 
 import { IHeatingPlan } from "@app/model";
 import { BootStrapper, CapabilityType, HeatingPlanRepositoryService, LoggerFactory } from "@app/services";
-import { __, Driver } from "homey";
+import { Driver } from "homey";
 import { container } from "tsyringe";
 
 class VirtualThermostatsDriver extends Driver {
@@ -12,12 +12,12 @@ class VirtualThermostatsDriver extends Driver {
         // tslint:disable-next-line: no-console
         console.info(`Bootstrapping Driver v${__VERSION} (${__BUILD})`);
 
-        await BootStrapper();
+        await BootStrapper(this.homey.app);
     }
 
-    public async onPairListDevices(_data: any, callback: (err: Error | null, result: Array<{}>) => void) {
+    public async onPairListDevices() {
         // moved code down due to #94, HOMEY-HEATING-1A
-        await BootStrapper();
+        await BootStrapper(this.homey.app);
 
         const factory = container.resolve<LoggerFactory>(LoggerFactory);
         const logger = factory.createLogger("Driver");
@@ -27,21 +27,19 @@ class VirtualThermostatsDriver extends Driver {
         logger.information("Preparing available devices");
         const plans: IHeatingPlan[] = await repository.plans;
 
-        callback(null,
-            plans.map((p) => {
-                return {
-                    name: __("Device.pair", { name: p.name }),
-                    data: {
-                        id: p.id,
-                    },
-                    capabilities: [
-                        CapabilityType.TargetTemperature,
-                        CapabilityType.MeasureTemperature,
-                        CapabilityType.ThermostatOverride,
-                    ],
-                };
-            }),
-        );
+        return plans.map((p) => {
+            return {
+                name: this.homey.__("Device.pair", { name: p.name }),
+                data: {
+                    id: p.id,
+                },
+                capabilities: [
+                    CapabilityType.TargetTemperature,
+                    CapabilityType.MeasureTemperature,
+                    CapabilityType.ThermostatOverride,
+                ],
+            };
+        });
     }
 
 }

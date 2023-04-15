@@ -15,6 +15,7 @@ function createLink({innerRef, ...props}: Props) {
     // Remove `innerRef` from properties as the interface is incompatible.
 
     if (props.to.toString().match(/https/)) {
+        // @ts-ignore
         return <a onClick={() => Homey.openURL(props.to.toString())} {...props}>{props.children}</a>;
     }
 
@@ -24,6 +25,7 @@ function createLink({innerRef, ...props}: Props) {
 
 const ListItemLink: React.FunctionComponent<Props> = (props) => {
     return (
+        // @ts-ignore
         <ListItem {...props} component={createLink as unknown as "a"}>
             {props.children}
         </ListItem>

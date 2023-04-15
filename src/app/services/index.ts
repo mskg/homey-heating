@@ -10,3 +10,5 @@ export * from "./heating-plan-repository";
 export * from "./flow-service";
 export * from "./heating-manager";
 export * from "./bootstrapper";
+export * from "./translations";
+export * from "./notifications";

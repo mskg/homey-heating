@@ -37,14 +37,14 @@ import { useZones } from "../state/zoneHooks";
 const CloneDialog = React.lazy(() => import("../dialogs/CloneDialog"));
 const Chart = React.lazy(() => import("../components/TemperatureChart"));
 
-const styles: StyleRulesCallback = (theme) => ({
+const styles: StyleRulesCallback<any, any> = (theme) => ({
     button: {
-        margin: theme.spacing.unit * 2,
+        margin: theme.spacing(2),
     },
 
     divider: {
-        marginTop: theme.spacing.unit * 3,
-        marginBottom: theme.spacing.unit * 1,
+        marginTop: theme.spacing(3),
+        marginBottom: theme.spacing(1),
     },
 
     avatar: {

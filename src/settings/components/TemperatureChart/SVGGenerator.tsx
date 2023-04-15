@@ -81,7 +81,7 @@ export class SVGGenerator {
         timeslot.insert("rect")
             .attr("height", this.yScale.bandwidth)
             .attr("width", (d: SeriesElement) => {
-                return Math.max(1, (this.xScale(d.end) - this.xScale(d.start)));
+                return Math.max(1, ((this.xScale(d.end) || 0) - (this.xScale(d.start) || 0)));
             });
 
         if (this.showLegend) {
@@ -90,7 +90,7 @@ export class SVGGenerator {
                 .attr("x", 6)
                 .attr("y", 20)
                 .attr("width", (d: SeriesElement) => {
-                    return Math.max(1, (this.xScale(d.end) - this.xScale(d.start) - 6));
+                    return Math.max(1, ((this.xScale(d.end) || 0) - (this.xScale(d.start) || 0) - 6));
                 })
                 .text((d: SeriesElement) => this.fixedDigits(d.temperature, 1));
 

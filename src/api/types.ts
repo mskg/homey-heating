@@ -1,7 +1,7 @@
 import { ILogger, InternalSettings, LoggerFactory, SettingsManagerService } from "@app/services";
 import { container } from "tsyringe";
 
-type UnkownParameters = { [k: string]: string; };
+export type UnkownParameters = { [k: string]: string; };
 
 /***
  * Success for APIs not returning a value.
@@ -51,6 +51,7 @@ export abstract class ApiBase<B = any, P = UnkownParameters, Q = UnkownParameter
         ApiBase.logger = container.resolve<LoggerFactory>(LoggerFactory).createLogger("Api");
         ApiBase.initialized = true;
     }
+
     private static logger: ILogger;
     private static logApi = false;
     private static initialized = false;
@@ -85,5 +86,5 @@ export abstract class ApiBase<B = any, P = UnkownParameters, Q = UnkownParameter
         }
     }
 
-    protected abstract async execute(args: IAPIParams<B, P, Q>): Promise<any>;
+    protected abstract execute(args: IAPIParams<B, P, Q>): Promise<any>;
 }

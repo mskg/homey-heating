@@ -10,7 +10,7 @@ import {
     HeatingSchedulerService, ILogger, InternalSettings, LoggerFactory, PlanChangeEventType,
     PlansAppliedEventArgs, PlansChangedEventArgs, SettingsManagerService, trycatchlog,
 } from "@app/services";
-import { __, Device } from "homey";
+import { Device } from "homey";
 import { filter, find } from "lodash";
 import { IEventHandler } from "ste-events";
 import { container } from "tsyringe";
@@ -37,8 +37,8 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
 
     @trycatchlog(true)
     public async onInit() {
-        await BootStrapper();
-        this.id = this.getData<Data>().id; // handback from initialization
+        await BootStrapper(this.homey.app);
+        this.id = (this.getData() as Data).id; // handback from initialization
 
         const factory = container.resolve<LoggerFactory>(LoggerFactory);
         this.logger = factory.createLogger("Device").createSubLogger(!__PRODUCTION__ ? this.getName() : this.id);
@@ -81,8 +81,12 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
         this.manager.onPlansApplied.unsubscribe(this.plansApplied);
 
         this.plan = undefined;
+
+        // @ts-ignore
         delete this.devices;
+        // @ts-ignore
         delete this.repository;
+        // @ts-ignore
         delete this.manager;
 
         this.logger.information(`was removed`);
@@ -240,7 +244,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
 
         if (this.plan == null) {
             this.logger.information(`Plan does not exist -> exit`);
-            await this.setUnavailable(__("Device.plan_removed"));
+            await this.setUnavailable(this.homey.__("Device.plan_removed"));
         } else {
             this.logger.debug(`available? ${this.getAvailable()}`);
             await this.unsetWarning();
@@ -255,7 +259,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
             }
 
             if (await this.doSetCapabilityValue(CapabilityType.ThermostatOverride, thermostatMode.toString())) {
-                await this.flow.thermostatModeChanged.trigger(this, {mode: __(`ThermostatMode.${thermostatMode}`)});
+                await this.flow.thermostatModeChanged.trigger(this, {mode: this.homey.__(`ThermostatMode.${thermostatMode}`)});
             }
 
             // need to filter out our own overrides
@@ -283,7 +287,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
         this.plan.thermostatMode = mode;
 
         await this.repository.update(this.plan);
-        await this.flow.thermostatModeChanged.trigger(this, {mode: __(`ThermostatMode.${value}`)});
+        await this.flow.thermostatModeChanged.trigger(this, {mode: this.homey.__(`ThermostatMode.${value}`)});
     }
 
     /**
@@ -309,7 +313,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
 
             // ok, will only change if not like that
             if (await this.doSetCapabilityValue(CapabilityType.ThermostatOverride, ThermostatMode.OverrideDay.toString())) {
-                await this.flow.thermostatModeChanged.trigger(this, {mode: __(`ThermostatMode.${ThermostatMode.OverrideDay}`)});
+                await this.flow.thermostatModeChanged.trigger(this, {mode: this.homey.__(`ThermostatMode.${ThermostatMode.OverrideDay}`)});
             }
         }
 

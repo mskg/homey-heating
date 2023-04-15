@@ -4,7 +4,7 @@ import { injectable } from "tsyringe";
 import { ApiBase, IAPIParams, SUCCESS } from "./types";
 
 @injectable()
-class GetSettings extends ApiBase {
+export class GetSettings extends ApiBase {
     constructor(private manager: SettingsManagerService) {
         super("GET", "/settings");
     }
@@ -26,7 +26,7 @@ class GetSettings extends ApiBase {
 type Body = {[key: string]: string; };
 
 @injectable()
-class PutSettings extends ApiBase {
+export class PutSettings extends ApiBase {
     constructor(private manager: SettingsManagerService) {
         super("PUT", "/settings");
     }
@@ -50,8 +50,3 @@ class PutSettings extends ApiBase {
         return SUCCESS;
     }
 }
-
-export default [
-    GetSettings,
-    PutSettings,
-];

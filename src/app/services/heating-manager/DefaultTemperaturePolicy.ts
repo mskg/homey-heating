@@ -72,7 +72,7 @@ export class DefaultTemperaturePolicy implements ISetTemperaturePolicy {
             return {
                 success: false,
                 skipped: false,
-                error: e.name,
+                error: (e as Error).name,
             };
         }
     }

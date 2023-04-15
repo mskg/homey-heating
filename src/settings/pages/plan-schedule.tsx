@@ -27,10 +27,10 @@ import { usePlanDispatch } from "../state/PlanProvider";
 const CopyDayDialog = React.lazy(() => import("../dialogs/CopyDayDialog"));
 const SetPointDialog = React.lazy(() => import("../dialogs/SetPointDialog"));
 
-const styles: StyleRulesCallback = (theme) => ({
+const styles: StyleRulesCallback<any, any> = (theme) => ({
     list: {
         marginTop: 0,
-        marginBottom: theme.spacing.unit * 2,
+        marginBottom: theme.spacing(2),
     },
 
     tab: {
@@ -144,7 +144,7 @@ const SchedulePage: React.FunctionComponent<Props> = (props: Props) => {
 
             <SetPointDialog
                 open={isSetPointDialogOpen}
-                onClose={(d) => {
+                onClose={(d: any) => {
                     if (d) { setDirty(true); selectTab(selectedTab); }
                     setSetPointDialogOpen(false);
                 }}

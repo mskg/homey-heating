@@ -10,8 +10,7 @@ if (__PRODUCTION__) {
 
     translate = (id: string, param?: any) => {
         let value = reduce(id.split("."), (r, v, _k) => {
-            if (r == null) { throw new Error(`Resource ${id} not found.`); }
-            return r[v];
+            return r != null ? r[v] : null;
         }, lang);
 
         if (value == null) { throw new Error(`Resource ${id} not found.`); }

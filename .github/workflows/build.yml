@@ -1,0 +1,49 @@
+name: mskg/homey-heating
+
+on:
+  push:
+    tags:
+      - '*'
+
+# env:
+#   GITHUB_OAUTH_TOKEN: "${{ secrets.GITHUB_OAUTH_TOKEN }}"
+#   SENTRY_ORG: "${{ secrets.SENTRY_ORG }}"
+#   SENTRY_PROJECT: "${{ secrets.SENTRY_PROJECT }}"
+#   SENTRY_AUTH_TOKEN: "${{ secrets.SENTRY_AUTH_TOKEN }}"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+      with:
+        fetch-depth: 1
+
+    - uses: actions/setup-node@v3.6.0
+      with:
+        cache: npm
+        node-version: 11
+
+    - run: npm install
+    - run: if [ ${{ github.ref }} != '' ]; then npm run build:setversion ${{ github.ref }}; fi
+
+    - run: npm install -g homey
+
+    - run: npm run test
+    - run: npm run dist
+
+    # - run: npm run travis:sentry -- releases files homey-heating@${TRAVIS_TAG:1} upload-sourcemaps ../homey-heating-dist --rewrite --ignore-file scripts/.sentryignore
+    #   if: "${{ github.event_name == 'push' && ${{ github.ref }} }}"
+
+    - name: deploy branch
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: /tmp/homey-heating
+        publish_branch: release/${{ github.ref }}
+        keep_files: false
+
+    # - run: npm run travis:sentry -- releases set-commits homey-heating@${TRAVIS_TAG:1} --auto
+    #   if: "${{ github.event_name == 'push' && ${{ github.ref }} }}"

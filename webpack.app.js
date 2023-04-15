@@ -5,26 +5,35 @@ const fs = require('fs');
 const path = require('path');
 const LicenseCheckerWebpackPlugin = require("license-checker-webpack-plugin");
 
-const distPath = path.resolve(__dirname, '../homey-heating-dist');
-
-const package = require("./package.json");
-const appPackage = require("./src/app.json");
-
-if (package.version.indexOf("-") > 0) {
-  appPackage.version = package.version.substring(0, package.version.indexOf("-"));
-}
-else {
-  appPackage.version = package.version;
-}
-
-const tempDir = __dirname + "/tmp";
-if (!fs.existsSync(tempDir)) {
-  fs.mkdirSync(tempDir);
-}
-fs.writeFileSync(tempDir + "/app.json", JSON.stringify(appPackage, null, 4));
+const distPath = path.resolve('/tmp/homey-heating');
 
 var appConfig = (env, argv) => {
   const PRODUCTION = argv.mode === 'production';
+
+  const package = require("./package.json");
+  const appPackage = require("./src/app.json");
+  const { forEach } = require('lodash');
+
+  if (package.version.indexOf("-") > 0) {
+    appPackage.version = package.version.substring(0, package.version.indexOf("-"));
+  }
+  else {
+    appPackage.version = package.version;
+  }
+
+  // make endpoints public
+  if (!PRODUCTION) {
+    for (const [key, value] of Object.entries(appPackage.api)) {
+      appPackage.api[key].public = true;
+    }
+  }
+
+  const tempDir = __dirname + "/tmp";
+  if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir);
+  }
+  fs.writeFileSync(tempDir + "/app.json", JSON.stringify(appPackage, null, 4));
+
   const plugins = [
     new webpack.DefinePlugin({
       __PRODUCTION__: JSON.stringify(PRODUCTION),
@@ -86,8 +95,12 @@ var appConfig = (env, argv) => {
         to: distPath + '/node_modules/reflect-metadata/index.js'
       },
       {
-        from: 'node_modules/athom-api/dist/index.js',
-        to: distPath + '/node_modules/athom-api/index.js'
+        from: 'node_modules/homey',
+        to: distPath + '/node_modules/homey'
+      },
+      {
+        from: 'node_modules/homey-api',
+        to: distPath + '/node_modules/homey-api'
       },
       {
         from: 'locales/**/*',
@@ -99,7 +112,7 @@ var appConfig = (env, argv) => {
   if (PRODUCTION) {
     plugins.push(
       new LicenseCheckerWebpackPlugin({
-        allow: "(GPL-3.0 OR Apache-2.0 OR BSD-2-Clause OR BSD-3-Clause OR MIT)",
+        allow: "(GPL-3.0 OR Apache-2.0 OR BSD-2-Clause OR BSD-3-Clause OR MIT OR 0BSD OR ISC)",
         outputFilename: "ThirdPartyNotices.txt",
         emitError: true,
         override: {
@@ -116,12 +129,16 @@ var appConfig = (env, argv) => {
           "options@0.0.6": { licenseName: "MIT" },
           "utf8@2.0.0": { licenseName: "MIT" },
           "ws@0.4.31": { licenseName: "MIT" },
+          // this is proprietary but OK here
+          "homey-api@1.10.20": { licenseName: "ISC" },
+          "@types/homey@0.3.4": { licenseName: "ISC" },
         }
       }));
   }
 
   return {
     target: 'node',
+
     entry: {
       app: './src/app/app.ts',
       api: './src/api/api.ts',
@@ -141,7 +158,22 @@ var appConfig = (env, argv) => {
         test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/
-      }]
+      },
+      {
+        test: /\.js?$/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: [
+              '@babel/preset-env'
+            ],
+            plugins: [
+              '@babel/plugin-proposal-class-properties'
+            ]
+          }
+        }
+      },
+      ]
     },
 
     devtool: PRODUCTION ? false : "inline-source-map",
@@ -149,12 +181,13 @@ var appConfig = (env, argv) => {
     resolve: {
       extensions: ['.tsx', '.ts', '.js'],
     },
+
     externals: {
       "bufferutil": "bufferutil",
       "utf-8-validate": "utf-8-validate",
       "ws": "ws",
-      "athom-api": "athom-api",
       "homey": "homey",
+      "homey-api": "homey-api",
       "reflect-metadata": "reflect-metadata",
       "tsyringe": "tsyringe",
       "lodash": "lodash",
@@ -163,7 +196,9 @@ var appConfig = (env, argv) => {
       "@app/services": "@app/services",
       "@app/flows": "@app/flows",
     },
+
     plugins: plugins,
+
     output: {
       filename: '[name].js',
       path: distPath,

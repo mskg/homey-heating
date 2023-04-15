@@ -9,7 +9,7 @@ import { temperatureToColor } from "./temperatureToColor";
 const Icon = require("../../../assets/icon_black.svg");
 
 const AVATAR_DIMENSION = 35;
-const styles: StyleRulesCallback = (_theme) => ({
+const styles: StyleRulesCallback<any, any> = (_theme) => ({
     root: {
         fontSize: "1em",
         float: "left",

@@ -3,21 +3,21 @@ import blue from "@material-ui/core/colors/blue";
 // import pink from "@material-ui/core/colors/pink";
 // import green from "@material-ui/core/colors/teal";
 import orange from "@material-ui/core/colors/deepOrange";
-import { createMuiTheme } from "@material-ui/core/styles";
+import { createTheme } from "@material-ui/core/styles";
 import { SnackbarProvider } from "notistack";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { AppRouter } from "./router";
 
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     primary: blue,
     secondary: orange,
   },
-  typography: {
-    useNextVariants: true,
-  },
+  // typography: {
+  //   useNextVariants: true,
+  // },
 });
 
 ReactDOM.render(

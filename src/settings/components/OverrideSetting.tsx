@@ -7,9 +7,9 @@ import { TARGET_TEMPERATURE_MAX, TARGET_TEMPERATURE_MIN } from "../../app/servic
 import translate from "../i18n/Translation";
 import FormTextField from "./FormTextField";
 
-const styles: StyleRulesCallback = (theme) => ({
+const styles: StyleRulesCallback<any, any> = (theme) => ({
     planOverride: {
-        marginBottom: theme.spacing.unit * 2,
+        marginBottom: theme.spacing(2),
     },
 });
 

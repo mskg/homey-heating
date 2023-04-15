@@ -4,7 +4,7 @@ import BackIcon from "@material-ui/icons/ArrowBackIos";
 import CancelIcon from "@material-ui/icons/Cancel";
 import React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import { IHeatingPlan, OverrideMode } from "../../app/model";
+import { OverrideMode } from "../../app/model";
 import AppHeader from "../components/AppHeader";
 import BodyText from "../components/BodyText";
 import { MenuButton } from "../components/Menu";
@@ -14,7 +14,7 @@ import translate from "../i18n/Translation";
 import Page from "../layouts/Page";
 import { useHistory, useModifyExceptions, usePlan } from "../state/planHooks";
 
-const styles: StyleRulesCallback = (_theme) => ({
+const styles: StyleRulesCallback<any, any> = (_theme) => ({
     resetPadding: {
         paddingBottom: 100,
         paddingLeft: 0,
@@ -26,7 +26,7 @@ type Params = {
     id: string;
 };
 
-type Props = WithStyles<typeof styles> & RouteComponentProps<Params, {}, IHeatingPlan>;
+type Props = WithStyles<typeof styles> & RouteComponentProps<Params, {}, boolean>;
 
 const ScheduleExceptionsPage: React.FunctionComponent<Props> = (props: Props) => {
     const { history, classes } = props;
@@ -38,6 +38,7 @@ const ScheduleExceptionsPage: React.FunctionComponent<Props> = (props: Props) =>
     function onCancelDialog() {
         undo();
 
+        // @ts-ignore
         history.replace({
             pathname: `/plans/${plan.id}`,
             state: true,
@@ -47,6 +48,7 @@ const ScheduleExceptionsPage: React.FunctionComponent<Props> = (props: Props) =>
     function onSaveDialog() {
         commit();
 
+        // @ts-ignore
         history.replace({
             pathname: `/plans/${plan.id}`,
             state: true,

@@ -42,10 +42,10 @@ const useDimensions = () => {
     return [setRef, dimensions];
 };
 
-const styles: StyleRulesCallback = (theme) => {
+const styles: StyleRulesCallback<any, any> = (theme) => {
     return {
         chart: {
-            padding: theme.spacing.unit * 2,
+            padding: theme.spacing(2),
             width: "100%",
 
             ["& .axis domain"]: {

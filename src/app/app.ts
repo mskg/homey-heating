@@ -4,7 +4,11 @@ import "reflect-metadata";
 
 import {
     BootStrapper, FlowService, HeatingManagerService, HeatingSchedulerService,
-    ILogger, LoggerFactory, LogService, trycatchlog,
+    ILogger,
+    LoggerFactory,
+    LogService,
+    NotificationService,
+    TranslationService, trycatchlog,
 } from "@app/services";
 import { App as HomeyApp } from "homey";
 import { container, inject, injectable } from "tsyringe";
@@ -17,6 +21,10 @@ export class HeatingSchedulerApp {
         private loggerFactory: LoggerFactory,
         private heatingScheduler: HeatingSchedulerService,
         private heatingManager: HeatingManagerService,
+        private translation: TranslationService,
+        private notification: NotificationService,
+
+        // @ts-ignore
         @inject("FlowService") private flowService: FlowService) {
 
         this.logger = this.loggerFactory.createLogger("App");
@@ -24,7 +32,7 @@ export class HeatingSchedulerApp {
 
     // whatever goes wrong - we log, hide and dump it
     @trycatchlog(true)
-    public async run() {
+    public async run(app: HomeyApp) {
         this.logger.information(`Bootstrapping App v${__VERSION} (${__BUILD})`);
 
         process.on("uncaughtException", (err) => {
@@ -35,8 +43,11 @@ export class HeatingSchedulerApp {
             this.logger.error(reason, "Unhandled Rejection at:", p, "reason:", reason);
         });
 
+        await this.translation.init(app.homey.__);
+        await this.notification.init(app.homey);
+
         // Flow hooks
-        await this.flowService.init();
+        await this.flowService.init(app);
 
         // apply what we have
         await this.heatingManager.init();
@@ -55,11 +66,11 @@ export default class App extends HomeyApp {
         console.info(`Bootstrapping App v${__VERSION} (${__BUILD})`);
         LogService.init(this);
 
-        await BootStrapper();
+        await BootStrapper(this);
 
         // we let the container do our stuff
         const app = container.resolve(HeatingSchedulerApp);
-        await app.run();
+        await app.run(this);
     }
 }
 

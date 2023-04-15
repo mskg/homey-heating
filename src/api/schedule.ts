@@ -4,7 +4,7 @@ import { injectable } from "tsyringe";
 import { ApiBase } from "./types";
 
 @injectable()
-class GetSchedule extends ApiBase {
+export class GetSchedule extends ApiBase {
     constructor(
         private manager: HeatingManagerService,
         private scheduler: HeatingSchedulerService,
@@ -20,7 +20,3 @@ class GetSchedule extends ApiBase {
         } as IScheduleInformation;
     }
 }
-
-export default [
-    GetSchedule,
-];

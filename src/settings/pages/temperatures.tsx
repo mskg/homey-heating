@@ -18,10 +18,10 @@ import { FilledTemperatureAvatar, TemperatureAvatar } from "../components/Temper
 import translate from "../i18n/Translation";
 import Page from "../layouts/Page";
 
-const styles: StyleRulesCallback = (theme) => ({
+const styles: StyleRulesCallback<any, any> = (theme) => ({
     list: {
         marginTop: 0,
-        marginBottom: theme.spacing.unit * 2,
+        marginBottom: theme.spacing(2),
     },
 });
 

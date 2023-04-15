@@ -1,5 +1,4 @@
 import { ICalculatedTemperature, IGroupedCalculatedTemperature, IHeatingPlan, NormalOperationMode, OperationMode, OverrideMode, ThermostatMode } from "@app/model";
-import { __, Notification } from "homey";
 import { flatten, forEach, groupBy, isEmpty, map } from "lodash";
 import { EventDispatcher, IEvent } from "ste-events";
 import { container, inject, singleton } from "tsyringe";
@@ -8,7 +7,9 @@ import { AuditedDevice, DeviceManagerService } from "../device-manager";
 import { FlowService } from "../flow-service";
 import { HeatingPlanRepositoryService, PlanChangeEventType } from "../heating-plan-repository";
 import { ICategoryLogger, LoggerFactory, trycatchlog } from "../log";
+import { NotificationService } from "../notifications";
 import { InternalSettings, Settings, SettingsManagerService } from "../settings-manager";
+import { TranslationService } from "../translations";
 import { ITemperatureConflictPolicy, TemperatureConflictPolicy } from "./TemperatureConflictPolicy";
 import { ISetTemperaturePolicy, PolicyType } from "./types";
 
@@ -44,6 +45,10 @@ export class HeatingManagerService {
         private calc: HeatingPlanCalculator,
         private deviceManager: DeviceManagerService,
         private settings: SettingsManagerService,
+        private translation: TranslationService,
+        private notification: NotificationService,
+
+        // @ts-ignore
         @inject("FlowService") private flow: FlowService,
         loggerFactory: LoggerFactory) {
         this.logger = loggerFactory.createLogger("Manager");
@@ -77,12 +82,12 @@ export class HeatingManagerService {
 
         // mode was ticked
         this.onModeChanged.subscribe(async () => {
-            if (this.flow.mode != null) { this.flow.mode.setValue(__(`Modes.${this.mode}`)); }
-            await this.flow.modeChanged.trigger({ mode: __(`Modes.${this.mode}`) });
+            if (this.flow.mode != null) { this.flow.mode.setValue(this.translation.translate(`Modes.${this.mode}`)); }
+            await this.flow.modeChanged.trigger({ mode: this.translation.translate(`Modes.${this.mode}`) });
 
             if (this.settings.get(Settings.NotifyModeChange, true)) {
                 await this.sendNotification("set_operation_mode", {
-                    mode: __(`Modes.${this.mode}`),
+                    mode: this.translation.translate(`Modes.${this.mode}`),
                 });
             }
 
@@ -106,7 +111,7 @@ export class HeatingManagerService {
     }
 
     public async init() {
-        if (this.flow.mode != null) { this.flow.mode.setValue(__(`Modes.${this.mode}`)); }
+        if (this.flow.mode != null) { this.flow.mode.setValue(this.translation.translate(`Modes.${this.mode}`)); }
         await this.applyPlans();
     }
 
@@ -326,10 +331,6 @@ export class HeatingManagerService {
     }
 
     private async sendNotification(name: string, args?: {}) {
-        const notification = new Notification({
-            excerpt: __(`Notification.${name}`, args),
-        });
-
-        await notification.register();
+        await this.notification.send(name, args);
     }
 }

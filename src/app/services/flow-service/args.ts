@@ -1,12 +1,16 @@
 
-import { FlowCard, FlowCardAction, FlowCardTrigger, FlowCardTriggerDevice } from "homey";
+import { FlowCard, FlowCardTrigger, FlowCardTriggerDevice } from "homey";
+import { App as HomeyApp } from "homey";
 import { HeatingManagerService } from "../heating-manager";
 import { HeatingPlanRepositoryService } from "../heating-plan-repository";
 import { HeatingSchedulerService } from "../heating-scheduler";
 import { ILogger } from "../log";
 import { SettingsManagerService } from "../settings-manager";
 
+type FlowManager = HomeyApp["homey"]["flow"];
+
 export interface IFlowContext {
+    flow: FlowManager;
     logger: ILogger;
     manager: HeatingManagerService;
     repository: HeatingPlanRepositoryService;
@@ -16,11 +20,10 @@ export interface IFlowContext {
 
 type RunListener<A, S> = (args: A, state: S) => Promise<boolean>;
 
-export function flowCardActionFactory<A = void, S = void>(name: string, logger: ILogger, func: RunListener<A, S>): FlowCard {
+export function flowCardActionFactory<A = void, S = void>(flow: FlowManager, name: string, logger: ILogger, func: RunListener<A, S>): FlowCard {
     logger.information(`Registering action ${name}`);
 
-    return new FlowCardAction(name)
-        .register()
+    return flow.getActionCard(name)
         .registerRunListener(async (args, state) => {
             try {
                 logger.debug(`Executing ${name}`, args, state);
@@ -32,10 +35,10 @@ export function flowCardActionFactory<A = void, S = void>(name: string, logger: 
         });
 }
 
-export function flowCardTriggerFactory<T = void, S = void>(name: string, logger: ILogger): FlowCardTrigger<T, S> {
+export function flowCardTriggerFactory(flow: FlowManager, name: string, logger: ILogger): FlowCardTrigger {
     logger.information(`Registering trigger ${name}`);
 
-    const trigger = new FlowCardTrigger<T, S>(name).register<FlowCardTrigger<T, S>>();
+    const trigger = flow.getTriggerCard(name);
     const orig = trigger.trigger.bind(trigger);
 
     trigger.trigger = async (tokens, state) => {
@@ -50,10 +53,10 @@ export function flowCardTriggerFactory<T = void, S = void>(name: string, logger:
     return trigger;
 }
 
-export function flowCardTriggerDeviceFactory<T = void, S = void>(name: string, logger: ILogger): FlowCardTriggerDevice<T, S> {
+export function flowCardTriggerDeviceFactory(flow: FlowManager, name: string, logger: ILogger): FlowCardTriggerDevice {
     logger.information(`Registering trigger ${name}`);
 
-    const trigger = new FlowCardTriggerDevice<T, S>(name).register<FlowCardTriggerDevice<T, S>>();
+    const trigger = flow.getDeviceTriggerCard(name);
     const orig = trigger.trigger.bind(trigger);
 
     trigger.trigger = async (device, tokens, state) => {

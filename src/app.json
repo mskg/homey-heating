@@ -1,8 +1,8 @@
 {
   "id": "app.mskg.homey-heating",
   "version": "0.0.0",
-  "compatibility": ">= 2.0.0",
-  "sdk": 2,
+  "compatibility": ">= 5.0.0",
+  "sdk": 3,
   "name": {
     "en": "Homey Heating Scheduler",
     "nl": "Homey Verwarmingsregelaar",
@@ -18,6 +18,7 @@
   "category": [
     "tools"
   ],
+  "platforms": ["local"],
   "permissions": [
     "homey:manager:api"
   ],
@@ -384,5 +385,63 @@
         "small": "/drivers/virtual-thermostat/assets/images/small.png"
       }
     }
-  ]
+  ],
+  "api": {
+    "DebuggerOn": {
+      "method": "GET",
+      "path": "/debugger/on"
+    },
+    "DebuggerOff": {
+      "method": "GET",
+      "path": "/debugger/off"
+    },
+    "GetSettings": {
+      "method": "GET",
+      "path": "/settings"
+    },
+    "PutSettings": {
+      "method": "PUT",
+      "path": "/settings"
+    },
+    "PutMode": {
+      "method": "PUT",
+      "path": "/mode"
+    },
+    "GetMode": {
+      "method": "GET",
+      "path": "/mode"
+    },
+    "GetResetPlans": {
+      "method": "GET",
+      "path": "/resetplans"
+    },
+    "GetPlans": {
+      "method": "GET",
+      "path": "/plans"
+    },
+    "GetPlan": {
+      "method": "GET",
+      "path": "/plans/:id"
+    },
+    "PutPlan": {
+      "method": "PUT",
+      "path": "/plans/:id"
+    },
+    "DeletePlan": {
+      "method": "DELETE",
+      "path": "/plans/:id"
+    },
+    "GetZones": {
+      "method": "GET",
+      "path": "/zones"
+    },
+    "GetDevices": {
+      "method": "GET",
+      "path": "/devices"
+    },
+    "GetSchedule": {
+      "method": "GET",
+      "path": "/schedule"
+    }
+  }
 }

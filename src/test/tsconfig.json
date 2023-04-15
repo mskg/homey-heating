@@ -4,7 +4,8 @@
     "lib": [
       "es6",
       "dom"
-    ]
+    ],
+    "skipLibCheck": true
   },
   "include": [
     "../types/global.d.ts",
@@ -14,5 +15,5 @@
     "../services/**/*.ts",
     "../app/helper/**/*.ts",
     "**/*.spec.ts"
-  ],
+  ]
 }

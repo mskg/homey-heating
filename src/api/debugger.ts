@@ -2,7 +2,7 @@ import { injectable } from "tsyringe";
 import { ApiBase, IAPIParams, SUCCESS } from "./types";
 
 @injectable()
-class DebuggerOn extends ApiBase {
+export class DebuggerOn extends ApiBase {
     constructor() {
         super("GET", "/debugger/on");
         this.public = !__PRODUCTION__ || __VERSION === "0.0.0";
@@ -18,7 +18,8 @@ class DebuggerOn extends ApiBase {
     }
 }
 
-class DebuggerOff extends ApiBase {
+@injectable()
+export class DebuggerOff extends ApiBase {
     constructor() {
         super("GET", "/debugger/off");
         this.public = !__PRODUCTION__ || __VERSION === "0.0.0";
@@ -33,8 +34,3 @@ class DebuggerOff extends ApiBase {
         return SUCCESS;
     }
 }
-
-export default [
-    DebuggerOn,
-    DebuggerOff,
-];

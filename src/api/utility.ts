@@ -5,7 +5,7 @@ import { injectable } from "tsyringe";
 import { ApiBase } from "./types";
 
 @injectable()
-class GetZones extends ApiBase {
+export class GetZones extends ApiBase {
     constructor(private manager: DeviceManagerService) {
         super("GET", "/zones");
     }
@@ -26,7 +26,7 @@ class GetZones extends ApiBase {
 }
 
 @injectable()
-class GetDevices extends ApiBase {
+export class GetDevices extends ApiBase {
     constructor(private manager: DeviceManagerService) {
         super("GET", "/devices");
     }
@@ -45,8 +45,3 @@ class GetDevices extends ApiBase {
         return result;
     }
 }
-
-export default [
-    GetDevices,
-    GetZones,
-];

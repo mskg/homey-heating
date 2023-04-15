@@ -40,7 +40,9 @@ export class ConsoleReLogger implements ILogger, INeedsCleanup {
             this.cleanup = true;
             this.socket.disconnect();
 
+            //@ts-ignore
             delete this.socket;
+            //@ts-ignore
             delete this.buffer;
 
             LogService.transportLog.information("ConsoleRe cleaned up");

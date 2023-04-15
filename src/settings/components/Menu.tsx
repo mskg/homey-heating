@@ -7,14 +7,14 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import translate from "../i18n/Translation";
 import ListItemLink from "./ListItemLink";
 
-const styles: StyleRulesCallback = (theme) => ({
+const styles: StyleRulesCallback<any, any> = (theme) => ({
     text: {
-        padding: theme.spacing.unit * 2,
+        padding: theme.spacing(2),
         paddingBottom: 0,
     },
 
     version: {
-        padding: theme.spacing.unit * 2,
+        padding: theme.spacing(2),
         paddingTop: 0,
     },
 

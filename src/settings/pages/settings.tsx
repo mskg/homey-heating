@@ -18,7 +18,7 @@ import SubHeader from "../components/SubHeader";
 import translate from "../i18n/Translation";
 import Page from "../layouts/Page";
 
-const styles: StyleRulesCallback = (_theme) => ({
+const styles: StyleRulesCallback<any, any> = (_theme) => ({
 });
 
 type Params = {

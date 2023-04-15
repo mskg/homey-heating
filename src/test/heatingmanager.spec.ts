@@ -5,11 +5,11 @@ import { expect } from "chai";
 import "mocha";
 import { container } from "tsyringe";
 import { FakeDate, patchDate, revertDate } from "./mocks/date";
-import "./mocks/homey";
 import "./suppress-console";
+import { App } from 'homey';
 
 before(async () => {
-    await BootStrapper(true);
+    await BootStrapper(new App(), true);
 });
 
 beforeEach(async () => {

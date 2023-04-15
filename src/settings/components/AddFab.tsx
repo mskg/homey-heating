@@ -3,14 +3,14 @@ import { StyleRulesCallback, withStyles, WithStyles } from "@material-ui/core/st
 import AddIcon from "@material-ui/icons/Add";
 import React from "react";
 
-const styles: StyleRulesCallback = (theme) => ({
+const styles: StyleRulesCallback<any, any> = (theme) => ({
     fabButton: {
         zIndex: 1,
         margin: "0 auto",
 
         position: "absolute" as "absolute",
-        bottom: theme.spacing.unit * 2,
-        right: theme.spacing.unit * 2,
+        bottom: theme.spacing(2),
+        right: theme.spacing(2),
     },
 });
 

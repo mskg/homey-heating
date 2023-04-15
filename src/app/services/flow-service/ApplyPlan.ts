@@ -10,8 +10,8 @@ type PlanRefArgs = {
     plan: PlaceHolderArg;
 };
 
-export function ApplyPlanAction({ logger, manager, repository }: IFlowContext) {
-    return flowCardActionFactory<PlanRefArgs>("apply_plan", logger, async (args, _state) => {
+export function ApplyPlanAction({ flow, logger, manager, repository }: IFlowContext) {
+    return flowCardActionFactory<PlanRefArgs>(flow, "apply_plan", logger, async (args, _state) => {
         const plan = await repository.find(args.plan.id);
         if (plan == null) { return Promise.resolve(false); }
 

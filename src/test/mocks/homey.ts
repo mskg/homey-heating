@@ -1,27 +1,60 @@
 import * as mock from "mock-require";
-import { mockTask } from "./mockTask";
+import { mockEventHandler } from "./mockEventHandler";
+import { DEFAULT_HEATING_PLAN } from "@app/helper";
+import { flatten, keyBy } from "lodash";
 
-// tslint:disable: no-empty
-// tslint:disable: no-console
-mock("homey", {
-    ManagerSettings: {
+class App {
+    public log = (...args: string[]) => {
+        console.log(args);
+    }
+
+    public ManagerSettings = {
         get: () => {
             return null;
         },
 
         set: () => { },
-    },
+    };
+}
 
-    ManagerCron: {
-        _tasks: {},
+var allZones: string[] = [];
+const allDevices: string[] = ["Device A", "Device B", "Device C"];
 
-        unregisterAllTasks() { this._tasks = {}; },
+class HomeyAPIApp {
+    devices=  {
         // @ts-ignore
-        registerTask(name, ...args) {
+        ...mockEventHandler(),
+        getDevices: () => keyBy(allDevices.map((d) => ({
+            driverUri: "fake",
+            id: d,
+            name: d,
+            capabilities: ["target_temperature", "measure_temperature"],
             // @ts-ignore
-            this._tasks[name] = mockTask(...args);
-            // @ts-ignore
-            return Promise.resolve(this._tasks[name]);
-        },
-    },
+            zone: allZones[0],
+        })), (d) => d.id),
+    }
+
+    zones=  {
+        // @ts-ignore
+        ...mockEventHandler(),
+        // @ts-ignore
+        getZones: () => keyBy(allZones.map((d) => ({
+            id: d,
+            name: d,
+        })), (d) => d.id),
+    }
+}
+
+// tslint:disable: no-empty
+// tslint:disable: no-console
+mock("homey", {
+    App
 });
+
+
+mock("homey-api", {
+    HomeyAPIApp,
+});
+
+// @ts-ignore
+allZones = flatten(DEFAULT_HEATING_PLAN.map((p) => p.zones));

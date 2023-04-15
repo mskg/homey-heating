@@ -2,11 +2,11 @@ import { StyleRulesCallback, withStyles, WithStyles } from "@material-ui/core/st
 import Typography, { TypographyProps } from "@material-ui/core/Typography";
 import React from "react";
 
-const styles: StyleRulesCallback = (theme) => ({
+const styles: StyleRulesCallback<any, any> = (theme) => ({
     text: {
-        // marginTop: theme.spacing.unit * 4,
-        paddingLeft: theme.spacing.unit * 2,
-        paddingRight: theme.spacing.unit * 2,
+        // marginTop: theme.spacing(4),
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
     },
 });
 

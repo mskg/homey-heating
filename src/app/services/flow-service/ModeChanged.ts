@@ -6,6 +6,6 @@ export type ModeChangedTriggerTokens = {
     mode: string,
 };
 
-export function ModeChangedTrigger({ logger }: IFlowContext): FlowCardTrigger<ModeChangedTriggerTokens, void> {
-    return flowCardTriggerFactory("mode_changed", logger);
+export function ModeChangedTrigger({ flow, logger }: IFlowContext): FlowCardTrigger {
+    return flowCardTriggerFactory(flow, "mode_changed", logger);
 }

@@ -1,7 +1,6 @@
 
 import { Mutex, slotTime, synchronize } from "@app/helper";
 import { IHeatingPlan, NormalOperationMode, OverrideMode, ThermostatMode } from "@app/model";
-import { ManagerCron } from "homey";
 import { first, groupBy, map, sortBy, unionBy } from "lodash";
 import { inject, singleton } from "tsyringe";
 import { HeatingPlanCalculator } from "../calculator";
@@ -15,23 +14,26 @@ declare type TaskNames = "schedule" | "cleanup";
 
 @singleton()
 export class HeatingSchedulerService {
-    private static Lock = new Mutex();
 
     // api only, null is ok
     @trycatchlog(true, null)
     public get nextSchedule(): Date | null {
         return this.next;
     }
+    private static Lock = new Mutex();
 
     private logger: ICategoryLogger;
     private next: Date | null = null;
     private isRunning = false;
+
+    private timeout: any = null;
 
     constructor(
         private manager: HeatingManagerService,
         private calculator: HeatingPlanCalculator,
         private repository: HeatingPlanRepositoryService,
         private settings: SettingsManagerService,
+        // @ts-ignore
         @inject("FlowService") private flow: FlowService,
 
         loggerFactory: LoggerFactory) {
@@ -46,7 +48,7 @@ export class HeatingSchedulerService {
     @synchronize(HeatingSchedulerService.Lock)
     public async stop() {
         this.logger.information("Stop");
-        await ManagerCron.unregisterAllTasks();
+        clearTimeout(this.timeout);
     }
 
     // we live on our own, ok to kill
@@ -202,7 +204,7 @@ export class HeatingSchedulerService {
          * There is a bug in the SDK 2.0 that prevents registring more than one task a time.
          * We switch between two types of tasks.
          */
-        await ManagerCron.unregisterAllTasks();
+        clearTimeout(this.timeout);
 
         const END_OF_DAY = this.getEndOfDay();
 
@@ -229,8 +231,7 @@ export class HeatingSchedulerService {
         this.next = nextDate;
         this.logger.information(`Next execution is at ${nextDate.toLocaleString()}`, plansToExecute.map((p) => `${p.name} (${p.id})`));
 
-        const task = await ManagerCron.registerTask(taskName, nextDate, plansToExecute);
-        task.once("run", taskFunc);
+        this.timeout = setTimeout(() => { this.logger.information(`Running ${taskName}`); taskFunc(plansToExecute); }, (nextDate.getTime() - new Date().getTime()));
 
         if (nextDate != null) {
             this.flow.nextDate.setValue(nextDate.toLocaleString());

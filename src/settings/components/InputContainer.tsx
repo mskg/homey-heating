@@ -1,11 +1,11 @@
 import { StyleRulesCallback, withStyles, WithStyles } from "@material-ui/core/styles";
 import React from "react";
 
-const styles: StyleRulesCallback = (theme) => ({
+const styles: StyleRulesCallback<any, any> = (theme) => ({
     inputContainer: {
         width: "100%",
-        paddingLeft: theme.spacing.unit * 2,
-        paddingRight: theme.spacing.unit * 3,
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(3),
     },
 });
 

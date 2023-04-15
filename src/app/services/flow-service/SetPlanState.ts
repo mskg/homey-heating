@@ -14,8 +14,8 @@ type ChangePlanArgs = PlanRefArgs & {
     state: string;
 };
 
-export function SetPlanStateAction({ logger, repository }: IFlowContext) {
-    return flowCardActionFactory<ChangePlanArgs>("set_plan_state", logger, async (args, _state) => {
+export function SetPlanStateAction({ flow, logger, repository }: IFlowContext) {
+    return flowCardActionFactory<ChangePlanArgs>(flow, "set_plan_state", logger, async (args, _state) => {
             const plan = await repository.find(args.plan.id);
             if (plan == null) { return false; }
 

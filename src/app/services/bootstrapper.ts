@@ -1,6 +1,7 @@
 // tslint:disable: no-console
 
 import { Mutex } from "@app/helper";
+import { App as HomeyApp } from "homey";
 import { container } from "tsyringe";
 import { DeviceManagerService } from "../services/device-manager";
 import { HeatingPlanRepositoryService } from "./heating-plan-repository";
@@ -8,7 +9,7 @@ import { HeatingPlanRepositoryService } from "./heating-plan-repository";
 const mutex: Mutex = new Mutex();
 let ran: boolean = false;
 
-export async function BootStrapper(silent = false) {
+export async function BootStrapper(app: HomeyApp, silent = false) {
     const unlock = await mutex.lock();
     {
         if (ran) {
@@ -21,7 +22,7 @@ export async function BootStrapper(silent = false) {
         const repositoryService = container.resolve(HeatingPlanRepositoryService);
 
         // prepare device caches
-        await deviceManager.init();
+        await deviceManager.init(app);
 
         // load data
         repositoryService.load();

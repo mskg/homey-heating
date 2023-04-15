@@ -1,8 +1,9 @@
 import { Mutex, synchronize } from "@app/helper";
+import { App as HomeyApp } from "homey";
 import { filter, keys } from "lodash";
 import { EventDispatcher, IEvent } from "ste-events";
 import { singleton } from "tsyringe";
-import { CapabilityType, HomeyAPI, HomeyAPIService, ICapabilityInstance, IDevice, IZone, StringHashMap } from "../homey-api";
+import { CapabilityType, HomeyAPIService, ICapabilityInstance, IDevice, IZone, StableHomeyAPI, StringHashMap} from "../homey-api";
 import { ILogger, LoggerFactory, trycatchlog } from "../log";
 import { InternalSettings, SettingsManagerService } from "../settings-manager";
 
@@ -54,7 +55,7 @@ export class DeviceManagerService {
 
     private deviceList!: StringHashMap<AuditedDevice>;
     private zoneList!: StringHashMap<IZone>;
-    private homeyApi!: HomeyAPI;
+    private homeyApi!: StableHomeyAPI;
 
     private logger: ILogger;
 
@@ -67,9 +68,9 @@ export class DeviceManagerService {
     }
 
     // only called from one place -> needs no error handling, no workarround
-    public async init() {
+    public async init(app: HomeyApp) {
         this.logger.information(`Init`);
-        this.homeyApi = await this.apiService.getInstance();
+        this.homeyApi = await this.apiService.getInstance(app.homey);
 
         this.deviceList = {};
 
@@ -105,7 +106,7 @@ export class DeviceManagerService {
             ? d.watchedCapabilities.targetTemperature
             : null;
 
-        return capability != null ? capability.value : 0;
+        return capability != null ? capability as unknown as number : 0;
     }
 
     // mask, default is 0 - no change in logic
@@ -116,7 +117,7 @@ export class DeviceManagerService {
             ? (d.watchedCapabilities.temperature || d.watchedCapabilities.targetTemperature)
             : null;
 
-        return capability != null ? capability.value : 0;
+        return capability != null ? capability as unknown as number : 0;
     }
 
     // catched by all calling parties, no need to double
@@ -131,6 +132,7 @@ export class DeviceManagerService {
 
         try {
             const cap = d.watchedCapabilities != null ? d.watchedCapabilities.targetTemperature : null;
+
             if (cap != null) {
                 if (target > cap.max) {
                     target = cap.max;
@@ -154,9 +156,11 @@ export class DeviceManagerService {
         }
 
         await this.homeyApi.devices.setCapabilityValue({
-            deviceId: d.id,
             capabilityId: CapabilityType.TargetTemperature,
+            deviceId: d.id,
             value: target,
+            opts: undefined,
+            transactionId: undefined,
         });
     }
 
@@ -209,6 +213,7 @@ export class DeviceManagerService {
             delete this.deviceList[id];
         }));
 
+        // @ts-ignore API wrong
         this.zoneList = await this.homeyApi.zones.getZones();
         this.logger.information(`Found ${Object.keys(this.zoneList).length} zones`);
 
@@ -290,7 +295,7 @@ export class DeviceManagerService {
         if (device.watchedCapabilities.targetTemperature == null) {
             this.logger.information(`Listening on ${device.id} (${device.name}) ${CapabilityType.TargetTemperature}`);
 
-            device.watchedCapabilities.targetTemperature = await device.makeCapabilityInstance<number>(CapabilityType.TargetTemperature, (evt) => {
+            device.watchedCapabilities.targetTemperature = await device.makeCapabilityInstance(CapabilityType.TargetTemperature, (evt) => {
                 this.logger.debug(`${device.name} (${device.id}) changed ${CapabilityType.TargetTemperature} to ${evt}`);
 
                 this.onCapabilityChangedDispatcher.dispatch(this, {
@@ -304,7 +309,7 @@ export class DeviceManagerService {
         if (device.watchedCapabilities.temperature == null && CanMeasureTemperature(device)) {
             this.logger.information(`Listening on ${device.id} (${device.name}) ${CapabilityType.MeasureTemperature}`);
 
-            device.watchedCapabilities.temperature = await device.makeCapabilityInstance<number>(CapabilityType.MeasureTemperature, (evt) => {
+            device.watchedCapabilities.temperature = await device.makeCapabilityInstance(CapabilityType.MeasureTemperature, (evt) => {
                 this.logger.debug(`${device.name} (${device.id}) changed ${CapabilityType.MeasureTemperature} to ${evt}`);
 
                 this.onCapabilityChangedDispatcher.dispatch(this, {

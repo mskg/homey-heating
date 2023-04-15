@@ -8,7 +8,7 @@ type Body = {
 };
 
 @injectable()
-class PutMode extends ApiBase<Body> {
+export class PutMode extends ApiBase<Body> {
     constructor(
         private manager: HeatingManagerService) {
         super("PUT", "/mode");
@@ -22,7 +22,7 @@ class PutMode extends ApiBase<Body> {
 }
 
 @injectable()
-class GetMode extends ApiBase {
+export class GetMode extends ApiBase {
     constructor(private manager: HeatingManagerService) {
         super("GET", "/mode");
     }
@@ -31,8 +31,3 @@ class GetMode extends ApiBase {
         return {mode: this.manager.operationMode};
     }
 }
-
-export default [
-    PutMode,
-    GetMode,
-];

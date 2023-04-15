@@ -6,6 +6,7 @@ import { slotTime } from "../app/helper";
 import { IHeatingPlan } from "../app/model/heating";
 import { HeatingPlanCalculator } from "../app/services/calculator";
 import { FakeDate, patchDate } from "./mocks/date";
+import { App } from "homey";
 
 const PLANS_STRING = `
 [
@@ -1304,7 +1305,7 @@ function registerTasks(plans: IHeatingPlan[]) {
 }
 
 before(async () => {
-    await BootStrapper(true);
+    await BootStrapper(new App(), true);
     patchDate();
 });
 

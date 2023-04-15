@@ -10,7 +10,7 @@ type Params = {
 };
 
 @injectable()
-class GetResetPlans extends ApiBase {
+export class GetResetPlans extends ApiBase {
     constructor(private manager: HeatingPlanRepositoryService) {
         super("GET", "/resetplans");
     }
@@ -22,7 +22,7 @@ class GetResetPlans extends ApiBase {
 }
 
 @injectable()
-class GetPlans extends ApiBase {
+export class GetPlans extends ApiBase {
     constructor(private manager: HeatingPlanRepositoryService) {
         super("GET", "/plans");
     }
@@ -34,7 +34,7 @@ class GetPlans extends ApiBase {
 }
 
 @injectable()
-class GetPlan extends ApiBase<any, Params> {
+export class GetPlan extends ApiBase<any, Params> {
     constructor(private manager: HeatingPlanRepositoryService) {
         super("GET", "/plans/:id");
     }
@@ -47,7 +47,7 @@ class GetPlan extends ApiBase<any, Params> {
 }
 
 @injectable()
-class PutPlan extends ApiBase<any, Params> {
+export class PutPlan extends ApiBase<any, Params> {
     constructor(
         private manager: HeatingPlanRepositoryService,
         private devices: DeviceManagerService) {
@@ -84,7 +84,7 @@ class PutPlan extends ApiBase<any, Params> {
 }
 
 @injectable()
-class DeletePlan extends ApiBase<any, Params> {
+export class DeletePlan extends ApiBase<any, Params> {
     constructor(private manager: HeatingPlanRepositoryService) {
         super("DELETE", "/plans/:id");
     }
@@ -94,11 +94,3 @@ class DeletePlan extends ApiBase<any, Params> {
         return SUCCESS;
     }
 }
-
-export default [
-    DeletePlan,
-    GetPlan,
-    PutPlan,
-    GetPlans,
-    GetResetPlans,
-];
