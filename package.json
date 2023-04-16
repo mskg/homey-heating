@@ -82,7 +82,7 @@
   "scripts": {
     "homey": "homey",
 
-    "homey:run": "rimraf /tmp/homey-heating && npm run build:app:prod && homey -p /tmp/homey-heating app run --remote",
+    "homey:run": "rimraf /tmp/homey-heating && npm run build:app:dev && homey -p /tmp/homey-heating app run --remote",
     "homey:install": "rimraf /tmp/homey-heating && npm run build:app:prod && npm run build:web:prod && homey -p /tmp/homey-heating app install",
 
     "dist": "npm run build:app:prod && npm run build:web:prod && homey -p /tmp/homey-heating app validate --level publish",

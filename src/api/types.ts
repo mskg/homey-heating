@@ -1,5 +1,5 @@
 import { Mutex } from "@app/helper";
-import { ILogger, InternalSettings, LoggerFactory, SettingsManagerService } from "@app/services";
+import { BootStrapper, ILogger, InternalSettings, LoggerFactory, SettingsManagerService } from "@app/services";
 import { App as HomeyApp } from "homey";
 import { container } from "tsyringe";
 
@@ -33,7 +33,7 @@ export interface IAPIFunction<B = any, P = UnkownParameters, Q = UnkownParameter
 export abstract class ApiBase<B = any, P = UnkownParameters, Q = UnkownParameters> implements IAPIFunction<B, P, Q> {
 
     get logger(): ILogger {
-        return ApiBase.logger;
+        return ApiBase.logger || console;
     }
 
     /**
@@ -45,9 +45,9 @@ export abstract class ApiBase<B = any, P = UnkownParameters, Q = UnkownParameter
 
         const unlock = await ApiBase.mutex.lock();
         {
-            const settings = container.resolve<SettingsManagerService>(SettingsManagerService);
-            await settings.init(app.homey.settings);
+            await BootStrapper(app);
 
+            const settings = container.resolve<SettingsManagerService>(SettingsManagerService);
             settings.onChanged.subscribe((_s, v) => {
                 if (v.setting === InternalSettings.LogApi) {
                     ApiBase.logApi = v.value;
