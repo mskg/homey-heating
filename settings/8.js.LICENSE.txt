@@ -1,0 +1,31 @@
+/*! ../ButtonBase */
+
+/*! ../styles/colorManipulator */
+
+/*! ../styles/withStyles */
+
+/*! ../utils/capitalize */
+
+/*! ./utils/createSvgIcon */
+
+/*! @babel/runtime/helpers/esm/extends */
+
+/*! @babel/runtime/helpers/esm/objectWithoutProperties */
+
+/*! @babel/runtime/helpers/interopRequireDefault */
+
+/*! @babel/runtime/helpers/interopRequireWildcard */
+
+/*! clsx */
+
+/*! prop-types */
+
+/*! react */
+
+/*!*******************************************************!*\
+  !*** ../../node_modules/@material-ui/icons/Cancel.js ***!
+  \*******************************************************/
+
+/*!*****************************************************************!*\
+  !*** ../../node_modules/@material-ui/core/esm/Button/Button.js ***!
+  \*****************************************************************/

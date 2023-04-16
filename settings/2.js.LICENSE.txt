@@ -1,0 +1,179 @@
+/*! ../../../assets/icon_black.svg */
+
+/*! ../../app/model */
+
+/*! ../ButtonBase */
+
+/*! ../api/heating */
+
+/*! ../callAPI */
+
+/*! ../components/AddFab */
+
+/*! ../components/AppHeader */
+
+/*! ../components/Menu */
+
+/*! ../components/TemperatureAvatar */
+
+/*! ../dialogs/CopyDayDialog */
+
+/*! ../dialogs/SetPointDialog */
+
+/*! ../i18n/Translation */
+
+/*! ../layouts/Page */
+
+/*! ../state/PlanProvider */
+
+/*! ../state/planHooks */
+
+/*! ../styles/withStyles */
+
+/*! ../utils/capitalize */
+
+/*! ./PlanProvider */
+
+/*! ./temperatureToColor */
+
+/*! ./utils/createSvgIcon */
+
+/*! @babel/runtime/helpers/esm/extends */
+
+/*! @babel/runtime/helpers/esm/objectWithoutProperties */
+
+/*! @babel/runtime/helpers/interopRequireDefault */
+
+/*! @babel/runtime/helpers/interopRequireWildcard */
+
+/*! @material-ui/core */
+
+/*! @material-ui/core/AppBar */
+
+/*! @material-ui/core/Avatar */
+
+/*! @material-ui/core/Divider */
+
+/*! @material-ui/core/Fab */
+
+/*! @material-ui/core/IconButton */
+
+/*! @material-ui/core/List */
+
+/*! @material-ui/core/ListItem */
+
+/*! @material-ui/core/ListItemText */
+
+/*! @material-ui/core/Tab */
+
+/*! @material-ui/core/Tabs */
+
+/*! @material-ui/core/Toolbar */
+
+/*! @material-ui/core/Typography */
+
+/*! @material-ui/core/colors/amber */
+
+/*! @material-ui/core/colors/blue */
+
+/*! @material-ui/core/colors/deepOrange */
+
+/*! @material-ui/core/colors/green */
+
+/*! @material-ui/core/colors/lightBlue */
+
+/*! @material-ui/core/styles */
+
+/*! @material-ui/icons/Add */
+
+/*! @material-ui/icons/ArrowBackIos */
+
+/*! @material-ui/icons/Cancel */
+
+/*! @material-ui/icons/Delete */
+
+/*! @material-ui/icons/FileCopy */
+
+/*! @material-ui/utils */
+
+/*! clsx */
+
+/*! import() */
+
+/*! lodash */
+
+/*! prop-types */
+
+/*! react */
+
+/*! react-router-dom */
+
+/*! react-scroll-locky */
+
+/*! tslib */
+
+/*! uuid/v1 */
+
+/*!*************************!*\
+  !*** ./api/callAPI.tsx ***!
+  \*************************/
+
+/*!**************************!*\
+  !*** ./layouts/Page.tsx ***!
+  \**************************/
+
+/*!*****************************!*\
+  !*** ./state/planHooks.tsx ***!
+  \*****************************/
+
+/*!*******************************!*\
+  !*** ./api/heating/index.tsx ***!
+  \*******************************/
+
+/*!*******************************!*\
+  !*** ./components/AddFab.tsx ***!
+  \*******************************/
+
+/*!*********************************!*\
+  !*** ./pages/plan-schedule.tsx ***!
+  \*********************************/
+
+/*!**********************************!*\
+  !*** ./components/AppHeader.tsx ***!
+  \**********************************/
+
+/*!***********************************!*\
+  !*** ../../assets/icon_black.svg ***!
+  \***********************************/
+
+/*!*****************************************!*\
+  !*** ./components/Menu.tsx + 1 modules ***!
+  \*****************************************/
+
+/*!******************************************!*\
+  !*** ./components/TemperatureAvatar.tsx ***!
+  \******************************************/
+
+/*!*******************************************!*\
+  !*** ./components/temperatureToColor.tsx ***!
+  \*******************************************/
+
+/*!****************************************************!*\
+  !*** ../../node_modules/@material-ui/icons/Add.js ***!
+  \****************************************************/
+
+/*!***********************************************************!*\
+  !*** ../../node_modules/@material-ui/core/esm/Fab/Fab.js ***!
+  \***********************************************************/
+
+/*!************************************************************!*\
+  !*** ../../node_modules/@material-ui/core/colors/amber.js ***!
+  \************************************************************/
+
+/*!************************************************************!*\
+  !*** ../../node_modules/@material-ui/core/colors/green.js ***!
+  \************************************************************/
+
+/*!****************************************************************!*\
+  !*** ../../node_modules/@material-ui/core/colors/lightBlue.js ***!
+  \****************************************************************/

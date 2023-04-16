@@ -1,0 +1,15 @@
+/*! @material-ui/core/colors/amber */
+
+/*! @material-ui/core/colors/blue */
+
+/*! @material-ui/core/colors/deepOrange */
+
+/*! @material-ui/core/colors/green */
+
+/*!*******************************************!*\
+  !*** ./components/temperatureToColor.tsx ***!
+  \*******************************************/
+
+/*!***********************************************************!*\
+  !*** ./components/TemperatureChart/index.tsx + 3 modules ***!
+  \***********************************************************/
