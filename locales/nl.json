@@ -145,6 +145,7 @@
     },
     "temperature": {
       "label": "Temperatuur",
+      "custom": "Aangepast",
       "low": "Nacht",
       "warm": "Comfort",
       "middle": "Economisch",

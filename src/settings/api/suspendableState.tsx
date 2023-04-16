@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useEffect } from "react";
 
-export type MapType = {[key: string]: any};
+export type MapType = { [key: string]: any };
 
 export type HookSetType<T> = Dispatch<SetStateAction<T>>;
 export type HookReturnType = () => void;
@@ -17,6 +17,7 @@ type Async<T> = () => Promise<T>;
 async function tryMethod<T>(apiMethod: () => Promise<T>, setStateAction: Dispatch<SetStateAction<T>>): Promise<void> {
     try {
         setStateAction(await apiMethod());
+        // await (new Promise(resolve => setTimeout(resolve, 1000)));
     } catch (e) {
         // required for the error to popup the hierarchy
         setStateAction(() => { throw e; });
@@ -37,6 +38,7 @@ export function useSuspendableState<T extends MapType>(name: string, method: Asy
         // this is imporant as it sets the state after the promise resolves
         const val = cache.get(name);
         let [state, setState] = [null, null];
+
         if (provideState) {
             // we use instance compare on LOADING to determine non existing value
             // @ts-ignore
@@ -46,33 +48,35 @@ export function useSuspendableState<T extends MapType>(name: string, method: Asy
         const [failed, setFailed] = React.useState(false);
 
         function loadValue(force: boolean = false) {
-            if (cache.get(name) == null || force) {
+            if (val == null || val === LOADING || force) {
                 cache.set(name, LOADING);
 
                 // this unloads the component and waits for the promise to resolve
-                throw tryMethod(method, (r) => {
-                    if (typeof r === "function") {
-                        cache.set(name, (r as any)(cache.get(name)));
-                    } else {
-                        cache.set(name, r);
-                    }
-                }).catch((e) => {
-                    if (!provideFailed) {
-                        // console.error(e);
-                        // check me - this doesn't work
-                        setFailed(() => { throw e; });
-                    } else {
-                        setFailed(true);
-                    }
-                });
+                throw tryMethod(
+                    method,
+                    (r) => {
+                        if (typeof r === "function") {
+                            cache.set(name, (r as any)(cache.get(name)));
+                        } else {
+                            cache.set(name, r);
+                        }
+                    }).catch((e) => {
+                        if (!provideFailed) {
+                            // check me - this doesn't work
+                            setFailed(() => { throw e; });
+                        } else {
+                            setFailed(true);
+                        }
+                    });
             }
         }
 
         loadValue();
 
         useEffect(() => {
-            // console.log("killed value");
-            return () => { cache.delete(name); };
+            return () => {
+                cache.delete(name);
+            };
         }, []);
 
         // we tell the DEV that this is not the way to go

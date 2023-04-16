@@ -76,7 +76,7 @@ const AppMenuBase: React.FunctionComponent<Props> = (props) => {
                 {translate("menu.title")}
             </Typography>
             <Typography className={classes.version} variant="body2" color="textSecondary" gutterBottom={true}>
-                Version {__VERSION} ({__BUILD})
+                Version {__VERSION}
             </Typography>
 
             <Divider />

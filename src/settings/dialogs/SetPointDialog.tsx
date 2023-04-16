@@ -1,5 +1,5 @@
 import { Button, Dialog, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
-import { StyleRulesCallback, withStyles, WithStyles } from "@material-ui/core/styles";
+import { StyleRulesCallback, WithStyles, withStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
 import React from "react";
 import { TARGET_TEMPERATURE_MAX, TARGET_TEMPERATURE_MIN } from "../../app/services/homey-api/declarations";
@@ -26,8 +26,7 @@ type Props = WithStyles<typeof styles> & {
 
 const SetPointDialog: React.FunctionComponent<Props> = (props: Props) => {
     const { classes, onClose, ...otherProps } = props;
-
-    const {setPoint, setStart, saveSetPoint, setTargetTemperature } = useModifySetPoints();
+    const { setPoint, setStart, saveSetPoint, setTargetTemperature } = useModifySetPoints();
 
     function onCancelDialog() {
         onClose(false);
@@ -36,6 +35,23 @@ const SetPointDialog: React.FunctionComponent<Props> = (props: Props) => {
     function onSaveDialog() {
         saveSetPoint(setPoint);
         onClose(true);
+    }
+
+    const filterOnchange = (orig: any) => {
+        return (evt: any) => { if (evt?.target?.value >= 0) orig(evt); };
+    }
+
+    const filterResult = (val: number) => {
+        switch (val) {
+            case 16:
+            case 18.5:
+            case 20.5:
+            case 21.5:
+                return val;
+
+            default:
+                return -1;
+        }
     }
 
     return (
@@ -58,7 +74,7 @@ const SetPointDialog: React.FunctionComponent<Props> = (props: Props) => {
 
             <DialogContent className={classes.resetPadding}>
                 {/* <MuiPickersUtilsProvider utils={DateFnsUtils}> */}
-                    {/* <InputContainer>
+                {/* <InputContainer>
                         <TimePicker
                             ampm={false}
                             label={translate("setpoint.start.label")}
@@ -70,44 +86,45 @@ const SetPointDialog: React.FunctionComponent<Props> = (props: Props) => {
                         />
                     </InputContainer> */}
 
-                    <FormTextField
-                        type="time"
-                        InputProps={{ inputProps: { step: 60, pattern: "[0-9]{2}:[0-9]{2}" } }}
+                <FormTextField
+                    type="time"
+                    InputProps={{ inputProps: { step: 60, pattern: "[0-9]{2}:[0-9]{2}" } }}
 
-                        label={translate("setpoint.target.label")}
-                        placeholder={translate("setpoint.target.label")}
+                    label={translate("setpoint.start.label")}
+                    placeholder={translate("setpoint.start.label")}
 
-                        value={`${("00" + setPoint.hour).slice(-2)}:${("00" + setPoint.minute).slice(-2)}`}
-                        onChange={(evt) => { setStart(evt.target.value); }}
-                    />
+                    value={`${("00" + setPoint.hour).slice(-2)}:${("00" + setPoint.minute).slice(-2)}`}
+                    onChange={(evt) => { setStart(evt.target.value); }}
+                />
 
-                    <InputContainer>
-                        <FormControl className={classes.formControl} style={{ marginTop: 16 }} fullWidth={true}>
-                            <InputLabel >{translate("setpoint.temperature.label")}</InputLabel>
+                <InputContainer>
+                    <FormControl className={classes.formControl} style={{ marginTop: 16 }} fullWidth={true}>
+                        <InputLabel >{translate("setpoint.temperature.label")}</InputLabel>
 
-                            <Select
-                                fullWidth={true}
-                                onChange={setTargetTemperature}
-                                value={setPoint.targetTemperature}
-                            >
-                                <MenuItem value={16}>{translate("setpoint.temperature.low")}</MenuItem>
-                                <MenuItem value={18.5}>{translate("setpoint.temperature.middle")}</MenuItem>
-                                <MenuItem value={20.5}>{translate("setpoint.temperature.warm")}</MenuItem>
-                                <MenuItem value={21.5}>{translate("setpoint.temperature.warmer")}</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </InputContainer>
+                        <Select
+                            fullWidth={true}
+                            onChange={filterOnchange(setTargetTemperature)}
+                            value={filterResult(setPoint.targetTemperature)}
+                        >
+                            <MenuItem value={-1}>{translate("setpoint.temperature.custom")}</MenuItem>
+                            <MenuItem value={16}>{translate("setpoint.temperature.low")}</MenuItem>
+                            <MenuItem value={18.5}>{translate("setpoint.temperature.middle")}</MenuItem>
+                            <MenuItem value={20.5}>{translate("setpoint.temperature.warm")}</MenuItem>
+                            <MenuItem value={21.5}>{translate("setpoint.temperature.warmer")}</MenuItem>
+                        </Select>
+                    </FormControl>
+                </InputContainer>
 
-                    <FormTextField
-                        type="number"
-                        InputProps={{ inputProps: { min: TARGET_TEMPERATURE_MIN, max: TARGET_TEMPERATURE_MAX, step: 0.5 } }}
+                <FormTextField
+                    type="number"
+                    InputProps={{ inputProps: { min: TARGET_TEMPERATURE_MIN, max: TARGET_TEMPERATURE_MAX, step: 0.1 } }}
 
-                        label={translate("setpoint.target.label")}
-                        placeholder={translate("setpoint.target.label")}
+                    label={translate("setpoint.target.label")}
+                    placeholder={translate("setpoint.target.label")}
 
-                        value={setPoint.targetTemperature}
-                        onChange={setTargetTemperature}
-                    />
+                    value={setPoint.targetTemperature}
+                    onChange={setTargetTemperature}
+                />
                 {/* </MuiPickersUtilsProvider> */}
             </DialogContent>
         </Dialog>

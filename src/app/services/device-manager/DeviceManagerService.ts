@@ -106,7 +106,7 @@ export class DeviceManagerService {
             ? d.watchedCapabilities.targetTemperature
             : null;
 
-        return capability != null ? capability as unknown as number : 0;
+        return capability != null ? capability.value as unknown as number : 0;
     }
 
     // mask, default is 0 - no change in logic
@@ -117,7 +117,7 @@ export class DeviceManagerService {
             ? (d.watchedCapabilities.temperature || d.watchedCapabilities.targetTemperature)
             : null;
 
-        return capability != null ? capability as unknown as number : 0;
+        return capability != null ? capability.value as unknown as number : 0;
     }
 
     // catched by all calling parties, no need to double

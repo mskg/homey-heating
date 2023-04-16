@@ -120,7 +120,7 @@ const TemperaturesPage: React.FunctionComponent<Props> = (props) => {
                         <SubHeader text={translate("temperatures.list.title")} />
                         <BodyText text={translate("temperatures.list.text")} />
 
-                        {scheduleInformation.temperatures.length === 0
+                        {!scheduleInformation.temperatures
                             ? <BodyText style={{paddingTop: 16}} text={translate("temperatures.list.empty")} />
                             : <List className={classes.list}>
                                 {scheduleInformation.temperatures.length > 0 && <Divider />}

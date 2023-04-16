@@ -137,6 +137,7 @@
     },
     "temperature": {
       "low": "Nacht",
+      "custom": "Benutzerdefiniert",
       "warmer": "Komfort plus",
       "warm": "Komfort",
       "middle": "Economy",

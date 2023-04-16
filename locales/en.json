@@ -162,6 +162,7 @@
 
     "temperature": {
       "label": "Temperature",
+      "custom": "Custom",
       "low": "Night",
       "middle": "Economy",
       "warm": "Comfort",
