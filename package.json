@@ -96,7 +96,7 @@
     "build:app:dev": "webpack --mode development --config webpack.app.js",
     "build:app:prod": "npm run lint:app && npm run build:app:releasenotes && webpack --mode production --config webpack.app.js",
     "build:web:dev": "webpack --mode development --config webpack.react.js",
-    "build:web:prod": "FORCE_PRODUCTION=true && npm run lint:web && webpack --mode development --config webpack.react.js",
+    "build:web:prod": "npm run lint:web && FORCE_PRODUCTION=true webpack --mode development --config webpack.react.js",
     "start:web": "webpack-dev-server --mode development --config webpack.react.js --open",
     "start:web:prod": "webpack-dev-server --mode production --config webpack.react.js --open"
   },

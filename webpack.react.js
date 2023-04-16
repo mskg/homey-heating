@@ -81,10 +81,14 @@ var scriptConfig = (env, argv) => {
 
     optimization: {
       innerGraph: true,
-      mangleExports: true,
+      mangleExports: 'deterministic',
       minimize: true,
       mergeDuplicateChunks: true,
       removeEmptyChunks: true,
+      usedExports: true,
+      runtimeChunk: true,
+      chunkIds: 'natural',
+      concatenateModules: true,
     },
 
     externals: ["Homey"],
@@ -118,7 +122,6 @@ var scriptConfig = (env, argv) => {
     plugins: plugins,
 
     output: {
-      filename: "[name].js",
       path: distPath + "/settings"
     },
   };
