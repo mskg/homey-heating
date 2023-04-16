@@ -5,6 +5,8 @@ import { App as HomeyApp } from "homey";
 import { container } from "tsyringe";
 import { DeviceManagerService } from "../services/device-manager";
 import { HeatingPlanRepositoryService } from "./heating-plan-repository";
+import { LogService } from "./log";
+import { SettingsManagerService } from "./settings-manager";
 
 const mutex: Mutex = new Mutex();
 let ran: boolean = false;
@@ -13,21 +15,37 @@ export async function BootStrapper(app: HomeyApp, silent = false) {
     const unlock = await mutex.lock();
     {
         if (ran) {
+            if (!silent) { console.info(`********* APPLICATION STARTUP SKIPPED *********`); }
+
             unlock();
             return;
         }
 
-        if (!silent) { console.info(`********* APPLICATION STARTUP v${__VERSION} (${__BUILD}) *********`); }
-        const deviceManager = container.resolve(DeviceManagerService);
-        const repositoryService = container.resolve(HeatingPlanRepositoryService);
+        try {
+            // tslint:disable-next-line: no-console
+            if (!silent) { console.info(`********* APPLICATION STARTUP v${__VERSION} (${__BUILD}) *********`); }
 
-        // prepare device caches
-        await deviceManager.init(app);
+            // depends on logger -> settings -> ...
+            const settingsManager: SettingsManagerService = container.resolve(SettingsManagerService);
+            await settingsManager.init(app.homey.settings);
 
-        // load data
-        repositoryService.load();
+            // make that available
+            LogService.init(app);
 
-        ran = true;
+            const deviceManager = container.resolve(DeviceManagerService);
+            const repositoryService = container.resolve(HeatingPlanRepositoryService);
+
+            // prepare device caches
+            await deviceManager.init(app);
+
+            // load data
+            repositoryService.load();
+
+            if (!silent) { console.info(`********* APPLICATION STARTUP DONE *********`); }
+            ran = true;
+        } catch (e) {
+            console.error("BootStrapper failed", e);
+        }
     }
     unlock();
 }

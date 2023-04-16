@@ -1,4 +1,6 @@
+import { Mutex } from "@app/helper";
 import { ILogger, InternalSettings, LoggerFactory, SettingsManagerService } from "@app/services";
+import { App as HomeyApp } from "homey";
 import { container } from "tsyringe";
 
 export type UnkownParameters = { [k: string]: string; };
@@ -37,20 +39,30 @@ export abstract class ApiBase<B = any, P = UnkownParameters, Q = UnkownParameter
     /**
      * static initializer
      */
-    public static initialize() {
+    public static async initialize(app: HomeyApp) {
+        // this pattern is wrong here
         if (ApiBase.initialized) { return; }
 
-        const settings = container.resolve<SettingsManagerService>(SettingsManagerService);
-        settings.onChanged.subscribe((_s, v) => {
-            if (v.setting === InternalSettings.LogApi) {
-                ApiBase.logApi = v.value;
-            }
-        });
+        const unlock = await ApiBase.mutex.lock();
+        {
+            const settings = container.resolve<SettingsManagerService>(SettingsManagerService);
+            settings.init(app.homey.settings);
 
-        ApiBase.logApi = settings.get<boolean>(InternalSettings.LogApi, false) === true;
-        ApiBase.logger = container.resolve<LoggerFactory>(LoggerFactory).createLogger("Api");
-        ApiBase.initialized = true;
+            settings.onChanged.subscribe((_s, v) => {
+                if (v.setting === InternalSettings.LogApi) {
+                    ApiBase.logApi = v.value;
+                }
+            });
+
+            ApiBase.logApi = settings.get<boolean>(InternalSettings.LogApi, false) === true;
+            ApiBase.logger = container.resolve<LoggerFactory>(LoggerFactory).createLogger("Api");
+
+            ApiBase.initialized = true;
+        }
+        unlock();
     }
+
+    private static mutex: Mutex = new Mutex();
 
     private static logger: ILogger;
     private static logApi = false;
@@ -59,8 +71,8 @@ export abstract class ApiBase<B = any, P = UnkownParameters, Q = UnkownParameter
     public public = !__PRODUCTION__;
 
     constructor(public readonly method: Method, public readonly path: string) {
-        ApiBase.initialize();
-        this.logger.information(`Bound endpoint ${method} ${path}`);
+        // ApiBase.initialize();
+        // this.logger.information(`Bound endpoint ${method} ${path}`);
     }
 
     public async fn(args: IAPIParams<B, P, Q>, callback: CallBack) {

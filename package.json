@@ -81,22 +81,31 @@
   },
   "scripts": {
     "homey": "homey",
-    "homey:run": "npm run build:app:dev && homey -p /tmp/homey-heating app run --remote",
-    "homey:install": "npm run build:app:prod && npm run build:web:prod && homey -p /tmp/homey-heating app install",
+
+    "homey:run": "rimraf /tmp/homey-heating && npm run build:app:prod && homey -p /tmp/homey-heating app run --remote",
+    "homey:install": "rimraf /tmp/homey-heating && npm run build:app:prod && npm run build:web:prod && homey -p /tmp/homey-heating app install",
+
     "dist": "npm run build:app:prod && npm run build:web:prod && homey -p /tmp/homey-heating app validate --level publish",
     "tag": "npm run lint:app && npm run lint:web && npm run test && git tag",
     "test": "rimraf tmp && tsc -p ./src/test/tsconfig.json && mocha",
-    "release:install": "node scripts/install.js install",
+
+    "release:download": "node scripts/download.js",
+    "release:install": "homey app install -p tmp",
     "release:publish": "cp ./env.json ./tmp && node scripts/install.js publish",
+
     "build:setversion": "node scripts/update-version.js",
     "build:sentry": "sentry-cli",
+
     "lint:app": "tslint --project ./src/tsconfig.json",
     "lint:web": "tslint --project ./src/settings/tsconfig.json",
+
     "build:app:releasenotes": "node scripts/release-notes.js",
     "build:app:dev": "webpack --mode development --config webpack.app.js",
     "build:app:prod": "npm run lint:app && npm run build:app:releasenotes && webpack --mode production --config webpack.app.js",
+
     "build:web:dev": "webpack --mode development --config webpack.react.js",
-    "build:web:prod": "npm run lint:web && FORCE_PRODUCTION=true webpack --mode development --config webpack.react.js",
+    "build:web:prod": "npm run lint:web && webpack --mode production --config webpack.react.js",
+
     "start:web": "webpack-dev-server --mode development --config webpack.react.js --open",
     "start:web:prod": "webpack-dev-server --mode production --config webpack.react.js --open"
   },

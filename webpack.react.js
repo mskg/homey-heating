@@ -79,17 +79,17 @@ var scriptConfig = (env, argv) => {
       },
     },
 
-    optimization: {
-      innerGraph: true,
-      mangleExports: 'deterministic',
-      minimize: true,
-      mergeDuplicateChunks: true,
-      removeEmptyChunks: true,
-      usedExports: true,
-      runtimeChunk: true,
-      chunkIds: 'natural',
-      concatenateModules: true,
-    },
+    // optimization: {
+    //   innerGraph: true,
+    //   mangleExports: 'deterministic',
+    //   minimize: true,
+    //   mergeDuplicateChunks: true,
+    //   removeEmptyChunks: true,
+    //   usedExports: true,
+    //   runtimeChunk: true,
+    //   chunkIds: 'natural',
+    //   concatenateModules: true,
+    // },
 
     externals: ["Homey"],
 

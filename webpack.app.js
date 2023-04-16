@@ -8,7 +8,8 @@ const LicenseCheckerWebpackPlugin = require("license-checker-webpack-plugin");
 const distPath = path.resolve('/tmp/homey-heating');
 
 var appConfig = (env, argv) => {
-  const PRODUCTION = argv.mode === 'production';
+  const PRODUCTION = argv.mode === 'production' || process.env.FORCE_PRODUCTION == "true";
+  console.log('******************* PRODUCTION?', PRODUCTION );
 
   const package = require("./package.json");
   const appPackage = require("./src/app.json");
@@ -38,7 +39,7 @@ var appConfig = (env, argv) => {
     new webpack.DefinePlugin({
       __PRODUCTION__: JSON.stringify(PRODUCTION),
       __VERSION: JSON.stringify(package.version),
-      __BUILD: JSON.stringify(process.env.TRAVIS_BUILD_NUMBER)
+      __BUILD: JSON.stringify(process.env.GITHUB_REF_NAME)
     }),
 
     // source-map is wrong for typescript code but better than nothing
@@ -164,6 +165,17 @@ var appConfig = (env, argv) => {
       ]
     },
 
+    // optimization: {
+    //   concatenateModules: false,
+    //   minimize: false,
+    //   mangleExports: false,
+    //   // moduleIds: false,
+    //   providedExports: false,
+    //   removeAvailableModules: false,
+    //   removeEmptyChunks: false,
+    //   // chunkIds: false,
+    // },
+
     devtool: PRODUCTION ? 'source-map' : "inline-source-map",
 
     resolve: {
@@ -194,5 +206,6 @@ var appConfig = (env, argv) => {
     }
   }
 };
-
 module.exports = appConfig;
+
+

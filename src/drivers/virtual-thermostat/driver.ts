@@ -11,7 +11,6 @@ class VirtualThermostatsDriver extends Driver {
     public async onInit() {
         // tslint:disable-next-line: no-console
         console.info(`Bootstrapping Driver v${__VERSION} (${__BUILD})`);
-
         await BootStrapper(this.homey.app);
     }
 

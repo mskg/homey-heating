@@ -33,6 +33,10 @@ fs.readdir(docsDir, (err, files) => {
         getNotes(`${docsDir}/${file}`);
     });
 
+    if (!fs.existsSync(outDir)) {
+        fs.mkdirSync(outDir);
+    }
+
     fs.writeFileSync(
         `${outDir}/.homeychangelog.json`,
         JSON.stringify(releaseNotes),

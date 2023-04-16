@@ -5,13 +5,7 @@ const rimraf = require("rimraf");
 const cli = require("homey");
 const _ = require("lodash");
 
-var branchName = process.argv.length >= 4 ? process.argv[3] : null;
-var action = process.argv.length >= 4 ? process.argv[2] : null;
-
-if (action !== 'install' && action !== 'publish') {
-    console.error("Unkown action", action);
-    process.exit(-1);
-}
+var branchName = process.argv.length >= 3 ? process.argv[2] : null;
 
 const options = {
     hostname: 'api.github.com',
@@ -85,27 +79,7 @@ function run() {
                     })
                     .on("close", () => {
                         fs.unlinkSync(downLoadFile);
-                        console.log("Installing");
-
-                        if (action == 'publish') {
-                            new cli.App(tempDir).publish()
-                                .then(() => {
-                                    console.log("done.");
-                                })
-                                .catch((e) => {
-                                    console.error(e, "failed.");
-                                });
-                        } else {
-                            cli.AthomApi.getActiveHomey().then((homey) => {
-                                new cli.App(tempDir).install({ homey, debug: false, skipBuild: true })
-                                    .then(() => {
-                                        console.log("done.");
-                                    })
-                                    .catch((e) => {
-                                        console.error(e, "failed.");
-                                    });
-                            });
-                        }
+                        console.log("Done");
                     })
             });
         })

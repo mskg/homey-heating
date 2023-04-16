@@ -9,7 +9,7 @@ type AllowedSetting = boolean | string | number;
 
 @singleton()
 export class SettingsManagerService {
-    private logger: ILogger;
+    private logger!: ILogger;
     private settings!: ManagerSettings;
 
     private onChangedDispatcher = new EventDispatcher<SettingsManagerService, {
@@ -19,8 +19,7 @@ export class SettingsManagerService {
 
     private devSettings: { [key: string]: any } = {};
 
-    constructor(factory: LoggerFactory) {
-        this.logger = factory.createLogger("Settings");
+    constructor(private factory: LoggerFactory) {
     }
 
     public get onChanged() {
@@ -68,5 +67,7 @@ export class SettingsManagerService {
     @trycatchlog(true)
     public async init(settings: ManagerSettings) {
         this.settings = settings;
+        // depends on settingsmanager  - we must defer the creation post constructor
+        this.logger = this.factory.createLogger("Settings");
     }
 }

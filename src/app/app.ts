@@ -6,7 +6,6 @@ import {
     BootStrapper, FlowService, HeatingManagerService, HeatingSchedulerService,
     ILogger,
     LoggerFactory,
-    LogService,
     NotificationService,
     TranslationService, trycatchlog,
 } from "@app/services";
@@ -26,14 +25,13 @@ export class HeatingSchedulerApp {
 
         // @ts-ignore
         @inject("FlowService") private flowService: FlowService) {
-
         this.logger = this.loggerFactory.createLogger("App");
     }
 
     // whatever goes wrong - we log, hide and dump it
     @trycatchlog(true)
     public async run(app: HomeyApp) {
-        this.logger.information(`Bootstrapping App v${__VERSION} (${__BUILD})`);
+        this.logger.information(`Bootstrapping HeatingScheduler`);
 
         process.on("uncaughtException", (err) => {
             this.logger.error(err, "uncought Exception");
@@ -62,10 +60,6 @@ export class HeatingSchedulerApp {
  */
 export default class App extends HomeyApp {
     public async onInit() {
-        // tslint:disable-next-line: no-console
-        console.info(`Bootstrapping App v${__VERSION} (${__BUILD})`);
-        LogService.init(this);
-
         await BootStrapper(this);
 
         // we let the container do our stuff

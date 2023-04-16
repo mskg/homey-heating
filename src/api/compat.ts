@@ -9,7 +9,9 @@ type Parameters = {
 };
 
 export function CompatibilityWrapper<B = any, P = UnkownParameters, Q = UnkownParameters>(c: ApiBase<B, P, Q>): (p: Parameters) => Promise<any> {
-    return ({ body, params, query }: Parameters): Promise<any> => {
+    return ({ homey, body, params, query }: Parameters): Promise<any> => {
+        ApiBase.initialize(homey);
+
         return new Promise((resolve, reject) => {
             c.fn({ body, params, query } as IAPIParams<B, P, Q>, (e: any, v: any) => {
                 if (e) {
