@@ -125,7 +125,7 @@ const OverviewPage: React.FunctionComponent<Props> = (props: Props) => {
                         </InputContainer>
 
                         <SubHeader text={translate("plans.plans.section")} />
-                        { plans == undefined || plans.length === 0
+                        { plans.length === 0
                             ? <BodyText style={{paddingTop: 16}} text={translate("plans.plans.empty")} />
                             : <List className={classes.list}>
                                 {plans.length > 0 && <Divider key="0" />}

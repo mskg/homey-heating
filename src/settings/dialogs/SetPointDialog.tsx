@@ -38,8 +38,8 @@ const SetPointDialog: React.FunctionComponent<Props> = (props: Props) => {
     }
 
     const filterOnchange = (orig: any) => {
-        return (evt: any) => { if (evt?.target?.value >= 0) orig(evt); };
-    }
+        return (evt: any) => { if (evt?.target?.value >= 0) { orig(evt); } };
+    };
 
     const filterResult = (val: number) => {
         switch (val) {
@@ -52,7 +52,7 @@ const SetPointDialog: React.FunctionComponent<Props> = (props: Props) => {
             default:
                 return -1;
         }
-    }
+    };
 
     return (
         <Dialog fullScreen={true} TransitionComponent={Transition} {...otherProps}>
