@@ -1,0 +1,147 @@
+/*! ../api/devices */
+
+/*! ../api/heating */
+
+/*! ../api/zones */
+
+/*! ../callAPI */
+
+/*! ../components/AppHeader */
+
+/*! ../components/BodyText */
+
+/*! ../components/ConfirmDialog */
+
+/*! ../components/FormTextField */
+
+/*! ../components/Icons */
+
+/*! ../components/Menu */
+
+/*! ../components/SubHeader */
+
+/*! ../components/TemperatureChart */
+
+/*! ../dialogs/CloneDialog */
+
+/*! ../i18n/Translation */
+
+/*! ../layouts/Page */
+
+/*! ../state/deviceHooks */
+
+/*! ../state/planHooks */
+
+/*! ../state/zoneHooks */
+
+/*! ./InputContainer */
+
+/*! ./PlanProvider */
+
+/*! ./Transition */
+
+/*! @material-ui/core */
+
+/*! @material-ui/core/Avatar */
+
+/*! @material-ui/core/Button */
+
+/*! @material-ui/core/Checkbox */
+
+/*! @material-ui/core/Dialog */
+
+/*! @material-ui/core/DialogActions */
+
+/*! @material-ui/core/DialogContent */
+
+/*! @material-ui/core/DialogContentText */
+
+/*! @material-ui/core/DialogTitle */
+
+/*! @material-ui/core/FormControlLabel */
+
+/*! @material-ui/core/List */
+
+/*! @material-ui/core/ListItem */
+
+/*! @material-ui/core/ListItemAvatar */
+
+/*! @material-ui/core/ListItemSecondaryAction */
+
+/*! @material-ui/core/ListItemText */
+
+/*! @material-ui/core/Switch */
+
+/*! @material-ui/core/TextField */
+
+/*! @material-ui/core/styles */
+
+/*! @material-ui/icons */
+
+/*! @material-ui/icons/ArrowBackIos */
+
+/*! @material-ui/icons/Cancel */
+
+/*! @material-ui/icons/Delete */
+
+/*! @material-ui/icons/FileCopy */
+
+/*! import() */
+
+/*! lodash */
+
+/*! notistack */
+
+/*! react */
+
+/*! react-router-dom */
+
+/*! react-scroll-locky */
+
+/*! tslib */
+
+/*! uuid/v1 */
+
+/*!************************!*\
+  !*** ./pages/plan.tsx ***!
+  \************************/
+
+/*!*****************************!*\
+  !*** ./api/zones/index.tsx ***!
+  \*****************************/
+
+/*!*****************************!*\
+  !*** ./state/planHooks.tsx ***!
+  \*****************************/
+
+/*!*****************************!*\
+  !*** ./state/zoneHooks.tsx ***!
+  \*****************************/
+
+/*!******************************!*\
+  !*** ./components/Icons.tsx ***!
+  \******************************/
+
+/*!*******************************!*\
+  !*** ./api/devices/index.tsx ***!
+  \*******************************/
+
+/*!*******************************!*\
+  !*** ./state/deviceHooks.tsx ***!
+  \*******************************/
+
+/*!***********************************!*\
+  !*** ./components/Transition.tsx ***!
+  \***********************************/
+
+/*!**************************************!*\
+  !*** ./components/ConfirmDialog.tsx ***!
+  \**************************************/
+
+/*!**************************************!*\
+  !*** ./components/FormTextField.tsx ***!
+  \**************************************/
+
+/*!***************************************!*\
+  !*** ./components/InputContainer.tsx ***!
+  \***************************************/

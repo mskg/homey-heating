@@ -1,0 +1,65 @@
+/*! ../../app/model */
+
+/*! ../FormControl/useFormControl */
+
+/*! ../IconButton */
+
+/*! ../components/Transition */
+
+/*! ../i18n/Translation */
+
+/*! ../styles/withStyles */
+
+/*! ../utils/useControlled */
+
+/*! ./FormControlContext */
+
+/*! @babel/runtime/helpers/esm/extends */
+
+/*! @babel/runtime/helpers/esm/objectWithoutProperties */
+
+/*! @babel/runtime/helpers/esm/slicedToArray */
+
+/*! @material-ui/core */
+
+/*! @material-ui/core/Button */
+
+/*! @material-ui/core/Dialog */
+
+/*! @material-ui/core/DialogActions */
+
+/*! @material-ui/core/DialogContent */
+
+/*! @material-ui/core/DialogContentText */
+
+/*! @material-ui/core/DialogTitle */
+
+/*! @material-ui/utils */
+
+/*! clsx */
+
+/*! lodash */
+
+/*! prop-types */
+
+/*! react */
+
+/*!***********************************!*\
+  !*** ./components/Transition.tsx ***!
+  \***********************************/
+
+/*!***********************************!*\
+  !*** ./dialogs/CopyDayDialog.tsx ***!
+  \***********************************/
+
+/*!***********************************************************************!*\
+  !*** ../../node_modules/@material-ui/core/esm/internal/SwitchBase.js ***!
+  \***********************************************************************/
+
+/*!******************************************************************************!*\
+  !*** ../../node_modules/@material-ui/core/esm/FormControl/useFormControl.js ***!
+  \******************************************************************************/
+
+/*!**********************************************************************************!*\
+  !*** ../../node_modules/@material-ui/core/esm/FormControl/FormControlContext.js ***!
+  \**********************************************************************************/

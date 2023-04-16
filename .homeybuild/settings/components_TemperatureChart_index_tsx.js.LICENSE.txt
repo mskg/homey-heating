@@ -1,0 +1,49 @@
+/*! ../../../app/model */
+
+/*! ../../i18n/Translation */
+
+/*! ../../state/calculateDay */
+
+/*! ../temperatureToColor */
+
+/*! ./Component */
+
+/*! ./SVGGenerator */
+
+/*! ./SeriesElement */
+
+/*! @material-ui/core/colors/amber */
+
+/*! @material-ui/core/colors/blue */
+
+/*! @material-ui/core/colors/deepOrange */
+
+/*! @material-ui/core/colors/green */
+
+/*! @material-ui/core/styles */
+
+/*! d3 */
+
+/*! lodash */
+
+/*! react */
+
+/*!*******************************************!*\
+  !*** ./components/temperatureToColor.tsx ***!
+  \*******************************************/
+
+/*!***********************************************!*\
+  !*** ./components/TemperatureChart/index.tsx ***!
+  \***********************************************/
+
+/*!***************************************************!*\
+  !*** ./components/TemperatureChart/Component.tsx ***!
+  \***************************************************/
+
+/*!******************************************************!*\
+  !*** ./components/TemperatureChart/SVGGenerator.tsx ***!
+  \******************************************************/
+
+/*!*******************************************************!*\
+  !*** ./components/TemperatureChart/SeriesElement.tsx ***!
+  \*******************************************************/

@@ -1,0 +1,35 @@
+/*! ../FormControl/useFormControl */
+
+/*! ../IconButton */
+
+/*! ../internal/SwitchBase */
+
+/*! ../styles/colorManipulator */
+
+/*! ../styles/withStyles */
+
+/*! ../utils/capitalize */
+
+/*! ../utils/useControlled */
+
+/*! @babel/runtime/helpers/esm/extends */
+
+/*! @babel/runtime/helpers/esm/objectWithoutProperties */
+
+/*! @babel/runtime/helpers/esm/slicedToArray */
+
+/*! @material-ui/utils */
+
+/*! clsx */
+
+/*! prop-types */
+
+/*! react */
+
+/*!*****************************************************************!*\
+  !*** ../../node_modules/@material-ui/core/esm/Switch/Switch.js ***!
+  \*****************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ../../node_modules/@material-ui/core/esm/internal/SwitchBase.js ***!
+  \***********************************************************************/
