@@ -2,7 +2,7 @@ const https = require('https');
 const fs = require('fs');
 const unzipper = require("unzipper");
 const rimraf = require("rimraf");
-const cli = require("athom-cli");
+const cli = require("homey");
 const _ = require("lodash");
 
 var branchName = process.argv.length >= 4 ? process.argv[3] : null;
@@ -10,7 +10,7 @@ var action = process.argv.length >= 4 ? process.argv[2] : null;
 
 if (action !== 'install' && action !== 'publish') {
     console.error("Unkown action", action);
-    process.abort();
+    process.exit(-1);
 }
 
 const options = {
@@ -18,6 +18,7 @@ const options = {
     path: '/repos/mskg/homey-heating/branches',
     headers: { 'User-Agent': 'console' }
 };
+
 
 https.get(options, (res) => {
     var body = '';
@@ -89,20 +90,22 @@ function run() {
 
                         if (action == 'publish') {
                             new cli.App(tempDir).publish()
-                            .then(() => {
-                                console.log("done.");
-                            })
-                            .catch((e) => {
-                                console.error("done.");
-                            });
-                        } else {
-                            new cli.App(tempDir).install({ debug: false, skipBuild: true })
                                 .then(() => {
                                     console.log("done.");
                                 })
                                 .catch((e) => {
-                                    console.error("done.");
+                                    console.error(e, "failed.");
                                 });
+                        } else {
+                            cli.AthomApi.getActiveHomey().then((homey) => {
+                                new cli.App(tempDir).install({ homey, debug: false, skipBuild: true })
+                                    .then(() => {
+                                        console.log("done.");
+                                    })
+                                    .catch((e) => {
+                                        console.error(e, "failed.");
+                                    });
+                            });
                         }
                     })
             });

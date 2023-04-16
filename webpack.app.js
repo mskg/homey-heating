@@ -115,6 +115,8 @@ var appConfig = (env, argv) => {
         allow: "(GPL-3.0 OR Apache-2.0 OR BSD-2-Clause OR BSD-3-Clause OR MIT OR 0BSD OR ISC)",
         outputFilename: "ThirdPartyNotices.txt",
         emitError: true,
+        // https://github.com/microsoft/license-checker-webpack-plugin/pull/37#issuecomment-1006780673
+        filter: /(^.*[/\\]node_modules[/\\]((?:@[^/\\]+[/\\])?(?:[^@/\\][^/\\]*)))/,
         override: {
           "after@0.8.1": { licenseName: "MIT" },
           "component-bind@1.0.0": { licenseName: "MIT" },
@@ -158,20 +160,6 @@ var appConfig = (env, argv) => {
         test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/
-      },
-      {
-        test: /\.js?$/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: [
-              '@babel/preset-env'
-            ],
-            plugins: [
-              '@babel/plugin-proposal-class-properties'
-            ]
-          }
-        }
       },
       ]
     },

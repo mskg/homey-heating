@@ -39,7 +39,7 @@ jobs:
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: /tmp/homey-heating/.homeybuild
+        publish_dir: /tmp/homey-heating
         publish_branch: release/${{ github.ref_name }}
         keep_files: false
 

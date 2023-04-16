@@ -8,14 +8,14 @@ const distPath = path.resolve('/tmp/homey-heating');
 const version = require("./package.json").version;
 
 var scriptConfig = (env, argv) => {
-  const PRODUCTION = argv.mode === 'production';
+  const PRODUCTION = argv.mode === 'production' || process.env.FORCE_PRODUCTION == "true";
   const plugins = [
     new webpack.DefinePlugin({
       __PRODUCTION__: JSON.stringify(argv.mode === 'production'),
       __HOMEY_DEV_URL: JSON.stringify(process.env.HOMEY_DEV_URL || "http://homey-pro.iot.home.arpa"),
       __VERSION: JSON.stringify(version),
       __HOMEY_LANG: JSON.stringify(process.env.HOMEY_LANG || "en"),
-      __BUILD: JSON.stringify(process.env.TRAVIS_BUILD_NUMBER),
+      __BUILD: JSON.stringify(process.env.GITHUB_REF_NAME),
     }),
 
     new MiniCssExtractPlugin({
@@ -48,6 +48,8 @@ var scriptConfig = (env, argv) => {
     plugins.push(
       new LicenseCheckerWebpackPlugin({
         allow: "(GPL-3.0 OR Apache-2.0 OR BSD-2-Clause OR BSD-3-Clause OR 0BSD OR MIT OR ISC)",
+        // https://github.com/microsoft/license-checker-webpack-plugin/pull/37#issuecomment-1006780673
+        filter: /(^.*[/\\]node_modules[/\\]((?:@[^/\\]+[/\\])?(?:[^@/\\][^/\\]*)))/,
         outputFilename: "ThirdPartyNotices.txt",
         emitError: true,
         override: {
@@ -75,14 +77,15 @@ var scriptConfig = (env, argv) => {
       },
     },
 
-    externals: ["Homey"],
-
     optimization: {
-      splitChunks: {
-        // include all types of chunks
-        chunks: 'all'
-      }
+      innerGraph: true,
+      mangleExports: true,
+      minimize: true,
+      mergeDuplicateChunks: true,
+      removeEmptyChunks: true,
     },
+
+    externals: ["Homey"],
 
     module: {
       rules: [{
