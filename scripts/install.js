@@ -73,16 +73,20 @@ function run() {
                         var entryName = entry.path;
                         entryName = entryName.substring(entryName.indexOf("/") + 1);
 
-                        if (entry.type == "Directory") {
-                            if (entryName !== "") {
-                                fs.mkdirSync(tempDir + "/" + entryName);
+                        if (entry.path == null || entry.path.match(/\.homeybuild/)) {
+                           if (entry.type == "Directory") {
+                                if (entryName !== "") {
+                                    fs.mkdirSync(tempDir + "/" + entryName);
+                                }
+                                entry.autodrain();
                             }
+                            else {
+                                entry.pipe(fs.createWriteStream(tempDir + "/" + entryName));
+                            }
+                        } else {
+                            console.log('ignoring', entryName);
                             entry.autodrain();
                         }
-                        else {
-                            entry.pipe(fs.createWriteStream(tempDir + "/" + entryName));
-                        }
-
                     })
                     .on("close", () => {
                         fs.unlinkSync(downLoadFile);

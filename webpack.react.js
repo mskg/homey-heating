@@ -13,7 +13,7 @@ var scriptConfig = (env, argv) => {
 
   const plugins = [
     new webpack.DefinePlugin({
-      __PRODUCTION__: JSON.stringify(argv.mode === 'production'),
+      __PRODUCTION__: JSON.stringify(PRODUCTION),
       __HOMEY_DEV_URL: JSON.stringify(process.env.HOMEY_DEV_URL || "http://homey-pro.iot.home.arpa"),
       __VERSION: JSON.stringify(version),
       __HOMEY_LANG: JSON.stringify(process.env.HOMEY_LANG || "en"),
