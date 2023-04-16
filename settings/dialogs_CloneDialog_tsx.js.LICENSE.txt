@@ -1,0 +1,23 @@
+/*! ../components/Transition */
+
+/*! ../i18n/Translation */
+
+/*! @material-ui/core/Button */
+
+/*! @material-ui/core/Dialog */
+
+/*! @material-ui/core/DialogActions */
+
+/*! @material-ui/core/DialogContent */
+
+/*! @material-ui/core/DialogContentText */
+
+/*! @material-ui/core/DialogTitle */
+
+/*! @material-ui/core/TextField */
+
+/*! react */
+
+/*!*********************************!*\
+  !*** ./dialogs/CloneDialog.tsx ***!
+  \*********************************/
