@@ -9,6 +9,8 @@ const version = require("./package.json").version;
 
 var scriptConfig = (env, argv) => {
   const PRODUCTION = argv.mode === 'production' || process.env.FORCE_PRODUCTION == "true";
+  console.log('******************* PRODUCTION?', PRODUCTION );
+
   const plugins = [
     new webpack.DefinePlugin({
       __PRODUCTION__: JSON.stringify(argv.mode === 'production'),
@@ -68,7 +70,7 @@ var scriptConfig = (env, argv) => {
       app: './index.tsx',
     },
 
-    devtool: PRODUCTION ? false : 'inline-source-map',
+    devtool: PRODUCTION ? 'source-map' : 'inline-source-map',
 
     resolve: {
       extensions: [".ts", ".tsx", ".js", ".json"],

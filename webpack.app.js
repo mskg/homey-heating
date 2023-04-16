@@ -164,7 +164,7 @@ var appConfig = (env, argv) => {
       ]
     },
 
-    devtool: PRODUCTION ? false : "inline-source-map",
+    devtool: PRODUCTION ? 'source-map' : "inline-source-map",
 
     resolve: {
       extensions: ['.tsx', '.ts', '.js'],
