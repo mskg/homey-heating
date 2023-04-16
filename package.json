@@ -92,7 +92,7 @@
 
     "release:download": "node scripts/download.js",
     "release:install": "homey app install -p tmp",
-    "release:publish": "cp ./env.json ./tmp && node scripts/install.js publish",
+    "release:publish": "cp ./env.json ./tmp && homey app publish -p tmp",
 
     "build:setversion": "node scripts/update-version.js",
     "build:sentry": "sentry-cli",

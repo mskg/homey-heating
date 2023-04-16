@@ -46,7 +46,7 @@ export abstract class ApiBase<B = any, P = UnkownParameters, Q = UnkownParameter
         const unlock = await ApiBase.mutex.lock();
         {
             const settings = container.resolve<SettingsManagerService>(SettingsManagerService);
-            settings.init(app.homey.settings);
+            await settings.init(app.homey.settings);
 
             settings.onChanged.subscribe((_s, v) => {
                 if (v.setting === InternalSettings.LogApi) {
@@ -63,7 +63,6 @@ export abstract class ApiBase<B = any, P = UnkownParameters, Q = UnkownParameter
     }
 
     private static mutex: Mutex = new Mutex();
-
     private static logger: ILogger;
     private static logApi = false;
     private static initialized = false;
