@@ -8,20 +8,22 @@ class App {
         console.log(args);
     }
 
-    public ManagerSettings = {
-        get: () => {
-            return null;
-        },
+    homey = {
+        ManagerSettings: {
+            get: () => {
+                return null;
+            },
 
-        set: () => { },
-    };
+            set: () => { },
+        }
+    }
 }
 
 var allZones: string[] = [];
 const allDevices: string[] = ["Device A", "Device B", "Device C"];
 
 class HomeyAPIApp {
-    devices=  {
+    devices = {
         // @ts-ignore
         ...mockEventHandler(),
         getDevices: () => keyBy(allDevices.map((d) => ({
@@ -34,7 +36,7 @@ class HomeyAPIApp {
         })), (d) => d.id),
     }
 
-    zones=  {
+    zones = {
         // @ts-ignore
         ...mockEventHandler(),
         // @ts-ignore
@@ -51,6 +53,10 @@ mock("homey", {
     App
 });
 
+
+mock("homey-api", {
+    HomeyAPIApp,
+});
 
 mock("homey-api", {
     HomeyAPIApp,

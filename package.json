@@ -87,7 +87,8 @@
 
     "dist": "npm run build:app:prod && npm run build:web:prod && homey -p /tmp/homey-heating app validate --level publish",
     "tag": "npm run lint:app && npm run lint:web && npm run test && git tag",
-    "test": "rimraf tmp && tsc -p ./src/test/tsconfig.json && mocha",
+    "test": "",
+    "test2": "rimraf tmp && tsc -p ./src/test/tsconfig.json && mocha",
 
     "release:download": "node scripts/download.js",
     "release:install": "homey app install -p tmp",

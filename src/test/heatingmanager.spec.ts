@@ -8,9 +8,8 @@ import { FakeDate, patchDate, revertDate } from "./mocks/date";
 import "./suppress-console";
 import { App } from 'homey';
 
-before(async () => {
-    await BootStrapper(new App(), true);
-});
+// before(async () => {
+// });
 
 beforeEach(async () => {
     patchDate();
@@ -23,7 +22,8 @@ afterEach(() => {
 });
 
 // tslint:disable: no-unused-expression
-describe("HeatingManager", () => {
+describe("HeatingManager", async () => {
+    await BootStrapper(new App(), true);
     const scheduler = container.resolve<HeatingManagerService>(HeatingManagerService);
 
     it("Cap", () => {
