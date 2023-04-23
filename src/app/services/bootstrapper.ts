@@ -25,6 +25,9 @@ export async function BootStrapper(app: HomeyApp, silent = false) {
             // tslint:disable-next-line: no-console
             if (!silent) { console.info(`********* APPLICATION STARTUP v${__VERSION} (${__BUILD}) *********`); }
 
+            // global hack
+            process.env.TZ = app.homey.clock.getTimezone();
+
             // depends on logger -> settings -> ...
             const settingsManager: SettingsManagerService = container.resolve(SettingsManagerService);
             await settingsManager.init(app.homey.settings);
