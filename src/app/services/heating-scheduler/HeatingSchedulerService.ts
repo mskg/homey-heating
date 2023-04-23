@@ -212,9 +212,6 @@ export class HeatingSchedulerService {
         let taskFunc = this.scheduleTask.bind(this);
         let { date: nextDate, plans: plansToExecute } = await this.determineNextSchedule();
 
-        
-
-
         // If we have a setpoint neat EOD, we still have to cleanup
         if (nextDate == null || nextDate >= END_OF_DAY) {
             nextDate = END_OF_DAY;
