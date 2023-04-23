@@ -61,13 +61,13 @@ export class HeatingSchedulerApp {
 export default class App extends HomeyApp {
     public async onInit() {
         // we don't let homey wait for the init cycle to finish
-        async () => {
+        (async () => {
             await BootStrapper(this);
 
             // we let the container do our stuff
             const app = container.resolve(HeatingSchedulerApp);
             await app.run(this);
-        }
+        })();
     }
 }
 
