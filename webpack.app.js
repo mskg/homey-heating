@@ -100,6 +100,14 @@ var appConfig = (env, argv) => {
         to: distPath + '/node_modules/homey-api'
       },
       {
+        from: 'node_modules/socket.io-client',
+        to: distPath + '/node_modules/socket.io-client'
+      },
+      {
+        from: 'node_modules/regenerator-runtime',
+        to: distPath + '/node_modules/regenerator-runtime'
+      },
+      {
         from: 'locales/**/*',
         to: distPath
       },
@@ -190,7 +198,9 @@ var appConfig = (env, argv) => {
       "@app/model": "@app/model",
       "@app/helper": "@app/helper",
       "@app/services": "@app/services",
-      "@app/flows": "@app/flows"
+      "@app/flows": "@app/flows",
+      "socket.io-client": "socket.io-client",
+      "regenerator-runtime": "regenerator-runtime"
     },
 
     plugins: plugins,

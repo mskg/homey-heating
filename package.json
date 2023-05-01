@@ -27,7 +27,7 @@
     "react-router-dom": "^5.0.0",
     "react-scroll-locky": "^1.5.0",
     "reflect-metadata": "^0.1.13",
-    "socket.io-client": "^2.2.0",
+    "socket.io-client": "^2.5.0",
     "strongly-typed-events": "^1.4.10",
     "tslint-react": "^4.0.0",
     "tsyringe": "^4.0.1",
