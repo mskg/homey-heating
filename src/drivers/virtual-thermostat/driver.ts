@@ -36,6 +36,7 @@ class VirtualThermostatsDriver extends Driver {
                     CapabilityType.TargetTemperature,
                     CapabilityType.MeasureTemperature,
                     CapabilityType.ThermostatOverride,
+                    CapabilityType.OnOff,
                 ],
             };
         });

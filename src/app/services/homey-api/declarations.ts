@@ -4,6 +4,7 @@ export enum CapabilityType {
 
     // Can not be called mode as this is a standard capability
     ThermostatOverride = "thermostat_override",
+    OnOff = "onoff",
 }
 
 export const CLASS_THERMOSTAT: string = "thermostat";

@@ -59,6 +59,9 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
         this.tryRegisterCapability(CapabilityType.ThermostatOverride,
             AsyncDebounce(this.onThermostatModeChanged.bind(this), settings.get<number>(InternalSettings.DriverDebounce, 5 * 1000)));
 
+        this.tryRegisterCapability(CapabilityType.OnOff,
+            AsyncDebounce(this.onOnOff.bind(this), settings.get<number>(InternalSettings.DriverDebounce, 5 * 1000)));
+
         this.repositoryChanged = this.plansChanged.bind(this);
         this.capabilitiesChanged = this.capabilititesChanged.bind(this);
         this.plansApplied = this.scheduleChanged.bind(this);
@@ -72,6 +75,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
         this.plan = await this.repository.find(this.id);
         await this.updateCapabilitiesFromPlan();
         await this.updateTemperature();
+        await this.updateOnOffStatus();
     }
 
     @trycatchlog(true)
@@ -110,6 +114,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
             // must be processed, we don't care
             await this.updateCapabilitiesFromPlan();
             await this.updateTemperature();
+            await this.updateOnOffStatus();
         }));
     }
 
@@ -336,6 +341,31 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
         } else {
             this.logger.debug(`we don't have associated devices`);
         }
+    }
+
+    /**
+     * React to a thermostat onoff.
+     *
+     * @param value boolean
+     * @param opts unused
+     */
+    @trycatchlog(true)
+    private async onOnOff(value: boolean, _opts: any) {
+        if (this.plan == null) { return; } // should not happen unavailable
+        this.logger.information(`${CapabilityType.OnOff} ${value}`);
+
+        this.plan.enabled = value;
+        await this.repository.update(this.plan);
+    }
+
+    /**
+     * Update this device's state
+     */
+    private async updateOnOffStatus() {
+        if (this.plan == null) { return; }
+
+        this.logger.debug(`Updating ${CapabilityType.OnOff} ${this.plan.enabled}`);
+        await this.doSetCapabilityValue(CapabilityType.OnOff, this.plan.enabled);
     }
 }
 
