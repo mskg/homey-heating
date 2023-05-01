@@ -1,0 +1,17 @@
+*.js.map
+*.LICENSE.txt
+**/*.js.map
+**/*.LICENSE.txt
+node_modules/@app/services/*.js.map
+node_modules/@app/helper/*.js.map
+node_modules/@app/model/*.js.map
+node_modules/tsyringe/*.js.map
+node_modules/@app/services/*.LICENSE.txt
+node_modules/@app/helper/*.LICENSE.txt
+node_modules/@app/model/*.LICENSE.txt
+node_modules/tsyringe/*.LICENSE.txt
+drivers/virtual-thermostat/*.js.map
+settings/*.js.map
+settings/*.LICENSE.txt
+ThirdPartyNotices.txt
+settings/ThirdPartyNotices.txt
