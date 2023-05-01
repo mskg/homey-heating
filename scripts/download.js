@@ -9,7 +9,7 @@ var branchName = process.argv.length >= 3 ? process.argv[2] : null;
 
 const options = {
     hostname: 'api.github.com',
-    path: '/repos/mskg/homey-heating/branches',
+    path: '/repos/mskg/homey-heating/branches?per_page=100',
     headers: { 'User-Agent': 'console' }
 };
 

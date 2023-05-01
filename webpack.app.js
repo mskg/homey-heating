@@ -96,10 +96,6 @@ var appConfig = (env, argv) => {
         to: distPath + '/node_modules/reflect-metadata/index.js'
       },
       {
-        from: 'node_modules/homey',
-        to: distPath + '/node_modules/homey'
-      },
-      {
         from: 'node_modules/homey-api',
         to: distPath + '/node_modules/homey-api'
       },
@@ -194,7 +190,7 @@ var appConfig = (env, argv) => {
       "@app/model": "@app/model",
       "@app/helper": "@app/helper",
       "@app/services": "@app/services",
-      "@app/flows": "@app/flows",
+      "@app/flows": "@app/flows"
     },
 
     plugins: plugins,

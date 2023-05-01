@@ -15,7 +15,7 @@ export type AuditedDevice = {
 } & IDevice;
 
 export function VirtualDevice(device: IDevice): boolean {
-    return device.driverUri.match(/app\.mskg\.homey\-heating/ig) != null;
+    return device.driverUri != null && device.driverUri.match(/app\.mskg\.homey\-heating/ig) != null;
 }
 
 export function CanSetTargetTemperature(device: IDevice): boolean {

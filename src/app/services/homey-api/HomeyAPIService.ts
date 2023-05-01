@@ -1,5 +1,5 @@
 import { App as HomeyApp } from "homey";
-import { HomeyAPIApp } from "homey-api";
+import { HomeyAPI } from "homey-api";
 import { singleton } from "tsyringe";
 import { ICategoryLogger, LoggerFactory } from "../log";
 import { StableHomeyAPI } from "./api";
@@ -21,7 +21,9 @@ export class HomeyAPIService {
         if (this.homeyAPI == null) {
             try {
                 this.logger.debug("Connecting to API");
-                this.homeyAPI = new HomeyAPIApp({ homey, debug: !__PRODUCTION__ }) as StableHomeyAPI;
+
+                //@ts-ignore
+                this.homeyAPI = await HomeyAPI.createAppAPI({ homey, debug: !__PRODUCTION__ }) as StableHomeyAPI;
             } catch (e) {
                 this.logger.error(e, "CATASTROPHIC FAILURE **** CANNOT BE HANDELED *****");
 
