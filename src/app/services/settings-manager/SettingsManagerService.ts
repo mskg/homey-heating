@@ -38,14 +38,14 @@ export class SettingsManagerService {
 
         if (val == null) { val = def; }
 
-        this.logger.debug(`Get '${setting}' => '${val}'`);
+        this.logger.debug(`Get '${setting}' => '${val}' (${typeof(val)})`);
         return val;
     }
 
     // Catastrophic failure, cannot be handeled here.
     @trycatchlog()
     public set<T extends AllowedSetting>(setting: AllSettings, val: T) {
-        this.logger.debug(`Put '${setting}' <= '${val}'`);
+        this.logger.debug(`Put '${setting}' <= '${val}' (${typeof(val)})`);
 
         // tslint:disable: one-line
         try {

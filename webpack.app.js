@@ -9,7 +9,7 @@ const distPath = path.resolve('/tmp/homey-heating');
 
 var appConfig = (env, argv) => {
   const PRODUCTION = argv.mode === 'production' || process.env.FORCE_PRODUCTION == "true";
-  console.log('******************* PRODUCTION?', PRODUCTION );
+  console.log('******************* PRODUCTION?', PRODUCTION);
 
   const package = require("./package.json");
   const appPackage = require("./src/app.json");
@@ -95,18 +95,22 @@ var appConfig = (env, argv) => {
         from: 'node_modules/reflect-metadata/Reflect.js',
         to: distPath + '/node_modules/reflect-metadata/index.js'
       },
-      {
-        from: 'node_modules/homey-api',
-        to: distPath + '/node_modules/homey-api'
-      },
-      {
-        from: 'node_modules/socket.io-client',
-        to: distPath + '/node_modules/socket.io-client'
-      },
-      {
-        from: 'node_modules/regenerator-runtime',
-        to: distPath + '/node_modules/regenerator-runtime'
-      },
+      // {
+      //   from: 'node_modules/homey-api',
+      //   to: distPath + '/node_modules/homey-api'
+      // },
+      // {
+      //   from: 'node_modules/socket.io-client/dist/socket.io.js',
+      //   to: distPath + '/node_modules/socket.io-client/index.js'
+      // },
+      // {
+      //   from: 'node_modules/socket.io-parser',
+      //   to: distPath + '/node_modules/socket.io-parser'
+      // },
+      // {
+      //   from: 'node_modules/regenerator-runtime',
+      //   to: distPath + '/node_modules/regenerator-runtime'
+      // },
       {
         from: 'locales/**/*',
         to: distPath
@@ -137,7 +141,7 @@ var appConfig = (env, argv) => {
           "utf8@2.0.0": { licenseName: "MIT" },
           "ws@0.4.31": { licenseName: "MIT" },
           // this is proprietary but OK here
-          "homey-api@1.10.20": { licenseName: "ISC" },
+          "homey-api@3.0.0-rc.19": { licenseName: "ISC" },
           "@types/homey@0.3.4": { licenseName: "ISC" },
         }
       }));
@@ -165,7 +169,7 @@ var appConfig = (env, argv) => {
         test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/
-      },
+      }
       ]
     },
 
@@ -183,6 +187,8 @@ var appConfig = (env, argv) => {
     devtool: PRODUCTION ? 'source-map' : "inline-source-map",
 
     resolve: {
+      // node-fetch
+      mainFields: ["main", "module"],
       extensions: ['.tsx', '.ts', '.js'],
     },
 
@@ -191,7 +197,7 @@ var appConfig = (env, argv) => {
       "utf-8-validate": "utf-8-validate",
       "ws": "ws",
       "homey": "homey",
-      "homey-api": "homey-api",
+      // "homey-api": "homey-api",
       "reflect-metadata": "reflect-metadata",
       "tsyringe": "tsyringe",
       "lodash": "lodash",
@@ -199,8 +205,13 @@ var appConfig = (env, argv) => {
       "@app/helper": "@app/helper",
       "@app/services": "@app/services",
       "@app/flows": "@app/flows",
-      "socket.io-client": "socket.io-client",
+      // "socket.io-client": "socket.io-client",
+      // "socket.io-parser": "socket.io-parser",
       "regenerator-runtime": "regenerator-runtime"
+    },
+
+    externalsPresets: {
+      node: true,
     },
 
     plugins: plugins,
