@@ -22,7 +22,7 @@ export class HomeyAPIService {
             try {
                 this.logger.debug("Connecting to API");
 
-                //@ts-ignore
+                // @ts-ignore types wrong
                 this.homeyAPI = await HomeyAPI.createAppAPI({ homey, debug: !__PRODUCTION__ }) as StableHomeyAPI;
             } catch (e) {
                 this.logger.error(e, "CATASTROPHIC FAILURE **** CANNOT BE HANDELED *****");
