@@ -1,0 +1,450 @@
+{
+    "id": "app.mskg.homey-heating",
+    "version": "2.0.7",
+    "compatibility": ">= 5.0.0",
+    "sdk": 3,
+    "name": {
+        "en": "Homey Heating Scheduler",
+        "nl": "Homey Verwarmingsregelaar",
+        "de": "Homey Heizungsplaner"
+    },
+    "tags": {},
+    "brandColor": "#2196f3",
+    "description": {
+        "en": "Create and manage heating schedules",
+        "nl": "Creëer en beheer verwarmingsschema's",
+        "de": "Heizungspläne erstellen und verwalten"
+    },
+    "category": [
+        "tools"
+    ],
+    "platforms": [
+        "local"
+    ],
+    "permissions": [
+        "homey:manager:api"
+    ],
+    "images": {
+        "large": "/assets/images/large.png",
+        "small": "/assets/images/small.png"
+    },
+    "flow": {
+        "actions": [
+            {
+                "id": "apply_all",
+                "title": {
+                    "en": "Apply all active heating plans",
+                    "nl": "Pas alle actieve verwarmingsschema's toe",
+                    "de": "Wende alle aktiven Heizpläne an"
+                }
+            },
+            {
+                "id": "apply_plan",
+                "title": {
+                    "en": "Apply heating plan",
+                    "nl": "Verwarmingsschema toepassen",
+                    "de": "Heizplan anwenden"
+                },
+                "args": [
+                    {
+                        "type": "autocomplete",
+                        "name": "plan",
+                        "placeholder": {
+                            "en": "Search for a plan...",
+                            "nl": "Zoek naar een schema...",
+                            "de": "Einen Plan suchen ..."
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "set_mode",
+                "title": {
+                    "en": "Set heating mode",
+                    "nl": "Stel de verwarmingsmodus in",
+                    "de": "Heizmodus einstellen"
+                },
+                "args": [
+                    {
+                        "type": "dropdown",
+                        "name": "state",
+                        "values": [
+                            {
+                                "id": "0",
+                                "label": {
+                                    "en": "Automatic",
+                                    "nl": "Automatisch",
+                                    "de": "Automatik"
+                                }
+                            },
+                            {
+                                "id": "1",
+                                "label": {
+                                    "en": "1 day at home",
+                                    "nl": "1 dag thuis",
+                                    "de": "1 tag zu Hause"
+                                }
+                            },
+                            {
+                                "id": "2",
+                                "label": {
+                                    "en": "1 day away from home",
+                                    "nl": "1 dag weg van huis",
+                                    "de": "1 Tag unterwegs"
+                                }
+                            },
+                            {
+                                "id": "3",
+                                "label": {
+                                    "en": "Sleeping",
+                                    "nl": "Slapen",
+                                    "de": "Schlafen"
+                                }
+                            },
+                            {
+                                "id": "4",
+                                "label": {
+                                    "en": "Holiday",
+                                    "nl": "Vrije dag",
+                                    "de": "Urlaub"
+                                }
+                            },
+                            {
+                                "id": "5",
+                                "label": {
+                                    "en": "Out of season",
+                                    "nl": "Buiten het seizoen",
+                                    "de": "Außerhalb der Saison"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "set_log_state",
+                "title": {
+                    "en": "Set remote logging",
+                    "nl": "Stel loggen op afstand in",
+                    "de": "Remote-Protokollierung"
+                },
+                "args": [
+                    {
+                        "type": "dropdown",
+                        "name": "state",
+                        "values": [
+                            {
+                                "id": "true",
+                                "label": {
+                                    "en": "to enabled",
+                                    "nl": "naar ingeschakeld",
+                                    "de": "aktivieren"
+                                }
+                            },
+                            {
+                                "id": "false",
+                                "label": {
+                                    "en": "to disabled",
+                                    "nl": "naar uitgeschakeld",
+                                    "de": "deaktivieren"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "set_plan_state",
+                "title": {
+                    "en": "Set heating plan",
+                    "nl": "Activeer verwarmingsschema",
+                    "de": "Heizplan"
+                },
+                "args": [
+                    {
+                        "type": "autocomplete",
+                        "name": "plan",
+                        "placeholder": {
+                            "en": "Search for a plan...",
+                            "nl": "Zoek naar een schema...",
+                            "de": "Einen Plan suchen ..."
+                        }
+                    },
+                    {
+                        "type": "dropdown",
+                        "name": "state",
+                        "values": [
+                            {
+                                "id": "true",
+                                "label": {
+                                    "en": "to enabled",
+                                    "nl": "naar ingeschakeld",
+                                    "de": "aktivieren"
+                                }
+                            },
+                            {
+                                "id": "false",
+                                "label": {
+                                    "en": "to disabled",
+                                    "nl": "naar uitgeschakeld",
+                                    "de": "deaktivieren"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "set_thermostat_override",
+                "title": {
+                    "en": "Set thermostat mode",
+                    "nl": "Activeer thermostaatmodus",
+                    "de": "Thermostatmodus"
+                },
+                "args": [
+                    {
+                        "type": "dropdown",
+                        "name": "mode",
+                        "values": [
+                            {
+                                "id": "0",
+                                "label": {
+                                    "en": "Heating plan (automatic)",
+                                    "nl": "Verwarmingsschema (automatisch)",
+                                    "de": "Heizplan (automatisch)"
+                                }
+                            },
+                            {
+                                "id": "6",
+                                "label": {
+                                    "en": "Manual until midnight",
+                                    "nl": "Handmatig tot middernacht",
+                                    "de": "Manuell bis Mitternacht"
+                                }
+                            },
+                            {
+                                "id": "7",
+                                "label": {
+                                    "en": "Fully manual",
+                                    "nl": "Volledig handmatig",
+                                    "de": "Vollständig manuell"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "my_device",
+                        "type": "device",
+                        "filter": "driver_id=virtual-thermostat"
+                    }
+                ]
+            }
+        ],
+        "triggers": [
+            {
+                "id": "thermostat_override_changed",
+                "title": {
+                    "en": "Thermostat mode changed",
+                    "nl": "De thermostaatmodus is gewijzigd",
+                    "de": "Thermostatmodus geändert"
+                },
+                "tokens": [
+                    {
+                        "name": "mode",
+                        "type": "string",
+                        "title": {
+                            "en": "Mode",
+                            "nl": "Modus",
+                            "de": "Modus"
+                        },
+                        "example": "Automatic"
+                    }
+                ],
+                "args": [
+                    {
+                        "name": "my_device",
+                        "type": "device",
+                        "filter": "driver_id=virtual-thermostat"
+                    }
+                ]
+            },
+            {
+                "id": "mode_changed",
+                "title": {
+                    "en": "Heating mode changed",
+                    "nl": "Verwarmingsmodus gewijzigd",
+                    "de": "Heizmodus geändert"
+                },
+                "tokens": [
+                    {
+                        "name": "mode",
+                        "type": "string",
+                        "title": {
+                            "en": "Mode",
+                            "nl": "Modus",
+                            "de": "Modus"
+                        },
+                        "example": "Automatic"
+                    }
+                ]
+            }
+        ]
+    },
+    "author": {
+        "name": "Markus Kling",
+        "email": "markus.kling@gmail.com"
+    },
+    "contributors": {
+        "translators": [
+            {
+                "name": "Lennard Warnaar",
+                "email": "lennard@renlen.nl"
+            },
+            {
+                "name": "mapulu",
+                "email": "46723804+mapulu@users.noreply.github.com"
+            }
+        ]
+    },
+    "bugs": {
+        "url": "https://github.com/mskg/homey-heating/issues"
+    },
+    "contributing": {
+        "donate": {
+            "paypal": {
+                "username": "klingmarkus"
+            }
+        }
+    },
+    "capabilities": {
+        "thermostat_override": {
+            "type": "enum",
+            "title": {
+                "en": "Thermostat mode",
+                "nl": "Thermostaatmodus",
+                "de": "Thermostatmodus"
+            },
+            "getable": true,
+            "setable": true,
+            "icon": "/assets/icon.svg",
+            "values": [
+                {
+                    "id": "0",
+                    "title": {
+                        "en": "Heating plan (automatic)",
+                        "nl": "Verwarmingsschema (automatisch)",
+                        "de": "Heizplan (automatisch)"
+                    }
+                },
+                {
+                    "id": "6",
+                    "title": {
+                        "en": "Manual until midnight",
+                        "nl": "Handmatig tot middernacht",
+                        "de": "Manuell bis Mitternacht"
+                    }
+                },
+                {
+                    "id": "7",
+                    "title": {
+                        "en": "Fully manual",
+                        "nl": "Volledig handmatig",
+                        "de": "Vollständig manuell"
+                    }
+                }
+            ]
+        }
+    },
+    "drivers": [
+        {
+            "id": "virtual-thermostat",
+            "name": {
+                "en": "Virtual Thermostat",
+                "nl": "Virtuele thermostaat",
+                "de": "Virtueller Thermostat"
+            },
+            "class": "thermostat",
+            "capabilities": [
+                "target_temperature",
+                "thermostat_override",
+                "measure_temperature",
+                "onoff"
+            ],
+            "pair": [
+                {
+                    "id": "list_devices",
+                    "template": "list_devices",
+                    "navigation": {
+                        "next": "add_devices"
+                    }
+                },
+                {
+                    "id": "add_devices",
+                    "template": "add_devices"
+                }
+            ],
+            "images": {
+                "large": "/drivers/virtual-thermostat/assets/images/large.png",
+                "small": "/drivers/virtual-thermostat/assets/images/small.png"
+            }
+        }
+    ],
+    "api": {
+        "DebuggerOn": {
+            "method": "GET",
+            "path": "/debugger/on"
+        },
+        "DebuggerOff": {
+            "method": "GET",
+            "path": "/debugger/off"
+        },
+        "GetSettings": {
+            "method": "GET",
+            "path": "/settings"
+        },
+        "PutSettings": {
+            "method": "PUT",
+            "path": "/settings"
+        },
+        "PutMode": {
+            "method": "PUT",
+            "path": "/mode"
+        },
+        "GetMode": {
+            "method": "GET",
+            "path": "/mode"
+        },
+        "GetResetPlans": {
+            "method": "GET",
+            "path": "/resetplans"
+        },
+        "GetPlans": {
+            "method": "GET",
+            "path": "/plans"
+        },
+        "GetPlan": {
+            "method": "GET",
+            "path": "/plans/:id"
+        },
+        "PutPlan": {
+            "method": "PUT",
+            "path": "/plans/:id"
+        },
+        "DeletePlan": {
+            "method": "DELETE",
+            "path": "/plans/:id"
+        },
+        "GetZones": {
+            "method": "GET",
+            "path": "/zones"
+        },
+        "GetDevices": {
+            "method": "GET",
+            "path": "/devices"
+        },
+        "GetSchedule": {
+            "method": "GET",
+            "path": "/schedule"
+        }
+    }
+}
