@@ -1,16 +1,21 @@
 import { PromiseBuffer } from "@sentry/utils";
-import { connect } from "socket.io-client";
+// needs socket.io-client v3
+import { io } from "socket.io-client-v3";
 import { LogService } from "./LogService";
 import { ILogger, INeedsCleanup } from "./types";
 
 export class ConsoleReLogger implements ILogger, INeedsCleanup {
     private cleanup = false;
-    private socket: SocketIOClient.Socket;
+    private socket;
     private buffer = new PromiseBuffer<void>(30);
 
     constructor(private channel: string) {
-        this.socket = connect("https://console.re:443", {
+        this.socket = io("https://console.re", {
             transports: ["websocket"],
+            // @ts-ignore
+            extraHeaders: {
+                'x-consolere': 'true'
+            }
         });
 
         this.socket.on("connect", () => {
@@ -94,7 +99,7 @@ export class ConsoleReLogger implements ILogger, INeedsCleanup {
 
                 resolve();
             }),
-        // @ts-ignore
+            // @ts-ignore
         ).catch((e) => {
             LogService.transportLog.error(e, "ConsoleRe could not send log: ", ...args, e);
         });

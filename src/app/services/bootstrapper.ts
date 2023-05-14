@@ -2,6 +2,7 @@
 
 import { Mutex } from "@app/helper";
 import { App as HomeyApp } from "homey";
+import process = require("process");
 import { container } from "tsyringe";
 import { DeviceManagerService } from "../services/device-manager";
 import { HeatingPlanRepositoryService } from "./heating-plan-repository";
@@ -27,6 +28,11 @@ export async function BootStrapper(app: HomeyApp, silent = false) {
 
             // global hack
             process.env.TZ = app.homey.clock.getTimezone();
+
+            // // enables some websocket debug messages
+            // if (!__PRODUCTION__) {
+            //     process.env.DEBUG = "*";
+            // }
 
             // depends on logger -> settings -> ...
             const settingsManager: SettingsManagerService = container.resolve(SettingsManagerService);

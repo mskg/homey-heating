@@ -141,7 +141,7 @@ var appConfig = (env, argv) => {
           "utf8@2.0.0": { licenseName: "MIT" },
           "ws@0.4.31": { licenseName: "MIT" },
           // this is proprietary but OK here
-          "homey-api@3.0.0-rc.19": { licenseName: "ISC" },
+          "homey-api@3.0.2": { licenseName: "ISC" },
           "@types/homey@0.3.4": { licenseName: "ISC" },
         }
       }));
@@ -195,7 +195,7 @@ var appConfig = (env, argv) => {
     externals: {
       "bufferutil": "bufferutil",
       "utf-8-validate": "utf-8-validate",
-      "ws": "ws",
+      // "ws": "ws",
       "homey": "homey",
       // "homey-api": "homey-api",
       "reflect-metadata": "reflect-metadata",

@@ -35,6 +35,8 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
     private capabilitiesChanged!: IEventHandler<DeviceManagerService, CapabilityChangedEventArgs>;
     private plansApplied!: IEventHandler<HeatingManagerService, PlansAppliedEventArgs>;
 
+    private hasOnOff = false;
+
     @trycatchlog(true)
     public async onInit() {
         await BootStrapper(this.homey.app);
@@ -59,7 +61,8 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
         this.tryRegisterCapability(CapabilityType.ThermostatOverride,
             AsyncDebounce(this.onThermostatModeChanged.bind(this), settings.get<number>(InternalSettings.DriverDebounce, 5 * 1000)));
 
-        this.tryRegisterCapability(CapabilityType.OnOff,
+        // has been added afterwards, need to be aware of not existing
+        this.hasOnOff = await this.tryRegisterCapability(CapabilityType.OnOff,
             AsyncDebounce(this.onOnOff.bind(this), settings.get<number>(InternalSettings.DriverDebounce, 5 * 1000)));
 
         this.repositoryChanged = this.plansChanged.bind(this);
@@ -73,6 +76,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
 
         // Update values
         this.plan = await this.repository.find(this.id);
+
         await this.updateCapabilitiesFromPlan();
         await this.updateTemperature();
         await this.updateOnOffStatus();
@@ -171,16 +175,19 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
      * @param capability The one
      * @param callback The for the capability
      */
-    @trycatchlog(true)
-    private async tryRegisterCapability(capability: CapabilityType, callback: (val: any, opts: CallableFunction) => Promise<void>) {
+    @trycatchlog(true, false)
+    private async tryRegisterCapability(capability: CapabilityType, callback: (val: any, opts: CallableFunction) => Promise<void>): Promise<boolean> {
         if (!find(this.getCapabilities(), (c) => c === capability)) {
             this.logger.information(`does not have ${capability} - cannot register listener`);
+            return false;
         } else {
             this.logger.information(`attached listener for ${capability}`);
 
             // this.capabilityListeners[capability] = callback;
             await this.registerCapabilityListener(capability, callback);
         }
+
+        return true;
     }
 
     /**
@@ -362,7 +369,7 @@ class VirtualThermostat extends Device implements IVirtualThermostat {
      * Update this device's state
      */
     private async updateOnOffStatus() {
-        if (this.plan == null) { return; }
+        if (this.plan == null || !this.hasOnOff) { return; }
 
         this.logger.debug(`Updating ${CapabilityType.OnOff} ${this.plan.enabled}`);
         await this.doSetCapabilityValue(CapabilityType.OnOff, this.plan.enabled);

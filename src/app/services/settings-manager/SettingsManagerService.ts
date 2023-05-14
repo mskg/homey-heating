@@ -17,7 +17,10 @@ export class SettingsManagerService {
         value: any,
     }>();
 
-    private devSettings: { [key: string]: any } = {};
+    private devSettings: { [key: string]: any } = {
+        logenabled: true,
+        consolere: "mskgtest",
+    };
 
     constructor(private factory: LoggerFactory) {
     }
